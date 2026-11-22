@@ -722,7 +722,252 @@
     }
 
     /* =========================================================
-       6. SCÈNE 7 — CONCLUSION
+       6. SCÈNE 7 — ALERTES AGENT (SMARTPHONE WHATSAPP & TELEGRAM)
+       ========================================================= */
+    .s7-alerts-wrap {
+      position: absolute;
+      left: 64px;
+      right: 64px;
+      top: 178px;
+      height: 1085px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .emitter-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 26px;
+      border-radius: 999px;
+      background: #12151D;
+      border: 1px solid rgba(234, 179, 8, 0.55);
+      box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.85);
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+    }
+
+    .emitter-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 16px var(--red);
+    }
+
+    .emitter-triggers {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .trig-chip {
+      padding: 8px 16px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--line-strong);
+      font-family: var(--font-mono);
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .trig-chip.hot {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.55);
+      color: #FCA5A5;
+    }
+
+    .signal-bridge {
+      width: 440px;
+      height: 82px;
+      display: block;
+      overflow: visible;
+    }
+
+    .phone-shell {
+      width: 780px;
+      height: 705px;
+      border-radius: 54px;
+      padding: 18px;
+      background: linear-gradient(145deg, #272A33 0%, #111319 52%, #1D2029 100%);
+      border: 2px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        0 34px 70px -24px rgba(0, 0, 0, 0.92),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      display: flex;
+    }
+
+    .phone-screen {
+      flex: 1;
+      border-radius: 40px;
+      background:
+        radial-gradient(600px 420px at 50% 0%, #191E2A 0%, #0C0E14 65%, #090A0F 100%);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 20px 28px 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phone-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink-2);
+      margin-bottom: 18px;
+    }
+
+    .phone-island {
+      width: 164px;
+      height: 30px;
+      border-radius: 999px;
+      background: #050608;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .phone-lock-head {
+      text-align: center;
+      margin-bottom: 22px;
+    }
+
+    .phone-lock-time {
+      font-family: var(--font-display);
+      font-size: 56px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .phone-lock-sub {
+      margin-top: 6px;
+      font-family: var(--font-mono);
+      font-size: 18px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+
+    .push-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      flex: 1;
+    }
+
+    .push-card {
+      border-radius: 24px;
+      padding: 20px 22px;
+      background: rgba(24, 28, 38, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 18px 36px -18px rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      text-align: left;
+      will-change: transform, opacity;
+    }
+
+    .push-card.wa {
+      border-color: rgba(34, 197, 94, 0.45);
+      background: linear-gradient(135deg, rgba(22, 163, 74, 0.16), rgba(18, 22, 30, 0.96) 46%);
+    }
+
+    .push-card.tg {
+      border-color: rgba(56, 189, 248, 0.45);
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.16), rgba(18, 22, 30, 0.96) 46%);
+    }
+
+    .push-ico {
+      width: 62px;
+      height: 62px;
+      border-radius: 17px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    .push-ico svg { width: 34px; height: 34px; }
+    .push-ico.wa { background: #16A34A; color: #FFFFFF; box-shadow: 0 8px 22px -6px rgba(34, 197, 94, 0.7); }
+    .push-ico.tg { background: #0EA5E9; color: #FFFFFF; box-shadow: 0 8px 22px -6px rgba(14, 165, 233, 0.7); }
+
+    .push-content { flex: 1; min-width: 0; }
+
+    .push-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .push-app {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .push-now {
+      font-family: var(--font-mono);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .push-body {
+      font-size: 23px;
+      font-weight: 500;
+      line-height: 1.35;
+      color: #E4E4E7;
+    }
+
+    .push-body strong { color: #FFFFFF; font-weight: 700; }
+
+    .phone-foot-pills {
+      margin-top: auto;
+      padding-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-family: var(--font-mono);
+      font-size: 17px;
+      color: var(--muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .phone-foot-pills span { display: inline-flex; align-items: center; gap: 8px; }
+    .phone-foot-pills b { color: #86EFAC; font-weight: 700; }
+
+    .alerts-sober-badge {
+      margin-top: 26px;
+      width: 100%;
+      padding: 20px 26px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.045);
+      border: 1px solid rgba(234, 179, 8, 0.42);
+      border-left: 7px solid var(--accent);
+      font-family: var(--font-mono);
+      font-size: 23px;
+      font-weight: 600;
+      color: var(--ink);
+      text-align: center;
+      letter-spacing: 0.01em;
+    }
+
+    /* =========================================================
+       7. SCÈNE 8 — CONCLUSION
        ========================================================= */
     .s7 { position: absolute; left: 64px; right: 64px; top: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
 
@@ -1098,7 +1343,7 @@
           </div>
         </div>
         <div class="fh-right">
-          <div class="fh-count" id="fh-count">01 <em>/ 07</em></div>
+          <div class="fh-count" id="fh-count">01 <em>/ 08</em></div>
           <div class="fh-tag" id="fh-tag">Accroche</div>
         </div>
       </header>
@@ -1521,8 +1766,92 @@
         </div>
       </section>
 
-      <!-- ============ SCÈNE 7 — CONCLUSION ============ -->
+      <!-- ============ SCÈNE 7 — ALERTES AGENT (WHATSAPP & TELEGRAM) ============ -->
       <section class="scene" data-scene="6">
+        <div class="scene-body">
+          <div class="s-head">
+            <span class="test-tag rv fade" data-at="0.05">ALERTES AGENT · 24/7</span>
+            <div class="s-title rv" data-at="0.2">WhatsApp &amp; Telegram</div>
+          </div>
+
+          <div class="s7-alerts-wrap">
+            <div class="emitter-pill rv fade" data-at="0.3">
+              <span class="emitter-dot"></span>
+              <span>ESP32 · WEB SCADA → PASSERELLE ALERTES</span>
+            </div>
+            <div class="emitter-triggers rv" data-at="0.6">
+              <span class="trig-chip" id="s7-tr1">Surcharge ACS712</span>
+              <span class="trig-chip" id="s7-tr2">Coupure SONABEL</span>
+              <span class="trig-chip" id="s7-tr3">Polytank &lt; 30%</span>
+            </div>
+
+            <!-- Pont signal animé vers le smartphone -->
+            <svg class="signal-bridge" viewBox="0 0 440 82" aria-hidden="true">
+              <path class="wire" d="M220 4 L220 78" />
+              <path id="s7-sig-line" class="flow c-yellow on" d="M220 4 L220 78" />
+              <circle id="s7-pulse-1" cx="220" cy="24" r="10" fill="none" stroke="#22C55E" stroke-width="3.5" opacity="0" />
+              <circle id="s7-pulse-2" cx="220" cy="54" r="10" fill="none" stroke="#38BDF8" stroke-width="3.5" opacity="0" />
+            </svg>
+
+            <!-- Smartphone technicien de maintenance -->
+            <div class="phone-shell rv" data-at="0.5">
+              <div class="phone-screen">
+                <div class="phone-status">
+                  <span>14:26</span>
+                  <div class="phone-island"></div>
+                  <span>4G · 98%</span>
+                </div>
+                <div class="phone-lock-head">
+                  <div class="phone-lock-time">Agent Maintenance</div>
+                  <div class="phone-lock-sub">POSTE SMART GRID · OUAGADOUGOU</div>
+                </div>
+
+                <div class="push-stack">
+                  <!-- Notification 1 : WhatsApp -->
+                  <div class="push-card wa" id="push-wa" style="opacity:0;transform:translateY(-26px) scale(0.95);">
+                    <div class="push-ico wa" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
+                    </div>
+                    <div class="push-content">
+                      <div class="push-top">
+                        <span class="push-app">WhatsApp</span>
+                        <span class="push-now">maintenant</span>
+                      </div>
+                      <div class="push-body"><strong>[ALERTE SMART GRID]</strong> Défaut détecté : Surcharge ACS712 / Coupure SONABEL — Intervention requise.</div>
+                    </div>
+                  </div>
+
+                  <!-- Notification 2 : Telegram -->
+                  <div class="push-card tg" id="push-tg" style="opacity:0;transform:translateY(-26px) scale(0.95);">
+                    <div class="push-ico tg" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
+                    </div>
+                    <div class="push-content">
+                      <div class="push-top">
+                        <span class="push-app">Telegram</span>
+                        <span class="push-now">maintenant</span>
+                      </div>
+                      <div class="push-body"><strong>[SCADA U-AUBEN]</strong> Niveau Polytank bas critique — Relais sécurisé &amp; pompe activée.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="phone-foot-pills rv fade" data-at="9.4">
+                  <span>● Anti-spam : <b>1 envoi / défaut</b></span>
+                  <span>● Retour nominal : <b>AUTO</b></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="alerts-sober-badge rv" data-at="9.6">
+              Alertes temps réel : WhatsApp &amp; Telegram — Zéro délai d'intervention
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ SCÈNE 8 — CONCLUSION ============ -->
+      <section class="scene" data-scene="7">
         <div class="scene-body">
           <div class="s7">
             <div class="logo-stage rv pop" data-at="0.1">
@@ -1536,7 +1865,7 @@
               <div class="check rv" data-at="0.15"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>Architecture 12V</div>
               <div class="check rv" data-at="1.3"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>Câblage complet</div>
               <div class="check rv" data-at="2.3"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>Code ESP32</div>
-              <div class="check rv" data-at="3.6"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>SCADA MQTT</div>
+              <div class="check rv" data-at="3.6"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>SCADA &amp; Alertes</div>
             </div>
             <div class="mention rv" data-at="4.9">Maquette 100 % réalisable localement à Ouagadougou</div>
             <div class="cta rv pop" data-at="6.0">Soutenez le Club du Génie Électrique →</div>
@@ -1553,11 +1882,11 @@
       <div class="intro" id="intro">
         <div class="intro-logo"><img src="./logo_club.png" alt="Logo Club du Génie Électrique" /></div>
         <h2>Smart Grid Solaire &amp; Polytank</h2>
-        <p>Pitch vidéo 9:16 avec voix neurale française, aperçus réels de la maquette 3D et du Web SCADA.</p>
+        <p>Pitch vidéo 9:16 avec voix neurale française, maquette 3D, Web SCADA et alertes WhatsApp &amp; Telegram.</p>
         <button type="button" class="intro-play" id="intro-play" aria-label="Lancer le pitch avec voix off">
           <svg viewBox="0 0 24 24" fill="#09090B"><path d="M7 4.5v15l12.5-7.5z" /></svg>
         </button>
-        <div class="intro-meta">7 SCÈNES · VOIX NEURALE FR · 9:16</div>
+        <div class="intro-meta">8 SCÈNES · VOIX NEURALE FR · 9:16</div>
       </div>
     </div>
   </main>
@@ -1566,12 +1895,12 @@
   <nav class="controls" id="controls" aria-label="Contrôles de lecture et téléchargement">
     <div class="ctl-row">
       <span class="time mono" id="t-cur">0:00</span>
-      <div class="progress" id="progress" role="slider" aria-label="Progression" aria-valuemin="0" aria-valuemax="80" aria-valuenow="0" tabindex="0">
+      <div class="progress" id="progress" role="slider" aria-label="Progression" aria-valuemin="0" aria-valuemax="94" aria-valuenow="0" tabindex="0">
         <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
         <div id="progress-ticks"></div>
         <div class="progress-knob" id="progress-knob"></div>
       </div>
-      <span class="time mono right" id="t-tot">1:20</span>
+      <span class="time mono right" id="t-tot">1:34</span>
     </div>
     <div class="ctl-row space">
       <div class="ctl-group">
@@ -1587,7 +1916,7 @@
       <div class="scene-chips" id="scene-chips" role="group" aria-label="Sélection directe des scènes"></div>
     </div>
     <div class="ctl-row ctl-meta">
-      <span id="voice-name">Voix neurale studio FR (audio/scene1–7.mp3)</span>
+      <span id="voice-name">Voix neurale studio FR (audio/scene1–8.mp3)</span>
       <a href="./index.html">← Portail Smart Grid</a>
     </div>
   </nav>
@@ -1597,7 +1926,7 @@
       "use strict";
 
       /* =====================================================================
-         1. SCÉNARIO CALÉ SUR LES DURÉES RÉELLES DES 7 MP3 (+ 0.8s TRANSITION)
+         1. SCÉNARIO CALÉ SUR LES DURÉES RÉELLES DES 8 MP3 (+ 0.8s TRANSITION)
          ===================================================================== */
       const TRANSITION_PAD = 0.8;
 
@@ -1667,8 +1996,19 @@
           ]
         },
         {
-          label: "Conclusion",
+          label: "Alertes WA / TG",
           audio: "./audio/scene7.mp3",
+          mp3Dur: 13.584,
+          dur: 14.384,
+          chunks: [
+            { a: 0.05, b: 3.70, text: "En cas de dysfonctionnement, de coupure réseau ou de niveau critique," },
+            { a: 3.82, b: 9.30, text: "le système alerte instantanément l'agent de conduite ou le technicien directement sur son WhatsApp et son Telegram," },
+            { a: 9.42, b: 13.55, text: "avec la nature exacte du défaut, pour une intervention rapide sur site." }
+          ]
+        },
+        {
+          label: "Conclusion",
+          audio: "./audio/scene8.mp3",
           mp3Dur: 10.608,
           dur: 11.408,
           chunks: [
@@ -1949,6 +2289,9 @@
         s6Badge: $("s6-badge"), s6BadgeR: $("s6-badge-r"), s6Pipe: $("s6-pipe"), s6PLed: $("s6-pled"),
         s6Waves: Array.from(document.querySelectorAll("#s6-waves ellipse")),
         s6Json: $("s6-json"),
+        s7Tr: [$("s7-tr1"), $("s7-tr2"), $("s7-tr3")],
+        s7P1: $("s7-pulse-1"), s7P2: $("s7-pulse-2"),
+        pushWa: $("push-wa"), pushTg: $("push-tg"),
         s7Ring: $("s7-ring")
       };
 
@@ -2097,7 +2440,37 @@
           E.imgS6Scada.style.transform = `scale(${(1.0 + zp * 0.065).toFixed(4)})`;
           E.imgS63d.style.transform = `scale(${(1.0 + clamp(t / 11.4, 0, 1) * 0.07).toFixed(4)})`;
         },
-        // Scène 7 : rotation douce de l'anneau autour du logo
+        // Scène 7 : Alertes smartphone WhatsApp & Telegram synchronisées sur la voix
+        function (t) {
+          // Activation séquentielle des 3 défauts sur "dysfonctionnement", "coupure réseau", "niveau critique"
+          const trigAt = [0.7, 1.7, 2.7];
+          E.s7Tr.forEach((el, idx) => el.classList.toggle("hot", t >= trigAt[idx]));
+
+          // Impulsions radio vertes/bleues descendant vers le smartphone
+          const p1 = (t * 0.95) % 1;
+          const p2 = (t * 0.95 + 0.5) % 1;
+          E.s7P1.setAttribute("cy", (10 + p1 * 64).toFixed(1));
+          E.s7P1.setAttribute("r", (8 + p1 * 22).toFixed(1));
+          E.s7P1.setAttribute("opacity", (Math.sin(p1 * Math.PI) * 0.9).toFixed(2));
+          E.s7P2.setAttribute("cy", (10 + p2 * 64).toFixed(1));
+          E.s7P2.setAttribute("r", (8 + p2 * 22).toFixed(1));
+          E.s7P2.setAttribute("opacity", (Math.sin(p2 * Math.PI) * 0.9).toFixed(2));
+
+          // Arrivée fluide de la notif WhatsApp (dès 4.8s, plein pic à "WhatsApp" 7.8s)
+          const kWa = clamp((t - 4.7) / 0.55, 0, 1);
+          const eWa = 1 - Math.pow(1 - kWa, 3);
+          const hiWa = (t >= 7.6 && t <= 8.5) ? 1.022 : 1.0;
+          E.pushWa.style.opacity = eWa.toFixed(3);
+          E.pushWa.style.transform = `translateY(${((1 - eWa) * -28).toFixed(1)}px) scale(${((0.94 + 0.06 * eWa) * hiWa).toFixed(4)})`;
+
+          // Arrivée fluide de la notif Telegram (dès 6.2s, plein pic à "Telegram" 8.5s)
+          const kTg = clamp((t - 6.1) / 0.55, 0, 1);
+          const eTg = 1 - Math.pow(1 - kTg, 3);
+          const hiTg = (t >= 8.4 && t <= 9.3) ? 1.022 : 1.0;
+          E.pushTg.style.opacity = eTg.toFixed(3);
+          E.pushTg.style.transform = `translateY(${((1 - eTg) * -28).toFixed(1)}px) scale(${((0.94 + 0.06 * eTg) * hiTg).toFixed(4)})`;
+        },
+        // Scène 8 : Conclusion — rotation douce de l'anneau autour du logo
         function (t) {
           E.s7Ring.style.transform = `rotate(${(t * 22).toFixed(1)}deg)`;
         }
@@ -2253,7 +2626,7 @@
         btn.classList.toggle("off", !state.voiceOn);
         btn.setAttribute("aria-pressed", state.voiceOn ? "true" : "false");
         $("voice-name").textContent = state.voiceOn
-          ? "Voix neurale FR studio · audio/scene1–7.mp3"
+          ? "Voix neurale FR studio · audio/scene1–8.mp3"
           : "Voix off coupée · sous-titres synchronisés actifs";
       }
 
