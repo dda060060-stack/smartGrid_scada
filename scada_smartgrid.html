@@ -4,7 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Club U-AUBEN — Supervision SCADA | Projet Smart Grid</title>
-  <meta name="description" content="Tableau de bord SCADA temps réel du projet Smart Grid &amp; Polytank 12V DC (Club U-AUBEN) : télémétrie MQTT HiveMQ, synoptique P&amp;ID, suivi des 4 relais et simulateur hors ligne." />
+  <meta name="description" content="Supervision SCADA temps réel du projet Smart Grid &amp; Polytank 12V DC (Club U-AUBEN) : télémétrie MQTT HiveMQ, synoptique animé, courbes temps réel, commande des 4 relais et journal d'alarmes." />
+  <meta name="theme-color" content="#09090B" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="manifest" href="./manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
@@ -64,10 +68,11 @@
     }
 
     .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+    .num  { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
     h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
 
     /* =========================================================
-       1. EN-TÊTE STUDIO IDENTIQUE À INDEX.HTML
+       1. EN-TÊTE STUDIO (LOGO OFFICIEL + NAV + PWA + RETOUR)
        ========================================================= */
     .el-header {
       background: rgba(255, 255, 255, 0.92);
@@ -94,34 +99,28 @@
     }
 
     .club-logo-slot {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 10px;
       border: 1px solid var(--border-strong);
-      background: var(--ink);
+      background: #FFFFFF;
+      padding: 3px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       flex-shrink: 0;
-      transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
+      box-shadow: var(--shadow-xs);
     }
 
-    .club-logo-slot:hover { border-color: var(--ink); transform: translateY(-1px); }
-    .club-logo-slot img { width: 100%; height: 100%; object-fit: contain; background: #FFFFFF; display: block; }
-    .club-logo-fallback {
-      display: none;
-      width: 100%; height: 100%;
-      align-items: center; justify-content: center;
-      background: var(--ink); color: var(--el-yellow);
-      font-family: var(--font-display); font-size: 13px; font-weight: 700;
+    .club-logo-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
-    .club-logo-slot.is-fallback img { display: none; }
-    .club-logo-slot.is-fallback .club-logo-fallback { display: flex; }
 
     .el-brand-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-    .el-brand-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-
     .el-brand-name {
       font-family: var(--font-display);
       font-size: 15.5px;
@@ -131,7 +130,6 @@
       line-height: 1.15;
       white-space: nowrap;
     }
-
     .el-brand-sub {
       font-size: 11.5px;
       font-weight: 500;
@@ -141,36 +139,6 @@
       text-overflow: ellipsis;
     }
 
-    .logo-actions { display: inline-flex; align-items: center; gap: 4px; }
-    .logo-edit-btn {
-      border: 1px solid var(--border);
-      background: var(--surface-alt);
-      color: var(--ink-secondary);
-      font-family: var(--font-ui);
-      font-size: 10.5px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.16s var(--ease);
-    }
-    .logo-edit-btn:hover { border-color: var(--ink); color: var(--ink); background: var(--surface); }
-
-    .logo-reset-btn {
-      display: none;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .logo-reset-btn.visible { display: inline-flex; }
-    .logo-reset-btn:hover { color: var(--red); border-color: var(--red-border); }
-
-    /* Navigation pilules */
     .el-nav-tabs {
       display: inline-flex;
       flex-wrap: wrap;
@@ -190,7 +158,7 @@
       font-family: var(--font-ui);
       font-size: 12px;
       font-weight: 600;
-      padding: 6px 12px;
+      padding: 6px 13px;
       border-radius: 9px;
       cursor: pointer;
       display: inline-flex;
@@ -219,14 +187,14 @@
     .el-tab.active .nav-badge { background: var(--el-yellow); color: var(--ink); }
     .nav-badge.has-alarm { background: var(--red) !important; color: #FFFFFF !important; }
 
-    .header-right {
+    .header-actions {
       display: flex;
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-    .back-btn {
+    .btn-header {
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -239,15 +207,25 @@
       font-size: 12px;
       font-weight: 600;
       text-decoration: none;
+      cursor: pointer;
       white-space: nowrap;
       transition: all 0.18s var(--ease);
     }
-    .back-btn:hover { border-color: var(--ink); background: var(--surface-alt); transform: translateY(-1px); }
+    .btn-header:hover { border-color: var(--ink); background: var(--surface-alt); transform: translateY(-1px); }
+
+    .btn-install-pwa {
+      display: none;
+      background: var(--ink);
+      color: var(--surface);
+      border-color: var(--ink);
+    }
+    .btn-install-pwa:hover { background: var(--el-yellow); color: var(--ink); border-color: var(--ink); }
+    .btn-install-pwa.visible { display: inline-flex; }
 
     /* =========================================================
-       2. BARRE STATUT TEMPS RÉEL (MQTT / SIMULATEUR / HORLOGE)
+       2. BARRE STATUT BROKER MQTT & TÉLÉMÉTRIE
        ========================================================= */
-    .status-strip {
+    .telemetry-bar {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       padding: 9px 28px;
@@ -258,56 +236,47 @@
       gap: 10px 16px;
     }
 
-    .status-left, .status-right {
+    .telemetry-group {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       gap: 10px;
     }
 
-    .status-pill {
+    .broker-pill {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 4px 11px;
+      gap: 8px;
+      padding: 4px 12px;
       border-radius: 8px;
       background: var(--surface-alt);
       border: 1px solid var(--border);
-      font-size: 11.5px;
+      font-size: 12px;
       font-weight: 600;
-      color: var(--ink-secondary);
+      color: var(--ink);
       white-space: nowrap;
     }
 
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #F59E0B; flex-shrink: 0; }
-    .dot.online { background: #16A34A; }
-    .dot.sim    { background: #2563EB; }
-    .dot.error  { background: #DC2626; }
+    .broker-pill.online { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+    .broker-pill.offline { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
 
-    .mode-switch {
-      display: inline-flex;
-      background: var(--surface-alt);
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #D97706; flex-shrink: 0; }
+    .dot.online  { background: var(--green); }
+    .dot.offline { background: var(--red); }
+
+    .meta-chip {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+      background: var(--bg);
       border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 2px;
-      gap: 2px;
-    }
-
-    .mode-btn {
-      border: none;
-      background: transparent;
-      color: var(--ink-secondary);
-      font-family: var(--font-ui);
-      font-size: 11.5px;
-      font-weight: 600;
-      padding: 4px 11px;
       border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.16s var(--ease);
+      padding: 4px 10px;
+      white-space: nowrap;
     }
-
-    .mode-btn.active { background: var(--ink); color: var(--surface); }
-    .mode-btn.sim-active { background: var(--el-yellow); color: var(--ink); }
+    .meta-chip strong { color: var(--ink); font-weight: 600; }
 
     #alert-banner {
       display: none;
@@ -322,7 +291,7 @@
     }
 
     /* =========================================================
-       3. CONTENU PRINCIPAL & TRANSITIONS
+       3. STRUCTURE & CARTES STUDIO
        ========================================================= */
     .main-shell {
       max-width: 1460px;
@@ -358,7 +327,7 @@
     .card:hover { border-color: var(--border-strong); }
 
     .card-header {
-      padding: 12px 18px;
+      padding: 13px 18px;
       border-bottom: 1px solid var(--border);
       display: flex;
       flex-wrap: wrap;
@@ -369,21 +338,11 @@
 
     .card-title {
       font-family: var(--font-display);
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--ink);
     }
 
-    .card-kicker {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-    }
-
-    /* Badges */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -402,219 +361,115 @@
     .bg-gray   { background: var(--surface-alt); color: var(--muted); border-color: var(--border); }
 
     /* =========================================================
-       4. LIGNE KPI (4 CARTES)
+       4. INDICATEURS NUMÉRIQUES NETS (6 KPI TABULAR-NUMS)
        ========================================================= */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 14px;
     }
 
-    .kpi-card {
+    .kpi-tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
       padding: 14px 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 186px;
-      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), border-color 0.2s var(--ease);
-    }
-    .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
-
-    .kpi-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .gauge-wrap { flex: 1; display: flex; align-items: center; justify-content: center; }
-    .gauge-svg { width: 148px; height: 120px; display: block; }
-
-    .mini-tank-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
-    .mini-tank-svg { width: 90px; height: 80px; display: block; }
-    .mini-tank-pct { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--ink); line-height: 1.1; }
-
-    .spark-wrap { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding-top: 4px; }
-    .spark-svg { width: 100%; height: 78px; display: block; }
-    .spark-footer { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding-top: 4px; }
-    .spark-main { font-family: var(--font-mono); font-size: 19px; font-weight: 700; color: var(--green); }
-    .spark-sub { font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; color: var(--muted); }
-
-    .alarm-card-body { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
-    .alarm-top-row { display: flex; align-items: center; gap: 12px; }
-    .alarm-bell-svg { width: 34px; height: 34px; }
-    .alarm-count { font-family: var(--font-mono); font-size: 32px; font-weight: 700; line-height: 1; }
-    .alarm-count.alert { color: var(--red); }
-    .alarm-count.ok    { color: var(--green); }
-    .alarm-label { font-size: 12px; font-weight: 600; color: var(--ink); }
-    .alarm-detail { font-size: 11px; font-weight: 600; color: var(--green); text-align: center; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .alarm-detail.alert { color: var(--red); }
-
-    /* =========================================================
-       5. BANDEAU ÉTAT DES 4 RELAIS + PANNEAU SIMULATEUR HORS LIGNE
-       ========================================================= */
-    .relay-strip {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .relay-pill-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 11px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       gap: 10px;
-    }
-
-    .relay-info strong { font-size: 12.5px; color: var(--ink); display: block; }
-    .relay-info span { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); }
-
-    .sim-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
       box-shadow: var(--shadow-xs);
+      transition: transform 0.18s var(--ease), border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
     }
 
-    .sim-panel.is-sim-active {
-      border-color: var(--ink);
+    .kpi-tile:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-sm);
     }
 
-    .sim-head {
-      padding: 13px 18px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
+    .kpi-top {
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 6px;
     }
 
-    .sim-head-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .sim-head-left h2 { font-size: 14.5px; font-weight: 700; color: var(--ink); }
-    .sim-head-left p { font-size: 12px; color: var(--muted); }
-
-    .sim-body {
-      padding: 16px 18px;
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-      gap: 18px;
-    }
-
-    .sim-group-title {
+    .kpi-lbl {
       font-family: var(--font-mono);
-      font-size: 10.5px;
+      font-size: 10px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: var(--muted);
-      margin-bottom: 10px;
     }
 
-    .load-switches-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .load-switch-card {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px 12px;
-      background: var(--bg);
+    .kpi-main {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      cursor: pointer;
-      transition: all 0.16s var(--ease);
+      align-items: baseline;
+      gap: 5px;
     }
 
-    .load-switch-card:hover { border-color: var(--ink); background: var(--surface); }
-    .load-switch-card.on { background: var(--surface); border-color: var(--ink); }
-
-    .load-switch-meta strong { font-size: 12.5px; color: var(--ink); display: block; line-height: 1.25; }
-    .load-switch-meta span { font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); }
-
-    /* Interrupteur sobre */
-    .toggle-track {
-      width: 38px;
-      height: 22px;
-      border-radius: 999px;
-      background: var(--border-strong);
-      position: relative;
-      flex-shrink: 0;
-      transition: background-color 0.18s var(--ease);
-    }
-
-    .toggle-thumb {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #FFFFFF;
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-      transition: transform 0.18s var(--ease);
-    }
-
-    .load-switch-card.on .toggle-track { background: var(--ink); }
-    .load-switch-card.on .toggle-thumb { transform: translateX(16px); background: var(--el-yellow); }
-
-    .scenario-btns-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .sim-btn {
-      padding: 8px 12px;
-      border-radius: 9px;
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
+    .kpi-val {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      font-size: 25px;
+      font-weight: 700;
       color: var(--ink);
-      font-family: var(--font-ui);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi-val.ok    { color: var(--green); }
+    .kpi-val.warn  { color: var(--amber); }
+    .kpi-val.alert { color: var(--red); }
+
+    .kpi-unit {
+      font-family: var(--font-mono);
       font-size: 12px;
       font-weight: 600;
-      cursor: pointer;
-      transition: all 0.16s var(--ease);
-    }
-
-    .sim-btn:hover { border-color: var(--ink); background: var(--surface-alt); transform: translateY(-1px); }
-    .sim-btn.warn:hover { border-color: var(--amber); background: var(--amber-bg); color: var(--amber); }
-    .sim-btn.danger:hover { border-color: var(--red); background: var(--red-bg); color: var(--red); }
-    .sim-btn.info:hover { border-color: var(--blue); background: var(--blue-bg); color: var(--blue); }
-    .sim-btn.reset { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-    .sim-btn.reset:hover { background: var(--el-yellow); color: var(--ink); }
-
-    .sim-note-line {
-      margin-top: 10px;
-      font-size: 11.5px;
       color: var(--muted);
     }
 
+    .kpi-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .mini-bar {
+      width: 100%;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--surface-alt);
+      overflow: hidden;
+    }
+
+    .mini-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: var(--green);
+      transition: width 0.45s var(--ease), background-color 0.25s ease;
+    }
+
     /* =========================================================
-       6. SYNOPTIQUE P&ID
+       5. SYNOPTIQUE P&ID ANIMÉ (FLUX ÉLECTRIQUE + HYDRAULIQUE)
        ========================================================= */
-    .plant-body {
+    .synoptic-body {
       padding: 12px 16px 16px;
+      background: var(--surface);
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--surface);
     }
 
-    .pid-svg { width: 100%; max-height: 410px; display: block; }
+    .pid-svg { width: 100%; max-height: 405px; display: block; }
 
-    .pipe-base { stroke: #CBD5E1; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .pipe-base { stroke: #D4D4D8; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
     .water-pipe-outer { stroke: #93C5FD; stroke-width: 8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
     .water-pipe-inner { stroke: #EFF6FF; stroke-width: 4.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
     .flow-line { stroke: transparent; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.25s ease; }
@@ -628,57 +483,116 @@
     #cb-blade { transform-origin: 518px 206px; transition: transform 0.35s var(--ease), stroke 0.25s ease; }
     .wave-anim { animation: waveSlide 3.2s linear infinite; }
     @keyframes waveSlide { from { transform: translateX(0); } to { transform: translateX(-124px); } }
-    .mini-wave-anim { animation: miniWaveSlide 3s linear infinite; }
-    @keyframes miniWaveSlide { from { transform: translateX(0); } to { transform: translateX(-76px); } }
 
     /* =========================================================
-       7. VUES SECONDAIRES : TENDANCES, ALARMES, JOURNAL, ÉQUIPEMENTS
+       6. GRILLE OPÉRATIONNELLE : COMMANDE 4 RELAIS + JOURNAL
        ========================================================= */
-    .stats-strip {
+    .ops-grid {
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 12px;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: 18px;
+      align-items: start;
     }
 
-    .stat-box {
-      background: var(--surface);
+    .relay-list {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .relay-row {
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 12px 14px;
+      background: var(--bg);
       display: flex;
-      flex-direction: column;
-      gap: 4px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: border-color 0.16s var(--ease), background-color 0.16s var(--ease);
     }
 
-    .stat-box .lbl { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
-    .stat-box .val { font-family: var(--font-mono); font-size: 19px; font-weight: 700; color: var(--ink); }
+    .relay-row:hover { border-color: var(--border-strong); background: var(--surface); }
 
-    .chart-body { padding: 16px 18px; }
-    .chart-box { position: relative; width: 100%; height: 390px; }
+    .relay-meta strong { font-size: 13px; color: var(--ink); display: block; }
+    .relay-meta span { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+    .relay-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cmd-btn {
+      padding: 5px 11px;
+      border-radius: 7px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--font-ui);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s var(--ease);
+    }
+
+    .cmd-btn:hover:not(:disabled) { border-color: var(--ink); background: var(--ink); color: var(--surface); }
+    .cmd-btn.cmd-off:hover:not(:disabled) { border-color: var(--red); background: var(--red); color: #FFFFFF; }
+    .cmd-btn:disabled { opacity: 0.42; cursor: not-allowed; }
+
+    .cmd-foot {
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 11.5px;
+      color: var(--muted);
+    }
 
     .log-list {
-      max-height: 460px;
+      max-height: 360px;
       overflow-y: auto;
-      padding: 14px 18px;
+      padding: 14px 16px;
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      font-size: 11.5px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
     }
 
     .log-item {
-      padding: 9px 13px;
+      padding: 8px 11px;
       border-radius: 8px;
       background: var(--bg);
       border: 1px solid var(--border);
       border-left: 3px solid var(--blue);
       color: var(--ink-secondary);
+      line-height: 1.45;
     }
 
     .log-item.ok   { border-left-color: var(--green); background: #F7FDF9; color: var(--ink); }
     .log-item.warn { border-left-color: #D97706; background: #FFFDF5; color: var(--ink); }
     .log-item.err  { border-left-color: var(--red); background: var(--red-bg); color: #991B1B; }
+
+    /* =========================================================
+       7. VUES SECONDAIRES : TENDANCES, ALARMES, ÉQUIPEMENTS
+       ========================================================= */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .chart-body { padding: 14px 16px 16px; }
+    .chart-box { position: relative; width: 100%; height: 340px; }
 
     .table-wrap { width: 100%; overflow-x: auto; padding: 0 18px 16px; }
     table.scada-table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 640px; }
@@ -694,7 +608,6 @@
     }
     table.scada-table td { padding: 11px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 
-    /* Pied de page sobre aligné sur index.html */
     .site-footer {
       background: var(--ink);
       color: #D4D4D8;
@@ -702,6 +615,7 @@
       margin-top: 12px;
       border-top: 1px solid #18181B;
     }
+
     .footer-inner {
       max-width: 1404px;
       margin: 0 auto;
@@ -711,6 +625,7 @@
       justify-content: space-between;
       gap: 14px;
     }
+
     .footer-brand h3 { font-size: 14px; font-weight: 700; color: #FFFFFF; margin-bottom: 3px; }
     .footer-brand p { font-size: 12px; color: #A1A1AA; }
     .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
@@ -720,73 +635,62 @@
     }
     .footer-link:hover { color: var(--el-yellow); }
 
-    @media (max-width: 1120px) {
-      .kpi-grid, .relay-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .sim-body { grid-template-columns: 1fr; }
-      .stats-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 1240px) {
+      .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .ops-grid, .charts-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 720px) {
-      .el-header, .status-strip, .main-shell { padding-left: 14px; padding-right: 14px; }
-      .kpi-grid, .relay-strip, .load-switches-grid { grid-template-columns: 1fr; }
-      .stats-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .chart-box { height: 280px; }
+      .el-header, .telemetry-bar, .main-shell { padding-left: 14px; padding-right: 14px; }
+      .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .chart-box { height: 260px; }
     }
   </style>
 </head>
 <body>
-  <!-- EN-TÊTE STUDIO IDENTIQUE À INDEX.HTML -->
+  <!-- EN-TÊTE STUDIO AVEC LOGO OFFICIEL DU CLUB -->
   <header class="el-header">
     <div class="el-brand">
-      <div id="club-logo-slot" class="club-logo-slot" title="Logo Club U-AUBEN">
-        <img id="club-logo-img" src="./logo_club.png" alt="Logo Club U-AUBEN" onerror="handleClubLogoError()" />
-        <span class="club-logo-fallback" aria-hidden="true">UA</span>
+      <div class="club-logo-slot">
+        <img src="./logo_club.png" alt="Logo officiel Club U-AUBEN" />
       </div>
       <div class="el-brand-text">
-        <div class="el-brand-row">
-          <span class="el-brand-name">Club U-AUBEN — Projet Smart Grid</span>
-          <span class="logo-actions">
-            <button class="logo-edit-btn" type="button" onclick="triggerLogoUpload()">Changer le logo</button>
-            <button id="btn-reset-logo" class="logo-reset-btn" type="button" onclick="resetClubLogo()" title="Revenir à ./logo_club.png">Reset</button>
-            <input id="club-logo-input" type="file" accept="image/*" style="display:none;" onchange="handleLogoFileChange(event)" />
-          </span>
-        </div>
-        <span class="el-brand-sub">Supervision SCADA temps réel • Énergie hybride SONABEL / Solaire &amp; Polytank</span>
+        <span class="el-brand-name">Club U-AUBEN — Projet Smart Grid</span>
+        <span class="el-brand-sub">Supervision SCADA temps réel • Flux MQTT ESP32 &amp; Commande Relais</span>
       </div>
     </div>
 
     <nav class="el-nav-tabs" role="tablist" aria-label="Vues SCADA">
-      <button class="el-tab active" data-view="dashboard" onclick="switchView('dashboard')">Dashboard</button>
+      <button class="el-tab active" data-view="supervision" onclick="switchView('supervision')">Supervision</button>
       <button class="el-tab" data-view="tendances" onclick="switchView('tendances')">Tendances</button>
       <button class="el-tab" data-view="alarmes" onclick="switchView('alarmes')">
         <span>Alarmes</span>
         <span id="nav-alarm-badge" class="nav-badge">0</span>
       </button>
-      <button class="el-tab" data-view="journal" onclick="switchView('journal')">Journal</button>
       <button class="el-tab" data-view="equipements" onclick="switchView('equipements')">Équipements</button>
     </nav>
 
-    <div class="header-right">
-      <a class="back-btn" href="./index.html">← Retour au Dossier &amp; Maquette 3D</a>
+    <div class="header-actions">
+      <button id="btn-install-pwa" class="btn-header btn-install-pwa" type="button" onclick="installPWA()">Installer l'application</button>
+      <a class="btn-header" href="./index.html">← Retour au Dossier &amp; Maquette 3D</a>
     </div>
   </header>
 
-  <!-- BARRE STATUT MQTT / MODE SIMULATEUR / HORLOGE -->
-  <div class="status-strip">
-    <div class="status-left">
-      <div class="status-pill">
+  <!-- BARRE STATUT BROKER MQTT -->
+  <div class="telemetry-bar">
+    <div class="telemetry-group">
+      <div id="broker-pill" class="broker-pill">
         <span id="mqtt-dot" class="dot"></span>
-        <span id="mqtt-status">Connexion MQTT...</span>
+        <span id="mqtt-status">Connexion au broker...</span>
       </div>
-      <div class="mode-switch" role="group" aria-label="Source de données">
-        <button id="btn-mode-mqtt" class="mode-btn active" type="button" onclick="setSourceMode('mqtt')">Direct MQTT (ESP32)</button>
-        <button id="btn-mode-sim" class="mode-btn" type="button" onclick="setSourceMode('sim')">Simulateur hors ligne</button>
-      </div>
+      <span class="meta-chip">Broker : <strong>broker.hivemq.com</strong></span>
+      <span class="meta-chip">RX : <strong>cge/uauben/david/smartgrid</strong></span>
+      <span class="meta-chip">TX : <strong>cge/uauben/david/smartgrid/cmd</strong></span>
     </div>
-    <div class="status-right">
-      <span class="status-pill mono">broker.hivemq.com • cge/uauben/david/smartgrid</span>
-      <span class="status-pill mono">Trame : <strong id="last-update">--:--:--</strong></span>
-      <span class="status-pill mono" id="live-clock">--:--:--</span>
+    <div class="telemetry-group">
+      <span class="meta-chip">Trames : <strong id="rx-count">0</strong></span>
+      <span class="meta-chip">Dernière trame : <strong id="last-update">--:--:--</strong></span>
+      <span class="meta-chip" id="live-clock">--:--:--</span>
     </div>
   </div>
 
@@ -794,205 +698,106 @@
 
   <main class="main-shell">
     <!-- =======================================================
-         VUE 1 : DASHBOARD PRINCIPAL + SIMULATEUR + SYNOPTIQUE P&ID
+         VUE 1 : SUPERVISION PRINCIPALE (KPI + P&ID + RELAIS + LOGS)
          ======================================================= -->
-    <section id="view-dashboard" class="view-container active" aria-label="Dashboard SCADA">
-      <!-- LIGNE 1 : 4 CARTES KPI -->
+    <section id="view-supervision" class="view-container active" aria-label="Supervision SCADA temps réel">
+      <!-- 1. INDICATEURS NUMÉRIQUES NETS (TABULAR-NUMS) -->
       <div class="kpi-grid">
-        <!-- CARTE 1 : BATTERIE SOLAIRE / SOURCE -->
-        <div class="card kpi-card">
-          <div class="kpi-head">
-            <span class="card-kicker">Batterie / Source</span>
+        <article class="kpi-tile">
+          <div class="kpi-top">
+            <span class="kpi-lbl">Tension Bus DC</span>
             <span id="val-src" class="badge bg-gray">ATTENTE</span>
           </div>
-          <div class="gauge-wrap">
-            <svg class="gauge-svg" viewBox="0 0 160 122" role="img" aria-label="Jauge batterie solaire">
-              <path d="M 32 98 A 56 56 0 1 1 128 98" fill="none" stroke="#E4E4E7" stroke-width="13" stroke-linecap="round" />
-              <path d="M 32 98 A 56 56 0 0 1 42 40" fill="none" stroke="#EF4444" stroke-width="13" stroke-linecap="round" opacity="0.2" />
-              <path d="M 42 40 A 56 56 0 0 1 118 40" fill="none" stroke="#F59E0B" stroke-width="13" opacity="0.2" />
-              <path d="M 118 40 A 56 56 0 0 1 128 98" fill="none" stroke="#22C55E" stroke-width="13" stroke-linecap="round" opacity="0.2" />
-              <path id="batt-gauge-arc" d="M 32 98 A 56 56 0 1 1 128 98" fill="none" stroke="#16A34A" stroke-width="13" stroke-linecap="round" stroke-dasharray="235" stroke-dashoffset="235" style="transition: stroke-dashoffset 0.45s ease, stroke 0.3s ease;" />
-              <text x="80" y="79" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="25" font-weight="700" fill="#09090B"><tspan id="val-batt">0</tspan><tspan font-size="14" font-weight="600" fill="#52525B">%</tspan></text>
-              <text id="gauge-sub-lbl" x="80" y="99" text-anchor="middle" font-family="Inter, sans-serif" font-size="10.5" font-weight="600" fill="#71717A">SOC BATTERIE 3S</text>
-            </svg>
+          <div class="kpi-main">
+            <span id="val-v" class="kpi-val">--.-</span>
+            <span class="kpi-unit">V</span>
           </div>
-        </div>
+          <div class="kpi-foot">
+            <span>GPIO 34 / 32</span>
+            <span id="val-v-detail" class="mono">SONABEL 12V</span>
+          </div>
+        </article>
 
-        <!-- CARTE 2 : NIVEAU POLYTANK -->
-        <div class="card kpi-card">
-          <div class="kpi-head">
-            <span class="card-kicker">Niveau Polytank</span>
+        <article class="kpi-tile">
+          <div class="kpi-top">
+            <span class="kpi-lbl">Batterie 3S</span>
+            <span id="val-batt-v" class="mono" style="font-size:11px; color:var(--muted);">--.- V</span>
+          </div>
+          <div class="kpi-main">
+            <span id="val-batt" class="kpi-val">--</span>
+            <span class="kpi-unit">%</span>
+          </div>
+          <div class="mini-bar"><div id="bar-batt" class="mini-bar-fill"></div></div>
+        </article>
+
+        <article class="kpi-tile">
+          <div class="kpi-top">
+            <span class="kpi-lbl">Courant / Puiss.</span>
+            <span class="mono" style="font-size:11px; color:var(--muted);">ACS712</span>
+          </div>
+          <div class="kpi-main">
+            <span id="val-i" class="kpi-val">--.-</span>
+            <span class="kpi-unit">A</span>
+          </div>
+          <div class="kpi-foot">
+            <span>GPIO 35</span>
+            <strong class="mono" style="color:var(--ink);"><span id="kpi-power">0</span> W</strong>
+          </div>
+        </article>
+
+        <article class="kpi-tile">
+          <div class="kpi-top">
+            <span class="kpi-lbl">Temp. Transfo</span>
+            <span class="mono" style="font-size:10.5px; color:var(--muted);">Max 60°C</span>
+          </div>
+          <div class="kpi-main">
+            <span id="val-t" class="kpi-val">--.-</span>
+            <span class="kpi-unit">°C</span>
+          </div>
+          <div class="kpi-foot">
+            <span>DS18B20 • GPIO 4</span>
+            <span id="val-t-state" class="mono">ATTENTE</span>
+          </div>
+        </article>
+
+        <article class="kpi-tile">
+          <div class="kpi-top">
+            <span class="kpi-lbl">Niveau Polytank</span>
             <span id="val-pompe" class="badge bg-gray">POMPE OFF</span>
           </div>
-          <div class="mini-tank-wrap">
-            <svg class="mini-tank-svg" viewBox="0 0 96 84" role="img" aria-label="Niveau Polytank">
-              <defs>
-                <clipPath id="mini-tank-clip"><rect x="14" y="8" width="68" height="68" rx="9" /></clipPath>
-                <linearGradient id="miniWaterGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#3B82F6" />
-                  <stop offset="100%" stop-color="#1D4ED8" />
-                </linearGradient>
-              </defs>
-              <rect x="12" y="6" width="72" height="72" rx="10" fill="#FAFAFA" stroke="#A1A1AA" stroke-width="2" />
-              <g clip-path="url(#mini-tank-clip)">
-                <rect id="mini-water-rect" x="14" y="76" width="68" height="0" fill="url(#miniWaterGrad)" style="transition: y 0.5s ease, height 0.5s ease;" />
-                <g id="mini-water-wave" transform="translate(0, 76)" style="transition: transform 0.5s ease;">
-                  <path class="mini-wave-anim" d="M 14 0 Q 33 -4 52 0 T 90 0 T 128 0 T 166 0 L 166 8 L 14 8 Z" fill="#60A5FA" opacity="0.65" />
-                </g>
-              </g>
-              <rect x="19" y="13" width="4" height="56" rx="2" fill="#FFFFFF" opacity="0.35" />
-            </svg>
-            <div class="mini-tank-pct"><span id="kpi-eau">0</span>%</div>
+          <div class="kpi-main">
+            <span id="kpi-eau" class="kpi-val">--</span>
+            <span class="kpi-unit">%</span>
           </div>
-        </div>
+          <div class="mini-bar"><div id="bar-eau" class="mini-bar-fill" style="background:var(--blue);"></div></div>
+        </article>
 
-        <!-- CARTE 3 : PUISSANCE / COURANT -->
-        <div class="card kpi-card">
-          <div class="kpi-head">
-            <span class="card-kicker">Puissance / Courant</span>
-            <span class="mono" style="font-size:11px; color:var(--muted); font-weight:600;"><span id="val-v">0.0</span> V</span>
+        <article class="kpi-tile" style="cursor:pointer;" onclick="switchView('alarmes')" title="Ouvrir la table des alarmes">
+          <div class="kpi-top">
+            <span class="kpi-lbl">Protection Q1</span>
+            <span id="val-disj" class="badge bg-gray">ATTENTE</span>
           </div>
-          <div class="spark-wrap">
-            <svg class="spark-svg" viewBox="0 0 220 76" preserveAspectRatio="none" role="img" aria-label="Courbe tendance puissance">
-              <line x1="0" y1="18" x2="220" y2="18" stroke="#F4F4F5" stroke-width="1" />
-              <line x1="0" y1="40" x2="220" y2="40" stroke="#F4F4F5" stroke-width="1" />
-              <line x1="0" y1="62" x2="220" y2="62" stroke="#F4F4F5" stroke-width="1" />
-              <path id="spark-area" d="M 0 66 L 220 66 L 220 74 L 0 74 Z" fill="rgba(22, 163, 74, 0.09)" />
-              <polyline id="spark-line" points="0,66 220,66" fill="none" stroke="#16A34A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <div class="spark-footer">
-              <span class="spark-main"><span id="kpi-power">0</span> W</span>
-              <span class="spark-sub"><span id="val-i">0.0</span> A • <span id="val-t">0.0</span>°C</span>
-            </div>
+          <div class="kpi-main">
+            <span id="kpi-alarm-count" class="kpi-val ok">0</span>
+            <span class="kpi-unit">alarmes</span>
           </div>
-        </div>
-
-        <!-- CARTE 4 : ALARMES -->
-        <div class="card kpi-card">
-          <div class="kpi-head">
-            <span class="card-kicker">Alarmes &amp; Protection</span>
-            <span id="val-disj" class="badge bg-gray">--</span>
+          <div class="kpi-foot">
+            <span id="kpi-alarm-detail" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">En attente télémétrie</span>
           </div>
-          <div class="alarm-card-body" onclick="switchView('alarmes')" title="Ouvrir la liste des alarmes">
-            <div class="alarm-top-row">
-              <svg class="alarm-bell-svg" viewBox="0 0 24 24" aria-hidden="true">
-                <path id="alarm-bell-path" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" fill="#CBD5E1" stroke="#94A3B8" stroke-width="1.4" stroke-linejoin="round" />
-                <path id="alarm-bell-clapper" d="M13.73 21a2 2 0 0 1-3.46 0" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" />
-              </svg>
-              <span id="kpi-alarm-count" class="alarm-count ok">0</span>
-            </div>
-            <div class="alarm-label">Alarmes actives</div>
-            <div id="kpi-alarm-detail" class="alarm-detail">Système nominal</div>
-          </div>
-        </div>
+        </article>
       </div>
 
-      <!-- LIGNE 2 : ÉTAT TEMPS RÉEL DES 4 RELAIS (GPIO 26 / 27 / 14 / 12) -->
-      <div class="relay-strip" aria-label="État des 4 relais">
-        <div class="relay-pill-card">
-          <div class="relay-info">
-            <strong>Relais IN1 — SONABEL</strong>
-            <span>GPIO 26 • Source principale</span>
-          </div>
-          <span id="rel-st-1" class="badge bg-gray">ATTENTE</span>
-        </div>
-        <div class="relay-pill-card">
-          <div class="relay-info">
-            <strong>Relais IN2 — Solaire / 3S</strong>
-            <span>GPIO 27 • Source secours</span>
-          </div>
-          <span id="rel-st-2" class="badge bg-gray">ATTENTE</span>
-        </div>
-        <div class="relay-pill-card">
-          <div class="relay-info">
-            <strong>Relais IN3 — Disjoncteur Q1</strong>
-            <span>GPIO 14 • Départ charges 12V</span>
-          </div>
-          <span id="rel-st-3" class="badge bg-gray">ATTENTE</span>
-        </div>
-        <div class="relay-pill-card">
-          <div class="relay-info">
-            <strong>Relais IN4 — Pompe Eau</strong>
-            <span>GPIO 12 • AD20P-1230C</span>
-          </div>
-          <span id="rel-st-4" class="badge bg-gray">ATTENTE</span>
-        </div>
-      </div>
-
-      <!-- LIGNE 3 : PANNEAU MODE SIMULATEUR (DÉMO HORS LIGNE) -->
-      <section id="sim-panel" class="sim-panel" aria-label="Mode Simulateur Démo hors ligne">
-        <div class="sim-head">
-          <div class="sim-head-left">
-            <h2>Mode Simulateur (Démo hors ligne)</h2>
-            <span id="sim-state-badge" class="badge bg-gray">VEILLE (ÉCOUTE MQTT)</span>
-            <p>Actionnez un interrupteur ou un scénario pour tester le SCADA sans matériel branché.</p>
-          </div>
-          <button id="btn-toggle-sim-panel" class="sim-btn" type="button" onclick="toggleSimulatorMode()">Activer le simulateur</button>
-        </div>
-
-        <div class="sim-body">
-          <div>
-            <div class="sim-group-title">Interrupteurs individuels des charges (12V DC)</div>
-            <div class="load-switches-grid">
-              <button id="sw-led1" class="load-switch-card on" type="button" onclick="toggleSimLoad('led1')">
-                <div class="load-switch-meta">
-                  <strong>Lampe LED 12V #1</strong>
-                  <span>0.45 A • 5.4 W (IN3)</span>
-                </div>
-                <div class="toggle-track"><div class="toggle-thumb"></div></div>
-              </button>
-
-              <button id="sw-led2" class="load-switch-card on" type="button" onclick="toggleSimLoad('led2')">
-                <div class="load-switch-meta">
-                  <strong>Lampe LED 12V #2</strong>
-                  <span>0.45 A • 5.4 W (IN3)</span>
-                </div>
-                <div class="toggle-track"><div class="toggle-thumb"></div></div>
-              </button>
-
-              <button id="sw-fan" class="load-switch-card on" type="button" onclick="toggleSimLoad('fan')">
-                <div class="load-switch-meta">
-                  <strong>Mini Ventilateur 12V</strong>
-                  <span>0.35 A • 4.2 W (IN3)</span>
-                </div>
-                <div class="toggle-track"><div class="toggle-thumb"></div></div>
-              </button>
-
-              <button id="sw-pump" class="load-switch-card" type="button" onclick="toggleSimLoad('pump')">
-                <div class="load-switch-meta">
-                  <strong>Mini Pompe Polytank</strong>
-                  <span>0.60 A • 7.2 W (IN4)</span>
-                </div>
-                <div class="toggle-track"><div class="toggle-thumb"></div></div>
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <div class="sim-group-title">Scénarios rapides de défauts (Démo jury)</div>
-            <div class="scenario-btns-grid">
-              <button class="sim-btn warn" type="button" onclick="triggerSimScenario('coupure')">Simuler coupure SONABEL</button>
-              <button class="sim-btn danger" type="button" onclick="triggerSimScenario('surcharge')">Simuler surcharge courant</button>
-              <button class="sim-btn danger" type="button" onclick="triggerSimScenario('surchauffe')">Simuler surchauffe transfo</button>
-              <button class="sim-btn info" type="button" onclick="triggerSimScenario('vider')">Vider le Polytank</button>
-              <button class="sim-btn reset" type="button" onclick="triggerSimScenario('reset')">Réinitialiser en mode normal</button>
-            </div>
-            <p id="sim-live-summary" class="sim-note-line">En mode direct, le SCADA affiche les trames reçues de l'ESP32/Wokwi sur HiveMQ. Tout clic ci-dessus bascule instantanément sur le simulateur local.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- LIGNE 4 : SYNOPTIQUE P&ID COMPLET -->
+      <!-- 2. SYNOPTIQUE ANIMÉ DES FLUX (ÉLECTRIQUE + HYDRAULIQUE) -->
       <section class="card">
         <div class="card-header">
-          <span class="card-title">Vue d'ensemble installation — Synoptique P&amp;ID</span>
+          <span class="card-title">Synoptique d'exploitation — Flux Smart Grid 12V DC &amp; Hydraulique Polytank</span>
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <span id="syn-state" class="badge bg-green">MODE SUPERVISION</span>
+            <span id="syn-state" class="badge bg-gray">EN ATTENTE ESP32</span>
             <button class="badge bg-blue" style="cursor:pointer;" onclick="switchView('tendances')">Courbes temps réel →</button>
           </div>
         </div>
-        <div class="plant-body">
-          <svg class="pid-svg" viewBox="0 0 1120 395" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Schéma industriel P&ID Smart Grid et Hydraulique">
+        <div class="synoptic-body">
+          <svg class="pid-svg" viewBox="0 0 1120 395" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Synoptique P&ID Smart Grid 12V DC et Polytank">
             <defs>
               <linearGradient id="metalTankGrad" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stop-color="#CBD5E1" />
@@ -1001,13 +806,13 @@
                 <stop offset="100%" stop-color="#94A3B8" />
               </linearGradient>
               <linearGradient id="metalMotorGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#E2E8F0" />
-                <stop offset="50%" stop-color="#CBD5E1" />
-                <stop offset="100%" stop-color="#94A3B8" />
+                <stop offset="0%" stop-color="#E4E4E7" />
+                <stop offset="50%" stop-color="#D4D4D8" />
+                <stop offset="100%" stop-color="#A1A1AA" />
               </linearGradient>
               <linearGradient id="cabinetGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#F8FAFC" />
-                <stop offset="100%" stop-color="#E2E8F0" />
+                <stop offset="0%" stop-color="#FAFAFA" />
+                <stop offset="100%" stop-color="#E4E4E7" />
               </linearGradient>
               <linearGradient id="pidWaterGrad" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stop-color="#3B82F6" />
@@ -1018,53 +823,58 @@
               </clipPath>
             </defs>
 
-            <text x="20" y="20" fill="#71717A" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.8">DISTRIBUTION ÉLECTRIQUE — SMART GRID</text>
+            <text x="20" y="20" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" letter-spacing="0.6">DISTRIBUTION ÉLECTRIQUE — BUS 12V DC &amp; ATS</text>
             <line x1="712" y1="16" x2="712" y2="378" stroke="#E4E4E7" stroke-width="1.2" stroke-dasharray="5 4" />
-            <text x="734" y="20" fill="#71717A" font-family="Inter, sans-serif" font-size="10" font-weight="700" letter-spacing="0.8">HYDRAULIQUE — POLYTANK &amp; MOTOPOMPE</text>
+            <text x="734" y="20" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" letter-spacing="0.6">CIRCUIT HYDRAULIQUE — POLYTANK &amp; POMPE 12V</text>
 
             <rect x="292" y="152" width="100" height="108" rx="6" fill="#FAFAFA" stroke="#D4D4D8" stroke-width="1.5" stroke-dasharray="5 3" />
-            <rect id="box-disj" x="428" y="152" width="108" height="108" rx="6" fill="#FFFFFF" stroke="#16A34A" stroke-width="1.8" />
+            <rect id="box-disj" x="428" y="152" width="108" height="108" rx="6" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.8" />
 
+            <!-- Conducteurs de base -->
             <path class="pipe-base" d="M 108 130 L 154 130 M 204 130 L 266 130 L 266 184 L 312 184" />
             <path class="pipe-base" d="M 108 292 L 156 292 M 202 292 L 266 292 L 266 228 L 312 228" />
             <path class="pipe-base" d="M 374 206 L 446 206" />
             <path class="pipe-base" d="M 518 206 L 574 206" />
 
+            <!-- Flux animés -->
             <path id="line-sonabel" class="flow-line" d="M 108 130 L 154 130 M 204 130 L 266 130 L 266 184 L 312 184" />
             <path id="line-solaire" class="flow-line" d="M 108 292 L 156 292 M 202 292 L 266 292 L 266 228 L 312 228" />
             <path id="line-ats-disj" class="flow-line" d="M 374 206 L 446 206" />
             <path id="line-disj-load" class="flow-line" d="M 518 206 L 574 206" />
 
+            <!-- V-101 SONABEL 12V -->
             <g>
-              <rect x="20" y="34" width="96" height="40" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
+              <rect x="16" y="34" width="104" height="40" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
               <line x1="68" y1="74" x2="68" y2="96" stroke="#D4D4D8" stroke-width="1.2" />
-              <text x="68" y="50" fill="#71717A" font-family="Inter, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">V-101 • SONABEL</text>
-              <text id="svg-v" x="68" y="66" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" text-anchor="middle">0.0 V</text>
+              <text x="68" y="50" fill="#71717A" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">V-101 • SONABEL</text>
+              <text id="svg-v" x="68" y="66" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" text-anchor="middle">--.- V</text>
             </g>
             <g>
               <rect x="28" y="96" width="80" height="68" rx="6" fill="url(#cabinetGrad)" stroke="#94A3B8" stroke-width="1.5" />
               <circle cx="68" cy="126" r="16" fill="#FFFFFF" stroke="#09090B" stroke-width="1.8" />
               <path d="M 58 126 Q 63 118 68 126 T 78 126" fill="none" stroke="#09090B" stroke-width="2" stroke-linecap="round" />
-              <text x="68" y="156" fill="#3F3F46" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">RÉSEAU AC</text>
+              <text x="68" y="156" fill="#3F3F46" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">SONABEL 12V</text>
             </g>
 
+            <!-- TT-101 TRANSFO DS18B20 -->
             <g>
-              <rect x="134" y="34" width="90" height="40" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
+              <rect x="132" y="34" width="94" height="40" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
               <line x1="179" y1="74" x2="179" y2="112" stroke="#D4D4D8" stroke-width="1.2" />
-              <text x="179" y="50" fill="#71717A" font-family="Inter, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">TT-101 • TR1</text>
-              <text id="svg-t" x="179" y="66" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" text-anchor="middle">0.0 °C</text>
+              <text x="179" y="50" fill="#71717A" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">TT-101 • DS18B20</text>
+              <text id="svg-t" x="179" y="66" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" text-anchor="middle">--.- °C</text>
             </g>
             <g>
               <circle cx="169" cy="130" r="15" fill="#FFFFFF" stroke="#09090B" stroke-width="2" />
               <circle cx="189" cy="130" r="15" fill="none" stroke="#09090B" stroke-width="2" />
-              <text x="179" y="160" fill="#71717A" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">TRANSFO HTA/BT</text>
+              <text x="179" y="160" fill="#71717A" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">TRANSFO TR1</text>
             </g>
 
+            <!-- BT-101 SOLAIRE + BATTERIE 3S -->
             <g>
-              <rect x="20" y="198" width="96" height="40" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
+              <rect x="16" y="198" width="104" height="40" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
               <line x1="68" y1="238" x2="68" y2="258" stroke="#D4D4D8" stroke-width="1.2" />
-              <text x="68" y="214" fill="#71717A" font-family="Inter, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">BT-101 • SOLAIRE</text>
-              <text id="svg-batt" x="68" y="230" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" text-anchor="middle">0 %</text>
+              <text x="68" y="214" fill="#71717A" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">BT-101 • BATT 3S</text>
+              <text id="svg-batt" x="68" y="230" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" text-anchor="middle">-- %</text>
             </g>
             <g>
               <rect x="28" y="258" width="80" height="68" rx="6" fill="url(#cabinetGrad)" stroke="#94A3B8" stroke-width="1.5" />
@@ -1074,72 +884,73 @@
               <line x1="69" y1="276" x2="69" y2="300" stroke="#09090B" stroke-width="1.8" />
               <line x1="75" y1="281" x2="75" y2="295" stroke="#09090B" stroke-width="3.2" />
               <line x1="75" y1="288" x2="86" y2="288" stroke="#09090B" stroke-width="1.8" />
-              <text x="68" y="318" fill="#3F3F46" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">PV / BATTERIE</text>
+              <text x="68" y="318" fill="#3F3F46" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">PV + 3S 18650</text>
             </g>
 
+            <!-- BMS 3S 40A -->
             <g>
               <rect x="156" y="270" width="46" height="44" rx="4" fill="#FFFFFF" stroke="#09090B" stroke-width="1.8" />
-              <line x1="156" y1="314" x2="202" y2="270" stroke="#09090B" stroke-width="1.4" />
-              <line x1="163" y1="281" x2="174" y2="281" stroke="#09090B" stroke-width="1.6" />
-              <line x1="163" y1="286" x2="174" y2="286" stroke="#09090B" stroke-width="1.6" stroke-dasharray="2.5 2" />
-              <path d="M 183 302 Q 186.5 297 190 302 T 197 302" fill="none" stroke="#09090B" stroke-width="1.6" />
-              <text x="179" y="328" fill="#71717A" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">ONDULEUR / BMS</text>
+              <text x="179" y="296" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" text-anchor="middle">BMS</text>
+              <text x="179" y="328" fill="#71717A" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">BMS 3S 40A</text>
             </g>
 
+            <!-- ATS-101 -->
             <g>
               <rect x="292" y="92" width="100" height="40" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
               <line x1="342" y1="132" x2="342" y2="152" stroke="#D4D4D8" stroke-width="1.2" />
-              <text x="342" y="108" fill="#71717A" font-family="Inter, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">ATS-101 • SOURCE</text>
+              <text x="342" y="108" fill="#71717A" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">ATS-101 • IN1/IN2</text>
               <text id="svg-src" x="342" y="124" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">ATTENTE</text>
             </g>
             <g>
               <circle cx="312" cy="184" r="4" fill="#FFFFFF" stroke="#09090B" stroke-width="1.8" />
-              <text x="302" y="177" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="600">S1</text>
+              <text x="301" y="177" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="600">IN1</text>
               <circle cx="312" cy="228" r="4" fill="#FFFFFF" stroke="#09090B" stroke-width="1.8" />
-              <text x="302" y="242" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="600">S2</text>
+              <text x="301" y="242" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="600">IN2</text>
               <line id="ats-arm" x1="374" y1="206" x2="315" y2="206" stroke="#71717A" stroke-width="3.4" stroke-linecap="round" />
               <circle cx="374" cy="206" r="4.5" fill="#09090B" />
-              <text x="342" y="252" fill="#71717A" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">INVERSEUR AUTO</text>
+              <text x="342" y="252" fill="#71717A" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">COMMUTATION ATS</text>
             </g>
 
+            <!-- Q1 DISJONCTEUR IN3 -->
             <g>
               <rect x="432" y="92" width="100" height="40" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
               <line x1="482" y1="132" x2="482" y2="152" stroke="#D4D4D8" stroke-width="1.2" />
-              <text x="482" y="108" fill="#71717A" font-family="Inter, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">Q1 • DISJONCTEUR</text>
-              <text id="svg-disj" x="482" y="124" fill="#16A34A" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="700" text-anchor="middle">FERMÉ</text>
+              <text x="482" y="108" fill="#71717A" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">Q1 • RELAIS IN3</text>
+              <text id="svg-disj" x="482" y="124" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">ATTENTE</text>
             </g>
             <g>
               <line x1="442" y1="202" x2="450" y2="210" stroke="#09090B" stroke-width="2" />
               <line x1="450" y1="202" x2="442" y2="210" stroke="#09090B" stroke-width="2" />
-              <line id="cb-blade" x1="518" y1="206" x2="447" y2="206" stroke="#16A34A" stroke-width="3.6" stroke-linecap="round" />
+              <line id="cb-blade" x1="518" y1="206" x2="447" y2="206" stroke="#71717A" stroke-width="3.6" stroke-linecap="round" />
               <circle cx="518" cy="206" r="4.5" fill="#FFFFFF" stroke="#09090B" stroke-width="2" />
-              <text x="482" y="252" fill="#71717A" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">PROTECTION 15A</text>
+              <text x="482" y="252" fill="#71717A" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">BUS DC • PROT. 15A</text>
             </g>
 
+            <!-- IT-101 CHARGES 12V -->
             <g>
               <rect x="572" y="92" width="120" height="46" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
               <line x1="632" y1="138" x2="632" y2="160" stroke="#D4D4D8" stroke-width="1.2" />
-              <text x="632" y="107" fill="#71717A" font-family="Inter, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">IT-101 • CHARGES BT</text>
-              <text id="svg-i" x="632" y="122" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="700" text-anchor="middle">0.0 A</text>
+              <text x="632" y="107" fill="#71717A" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">IT-101 • ACS712</text>
+              <text id="svg-i" x="632" y="122" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="700" text-anchor="middle">--.- A</text>
               <text id="svg-p" x="632" y="134" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="9.5" font-weight="600" text-anchor="middle">0 W</text>
             </g>
             <g>
-              <rect x="576" y="160" width="112" height="92" rx="6" fill="url(#metalMotorGrad)" stroke="#64748B" stroke-width="1.6" />
+              <rect x="576" y="160" width="112" height="92" rx="6" fill="url(#metalMotorGrad)" stroke="#71717A" stroke-width="1.6" />
               <rect x="584" y="168" width="60" height="76" rx="4" fill="#27272A" stroke="#3F3F46" stroke-width="1" />
               <circle cx="614" cy="206" r="24" fill="#18181B" stroke="#A1A1AA" stroke-width="1.5" />
               <circle cx="614" cy="206" r="14" fill="none" stroke="#71717A" stroke-width="1.2" stroke-dasharray="5 3" />
               <circle cx="614" cy="206" r="4" fill="#D4D4D8" />
-              <line x1="654" y1="176" x2="678" y2="176" stroke="#64748B" stroke-width="2" />
-              <line x1="654" y1="184" x2="678" y2="184" stroke="#64748B" stroke-width="2" />
-              <line x1="654" y1="192" x2="678" y2="192" stroke="#64748B" stroke-width="2" />
-              <line x1="654" y1="200" x2="678" y2="200" stroke="#64748B" stroke-width="2" />
-              <line x1="654" y1="208" x2="678" y2="208" stroke="#64748B" stroke-width="2" />
-              <rect x="588" y="252" width="14" height="8" rx="1" fill="#64748B" />
-              <rect x="662" y="252" width="14" height="8" rx="1" fill="#64748B" />
-              <text x="632" y="274" fill="#3F3F46" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">CHARGES 12V</text>
+              <line x1="654" y1="176" x2="678" y2="176" stroke="#52525B" stroke-width="2" />
+              <line x1="654" y1="184" x2="678" y2="184" stroke="#52525B" stroke-width="2" />
+              <line x1="654" y1="192" x2="678" y2="192" stroke="#52525B" stroke-width="2" />
+              <line x1="654" y1="200" x2="678" y2="200" stroke="#52525B" stroke-width="2" />
+              <line x1="654" y1="208" x2="678" y2="208" stroke="#52525B" stroke-width="2" />
+              <rect x="588" y="252" width="14" height="8" rx="1" fill="#71717A" />
+              <rect x="662" y="252" width="14" height="8" rx="1" fill="#71717A" />
+              <text x="632" y="274" fill="#3F3F46" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">CHARGES 12V</text>
             </g>
 
-            <!-- PARTIE DROITE : HYDRAULIQUE P&ID -->
+            <!-- PARTIE DROITE : CIRCUIT HYDRAULIQUE POLYTANK + POMPE -->
             <line x1="734" y1="342" x2="1095" y2="342" stroke="#D4D4D8" stroke-width="1.5" />
             <path class="water-pipe-outer" d="M 804 286 L 804 150 L 916 150" />
             <path class="water-pipe-inner" d="M 804 286 L 804 150 L 916 150" />
@@ -1157,35 +968,35 @@
             <g>
               <rect x="740" y="196" width="114" height="44" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
               <line x1="797" y1="240" x2="797" y2="282" stroke="#D4D4D8" stroke-width="1.2" />
-              <text x="797" y="213" fill="#3F3F46" font-family="Inter, sans-serif" font-size="10" font-weight="700" text-anchor="middle">P-101 • POMPE</text>
+              <text x="797" y="213" fill="#3F3F46" font-family="Inter, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">P-101 • POMPE IN4</text>
               <text id="svg-pompe-lbl" x="797" y="230" fill="#71717A" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">Arrêtée</text>
             </g>
 
             <g>
-              <rect x="748" y="332" width="90" height="10" rx="2" fill="#64748B" />
-              <rect x="752" y="294" width="44" height="36" rx="4" fill="url(#metalMotorGrad)" stroke="#475569" stroke-width="1.5" />
-              <line x1="758" y1="302" x2="790" y2="302" stroke="#64748B" stroke-width="1.3" />
-              <line x1="758" y1="310" x2="790" y2="310" stroke="#64748B" stroke-width="1.3" />
-              <line x1="758" y1="318" x2="790" y2="318" stroke="#64748B" stroke-width="1.3" />
-              <line x1="758" y1="324" x2="790" y2="324" stroke="#64748B" stroke-width="1.3" />
-              <circle id="pump-circle" cx="812" cy="310" r="20" fill="#E2E8F0" stroke="#475569" stroke-width="2" />
-              <polygon id="pump-impeller" points="812,298 802,318 822,318" fill="none" stroke="#475569" stroke-width="2" stroke-linejoin="round" />
-              <circle id="pump-led" cx="760" cy="299" r="3.5" fill="#94A3B8" stroke="#FFFFFF" stroke-width="1" />
+              <rect x="748" y="332" width="90" height="10" rx="2" fill="#71717A" />
+              <rect x="752" y="294" width="44" height="36" rx="4" fill="url(#metalMotorGrad)" stroke="#52525B" stroke-width="1.5" />
+              <line x1="758" y1="302" x2="790" y2="302" stroke="#71717A" stroke-width="1.3" />
+              <line x1="758" y1="310" x2="790" y2="310" stroke="#71717A" stroke-width="1.3" />
+              <line x1="758" y1="318" x2="790" y2="318" stroke="#71717A" stroke-width="1.3" />
+              <line x1="758" y1="324" x2="790" y2="324" stroke="#71717A" stroke-width="1.3" />
+              <circle id="pump-circle" cx="812" cy="310" r="20" fill="#E4E4E7" stroke="#52525B" stroke-width="2" />
+              <polygon id="pump-impeller" points="812,298 802,318 822,318" fill="none" stroke="#52525B" stroke-width="2" stroke-linejoin="round" />
+              <circle id="pump-led" cx="760" cy="299" r="3.5" fill="#A1A1AA" stroke="#FFFFFF" stroke-width="1" />
             </g>
 
             <g>
-              <rect x="928" y="34" width="106" height="44" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
+              <rect x="924" y="34" width="114" height="44" rx="5" fill="#FFFFFF" stroke="#D4D4D8" stroke-width="1.2" />
               <line x1="981" y1="78" x2="981" y2="104" stroke="#D4D4D8" stroke-width="1.2" />
-              <text x="981" y="51" fill="#71717A" font-family="Inter, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">LT-101 • POLYTANK</text>
-              <text id="tank-pct-text" x="981" y="69" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" text-anchor="middle">0%</text>
+              <text x="981" y="51" fill="#71717A" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">LT-101 • HC-SR04</text>
+              <text id="tank-pct-text" x="981" y="69" fill="#09090B" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" text-anchor="middle">--%</text>
             </g>
 
             <g>
-              <rect x="930" y="314" width="12" height="28" rx="2" fill="#94A3B8" stroke="#64748B" stroke-width="1.2" />
-              <rect x="1020" y="314" width="12" height="28" rx="2" fill="#94A3B8" stroke="#64748B" stroke-width="1.2" />
-              <rect x="962" y="102" width="38" height="12" rx="2" fill="#CBD5E1" stroke="#64748B" stroke-width="1.5" />
-              <path d="M 916 136 Q 916 114 950 114 L 1012 114 Q 1046 114 1046 136 Z" fill="url(#metalTankGrad)" stroke="#64748B" stroke-width="1.6" />
-              <rect x="916" y="134" width="130" height="184" rx="10" fill="url(#metalTankGrad)" stroke="#64748B" stroke-width="1.8" />
+              <rect x="930" y="314" width="12" height="28" rx="2" fill="#A1A1AA" stroke="#71717A" stroke-width="1.2" />
+              <rect x="1020" y="314" width="12" height="28" rx="2" fill="#A1A1AA" stroke="#71717A" stroke-width="1.2" />
+              <rect x="962" y="102" width="38" height="12" rx="2" fill="#2563EB" stroke="#1E40AF" stroke-width="1.2" />
+              <path d="M 916 136 Q 916 114 950 114 L 1012 114 Q 1046 114 1046 136 Z" fill="url(#metalTankGrad)" stroke="#71717A" stroke-width="1.6" />
+              <rect x="916" y="134" width="130" height="184" rx="10" fill="url(#metalTankGrad)" stroke="#71717A" stroke-width="1.8" />
               <rect x="920" y="138" width="122" height="176" rx="8" fill="#FAFAFA" stroke="#D4D4D8" stroke-width="1" />
 
               <g clip-path="url(#polytank-clip)">
@@ -1199,54 +1010,130 @@
               <line x1="920" y1="261.2" x2="1042" y2="261.2" stroke="#DC2626" stroke-width="1.1" stroke-dasharray="4 3" opacity="0.8" />
 
               <g font-family="IBM Plex Mono, monospace" font-size="9.5" font-weight="600">
-                <line x1="1052" y1="138" x2="1052" y2="314" stroke="#CBD5E1" stroke-width="1" />
-                <line x1="1052" y1="138" x2="1060" y2="138" stroke="#64748B" stroke-width="1.4" />
+                <line x1="1052" y1="138" x2="1052" y2="314" stroke="#D4D4D8" stroke-width="1" />
+                <line x1="1052" y1="138" x2="1060" y2="138" stroke="#71717A" stroke-width="1.4" />
                 <text x="1064" y="141" fill="#71717A">100%</text>
                 <line x1="1052" y1="164.4" x2="1061" y2="164.4" stroke="#16A34A" stroke-width="1.8" />
                 <text x="1064" y="167.4" fill="#16A34A" font-weight="700">85%</text>
-                <line x1="1052" y1="226" x2="1058" y2="226" stroke="#94A3B8" stroke-width="1.2" />
+                <line x1="1052" y1="226" x2="1058" y2="226" stroke="#A1A1AA" stroke-width="1.2" />
                 <line x1="1052" y1="261.2" x2="1061" y2="261.2" stroke="#DC2626" stroke-width="1.8" />
                 <text x="1064" y="264.2" fill="#DC2626" font-weight="700">30%</text>
-                <line x1="1052" y1="314" x2="1060" y2="314" stroke="#64748B" stroke-width="1.4" />
+                <line x1="1052" y1="314" x2="1060" y2="314" stroke="#71717A" stroke-width="1.4" />
                 <text x="1064" y="317" fill="#71717A">0%</text>
               </g>
 
-              <rect x="936" y="206" width="90" height="24" rx="4" fill="#FFFFFF" fill-opacity="0.92" stroke="#D4D4D8" stroke-width="1" />
-              <text id="tank-status-text" x="981" y="222" fill="#DC2626" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle" letter-spacing="0.4">NIVEAU BAS</text>
+              <rect x="934" y="206" width="94" height="24" rx="4" fill="#FFFFFF" fill-opacity="0.92" stroke="#D4D4D8" stroke-width="1" />
+              <text id="tank-status-text" x="981" y="222" fill="#71717A" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle" letter-spacing="0.4">ATTENTE</text>
             </g>
           </svg>
         </div>
       </section>
-    </section>
 
-    <!-- =======================================================
-         VUE 2 : TENDANCES (COURBES CHART.JS)
-         ======================================================= -->
-    <section id="view-tendances" class="view-container" aria-label="Tendances temps réel">
-      <div class="stats-strip">
-        <div class="stat-box"><span class="lbl">Tension Active</span><span class="val"><span id="t-val-v">0.0</span> V</span></div>
-        <div class="stat-box"><span class="lbl">Courant Charge</span><span class="val"><span id="t-val-i">0.0</span> A</span></div>
-        <div class="stat-box"><span class="lbl">Puissance Active</span><span class="val"><span id="t-val-p">0</span> W</span></div>
-        <div class="stat-box"><span class="lbl">Temp. Transfo</span><span class="val"><span id="t-val-t">0.0</span> °C</span></div>
-        <div class="stat-box"><span class="lbl">Batterie 3S</span><span class="val"><span id="t-val-batt">0</span> %</span></div>
-        <div class="stat-box"><span class="lbl">Niveau Polytank</span><span class="val"><span id="t-val-eau">0</span> %</span></div>
+      <!-- 3. GRILLE OPÉRATIONNELLE : COMMANDE RÉELLE 4 RELAIS + JOURNAL D'ALARMES -->
+      <div class="ops-grid">
+        <section class="card">
+          <div class="card-header">
+            <span class="card-title">État &amp; Commande Réelle des 4 Relais (MQTT)</span>
+            <button id="btn-cmd-auto" class="cmd-btn" type="button" onclick="sendAutoModeCommand()" disabled>Mode Auto ESP32</button>
+          </div>
+          <div class="relay-list">
+            <div class="relay-row">
+              <div class="relay-meta">
+                <strong>Relais IN1 — Source SONABEL 12V</strong>
+                <span>GPIO 26 • Commutation arrivée principale</span>
+              </div>
+              <div class="relay-controls">
+                <span id="rel-st-1" class="badge bg-gray">ATTENTE</span>
+                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN1', 26, 'ON')" disabled>Fermer</button>
+                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN1', 26, 'OFF')" disabled>Ouvrir</button>
+              </div>
+            </div>
+
+            <div class="relay-row">
+              <div class="relay-meta">
+                <strong>Relais IN2 — Source Solaire / Batterie 3S</strong>
+                <span>GPIO 27 • Commutation secours 12,6V</span>
+              </div>
+              <div class="relay-controls">
+                <span id="rel-st-2" class="badge bg-gray">ATTENTE</span>
+                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN2', 27, 'ON')" disabled>Fermer</button>
+                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN2', 27, 'OFF')" disabled>Ouvrir</button>
+              </div>
+            </div>
+
+            <div class="relay-row">
+              <div class="relay-meta">
+                <strong>Relais IN3 — Disjoncteur Q1 (Charges 12V)</strong>
+                <span>GPIO 14 • Départ 2× LED 12V + Ventilateur</span>
+              </div>
+              <div class="relay-controls">
+                <span id="rel-st-3" class="badge bg-gray">ATTENTE</span>
+                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN3', 14, 'ON')" disabled>Réarmer</button>
+                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN3', 14, 'OFF')" disabled>Déclencher</button>
+              </div>
+            </div>
+
+            <div class="relay-row">
+              <div class="relay-meta">
+                <strong>Relais IN4 — Mini-pompe Polytank</strong>
+                <span>GPIO 12 • Pompe submersible AD20P-1230C</span>
+              </div>
+              <div class="relay-controls">
+                <span id="rel-st-4" class="badge bg-gray">ATTENTE</span>
+                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN4', 12, 'ON')" disabled>Démarrer</button>
+                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN4', 12, 'OFF')" disabled>Arrêter</button>
+              </div>
+            </div>
+          </div>
+          <div class="cmd-foot">
+            <span>Publication JSON directe vers l'ESP32 / Wokwi sur <strong class="mono">cge/uauben/david/smartgrid/cmd</strong></span>
+            <span id="cmd-status-txt" class="mono">Broker hors ligne</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <span class="card-title">Journal d'alarmes &amp; d'événements horodaté</span>
+            <span class="mono" style="font-size:11px; color:var(--muted);">30 derniers événements</span>
+          </div>
+          <div id="event-log" class="log-list">
+            <div class="log-item">Initialisation SCADA. Connexion au broker MQTT HiveMQ en cours...</div>
+          </div>
+        </section>
       </div>
-
-      <section class="card">
-        <div class="card-header">
-          <span class="card-title">Télémétrie temps réel — Tension, Courant &amp; Température</span>
-          <span class="mono" style="font-size:11px; color:var(--muted);">Fenêtre glissante : 30 points</span>
-        </div>
-        <div class="chart-body">
-          <div class="chart-box"><canvas id="scadaChart"></canvas></div>
-        </div>
-      </section>
     </section>
 
     <!-- =======================================================
-         VUE 3 : ALARMES ACTIVES & SEUILS
+         VUE 2 : TENDANCES TEMPS RÉEL (2 GRAPHIQUES CHART.JS)
          ======================================================= -->
-    <section id="view-alarmes" class="view-container" aria-label="Gestion des alarmes">
+    <section id="view-tendances" class="view-container" aria-label="Courbes temps réel">
+      <div class="charts-grid">
+        <section class="card">
+          <div class="card-header">
+            <span class="card-title">Tension (V), Courant (A) &amp; Température (°C)</span>
+            <span class="mono" style="font-size:11px; color:var(--muted);">30 derniers points MQTT</span>
+          </div>
+          <div class="chart-body">
+            <div class="chart-box"><canvas id="scadaChart"></canvas></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <span class="card-title">Puissance Active (W) &amp; Niveau Polytank (%)</span>
+            <span class="mono" style="font-size:11px; color:var(--muted);">30 derniers points MQTT</span>
+          </div>
+          <div class="chart-body">
+            <div class="chart-box"><canvas id="powerWaterChart"></canvas></div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         VUE 3 : ALARMES & SEUILS DE PROTECTION
+         ======================================================= -->
+    <section id="view-alarmes" class="view-container" aria-label="Surveillance des alarmes">
       <section class="card">
         <div class="card-header">
           <span class="card-title">Surveillance des alarmes &amp; seuils de protection</span>
@@ -1263,7 +1150,7 @@
                 <th>État</th>
               </tr>
             </thead>
-            <tbody id="alarms-table-body">
+            <tbody>
               <tr>
                 <td class="mono"><strong>Q1_TRIP</strong></td>
                 <td>Déclenchement Disjoncteur Q1 (IN3 / GPIO 14)</td>
@@ -1275,21 +1162,21 @@
                 <td class="mono"><strong>IT-101_HI</strong></td>
                 <td>Surcharge Courant Charge (ACS712 #1 / GPIO 35)</td>
                 <td class="mono">&gt; 15.0 A</td>
-                <td class="mono" id="al-val-i">0.0 A</td>
-                <td><span id="al-st-i" class="badge bg-green">NOMINAL</span></td>
+                <td class="mono" id="al-val-i">--.- A</td>
+                <td><span id="al-st-i" class="badge bg-gray">ATTENTE</span></td>
               </tr>
               <tr>
                 <td class="mono"><strong>TT-101_HI</strong></td>
                 <td>Surchauffe Transformateur (DS18B20 / GPIO 4)</td>
                 <td class="mono">&gt; 60.0 °C</td>
-                <td class="mono" id="al-val-t">0.0 °C</td>
-                <td><span id="al-st-t" class="badge bg-green">NOMINAL</span></td>
+                <td class="mono" id="al-val-t">--.- °C</td>
+                <td><span id="al-st-t" class="badge bg-gray">ATTENTE</span></td>
               </tr>
               <tr>
                 <td class="mono"><strong>LT-101_LO</strong></td>
                 <td>Niveau Polytank Critique (HC-SR04 / GPIO 5-18)</td>
                 <td class="mono">&lt; 30 %</td>
-                <td class="mono" id="al-val-eau">0 %</td>
+                <td class="mono" id="al-val-eau">-- %</td>
                 <td><span id="al-st-eau" class="badge bg-gray">ATTENTE</span></td>
               </tr>
               <tr>
@@ -1306,28 +1193,13 @@
     </section>
 
     <!-- =======================================================
-         VUE 4 : JOURNAL D'ÉVÉNEMENTS HORODATÉ
+         VUE 4 : ÉQUIPEMENTS & TAGS INDUSTRIELS
          ======================================================= -->
-    <section id="view-journal" class="view-container" aria-label="Journal d'événements SCADA">
+    <section id="view-equipements" class="view-container" aria-label="Inventaire équipements SCADA">
       <section class="card">
         <div class="card-header">
-          <span class="card-title">Journal d'événements SCADA (horodaté)</span>
-          <span class="mono" style="font-size:11px; color:var(--muted);">30 derniers événements</span>
-        </div>
-        <div id="event-log" class="log-list">
-          <div class="log-item">Interface SCADA prête. En attente de trames ESP32 sur HiveMQ ou d'activation du simulateur hors ligne.</div>
-        </div>
-      </section>
-    </section>
-
-    <!-- =======================================================
-         VUE 5 : ÉQUIPEMENTS & TAGS INDUSTRIELS
-         ======================================================= -->
-    <section id="view-equipements" class="view-container" aria-label="Liste des équipements">
-      <section class="card">
-        <div class="card-header">
-          <span class="card-title">Inventaire des équipements, relais &amp; tags SCADA</span>
-          <span class="mono" style="font-size:11px; color:var(--muted);">Topic : cge/uauben/david/smartgrid</span>
+          <span class="card-title">Inventaire des équipements, broches ESP32 &amp; tags SCADA</span>
+          <span class="mono" style="font-size:11px; color:var(--muted);">Flux MQTT : cge/uauben/david/smartgrid</span>
         </div>
         <div class="table-wrap">
           <table class="scada-table">
@@ -1340,14 +1212,14 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td class="mono"><strong>V-101</strong></td><td>Source Active SONABEL / Batterie (GPIO 34 / 32)</td><td class="mono">v</td><td class="mono" id="eq-v">0.0 V</td></tr>
-              <tr><td class="mono"><strong>TT-101</strong></td><td>Sonde thermique DS18B20 (GPIO 4)</td><td class="mono">t</td><td class="mono" id="eq-t">0.0 °C</td></tr>
-              <tr><td class="mono"><strong>BT-101</strong></td><td>Pack Batterie 3S 18650 + BMS 40A (GPIO 32)</td><td class="mono">batt</td><td class="mono" id="eq-batt">0 %</td></tr>
-              <tr><td class="mono"><strong>ATS-101</strong></td><td>Inverseur Automatique Relais IN1/IN2 (GPIO 26 / 27)</td><td class="mono">src</td><td class="mono" id="eq-src">ATTENTE</td></tr>
-              <tr><td class="mono"><strong>Q1</strong></td><td>Disjoncteur Principal Relais IN3 (GPIO 14)</td><td class="mono">disj</td><td class="mono" id="eq-disj">--</td></tr>
-              <tr><td class="mono"><strong>IT-101</strong></td><td>Départ Charges 12V — ACS712 #1 (GPIO 35)</td><td class="mono">i</td><td class="mono" id="eq-i">0.0 A (0 W)</td></tr>
-              <tr><td class="mono"><strong>LT-101</strong></td><td>Niveau Polytank — HC-SR04 (GPIO 5 / 18)</td><td class="mono">eau</td><td class="mono" id="eq-eau">0 %</td></tr>
-              <tr><td class="mono"><strong>P-101</strong></td><td>Mini-pompe 12V AD20P-1230C — Relais IN4 (GPIO 12)</td><td class="mono">pompe</td><td class="mono" id="eq-pompe">ARRÊTÉE</td></tr>
+              <tr><td class="mono"><strong>V-101</strong></td><td>Tension Active Bus DC — SONABEL / Batterie (GPIO 34 / 32)</td><td class="mono">v</td><td class="mono" id="eq-v">--.- V</td></tr>
+              <tr><td class="mono"><strong>TT-101</strong></td><td>Sonde thermique étanche DS18B20 (GPIO 4)</td><td class="mono">t</td><td class="mono" id="eq-t">--.- °C</td></tr>
+              <tr><td class="mono"><strong>BT-101</strong></td><td>Pack Batterie 3S 18650 + BMS 3S 40A (GPIO 32)</td><td class="mono">batt</td><td class="mono" id="eq-batt">-- %</td></tr>
+              <tr><td class="mono"><strong>ATS-101</strong></td><td>Inverseur Automatique — Relais IN1/IN2 (GPIO 26 / 27)</td><td class="mono">src</td><td class="mono" id="eq-src">ATTENTE</td></tr>
+              <tr><td class="mono"><strong>Q1</strong></td><td>Disjoncteur Principal — Relais IN3 (GPIO 14)</td><td class="mono">disj</td><td class="mono" id="eq-disj">--</td></tr>
+              <tr><td class="mono"><strong>IT-101</strong></td><td>Départ Charges 12V — ACS712 #1 (GPIO 35)</td><td class="mono">i</td><td class="mono" id="eq-i">--.- A (0 W)</td></tr>
+              <tr><td class="mono"><strong>LT-101</strong></td><td>Niveau Polytank — Ultrason HC-SR04 (GPIO 5 / 18)</td><td class="mono">eau</td><td class="mono" id="eq-eau">-- %</td></tr>
+              <tr><td class="mono"><strong>P-101</strong></td><td>Mini-pompe 12V AD20P-1230C — Relais IN4 (GPIO 12)</td><td class="mono">pompe</td><td class="mono" id="eq-pompe">ATTENTE</td></tr>
             </tbody>
           </table>
         </div>
@@ -1359,78 +1231,50 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <h3>Club U-AUBEN — Projet Smart Grid</h3>
-        <p>Supervision SCADA temps réel (MQTT HiveMQ) &amp; simulateur de démonstration hors ligne.</p>
+        <p>Supervision industrielle temps réel sur broker MQTT HiveMQ — Architecture 12V DC &amp; Polytank sur ESP32.</p>
       </div>
       <div class="footer-links">
         <a class="footer-link" href="./index.html">← Retour au Dossier &amp; Maquette 3D</a>
-        <button class="footer-link" type="button" onclick="switchView('dashboard')">Dashboard</button>
+        <button class="footer-link" type="button" onclick="switchView('supervision')">Supervision</button>
         <button class="footer-link" type="button" onclick="switchView('tendances')">Tendances</button>
         <button class="footer-link" type="button" onclick="switchView('alarmes')">Alarmes</button>
-        <button class="footer-link" type="button" onclick="switchView('journal')">Journal</button>
+        <button class="footer-link" type="button" onclick="switchView('equipements')">Équipements</button>
       </div>
     </div>
   </footer>
 
   <script>
     // =========================================================
-    // 1. LOGO DU CLUB (PARTAGÉ AVEC INDEX.HTML VIA LOCALSTORAGE)
+    // 1. PWA — SERVICE WORKER & BOUTON D'INSTALLATION
     // =========================================================
-    const LOGO_STORAGE_KEY = "uauben_club_logo_v1";
+    let deferredInstallPrompt = null;
 
-    function initClubLogo() {
-      const slot = document.getElementById("club-logo-slot");
-      const img = document.getElementById("club-logo-img");
-      const resetBtn = document.getElementById("btn-reset-logo");
-      if (!slot || !img) return;
-      let saved = null;
-      try { saved = localStorage.getItem(LOGO_STORAGE_KEY); } catch (e) {}
-      if (saved) {
-        slot.classList.remove("is-fallback");
-        img.src = saved;
-        if (resetBtn) resetBtn.classList.add("visible");
-      }
+    if ("serviceWorker" in navigator && (location.protocol === "https:" || location.protocol === "http:")) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
     }
 
-    function handleClubLogoError() {
-      const slot = document.getElementById("club-logo-slot");
-      if (slot) slot.classList.add("is-fallback");
-    }
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const btn = document.getElementById("btn-install-pwa");
+      if (btn) btn.classList.add("visible");
+    });
 
-    function triggerLogoUpload() {
-      const inp = document.getElementById("club-logo-input");
-      if (inp) inp.click();
-    }
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      const btn = document.getElementById("btn-install-pwa");
+      if (btn) btn.classList.remove("visible");
+    });
 
-    function handleLogoFileChange(evt) {
-      const file = evt.target.files && evt.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target.result;
-        const slot = document.getElementById("club-logo-slot");
-        const img = document.getElementById("club-logo-img");
-        const resetBtn = document.getElementById("btn-reset-logo");
-        if (img && slot) {
-          slot.classList.remove("is-fallback");
-          img.src = dataUrl;
-        }
-        if (resetBtn) resetBtn.classList.add("visible");
-        try { localStorage.setItem(LOGO_STORAGE_KEY, dataUrl); } catch (err) {}
-      };
-      reader.readAsDataURL(file);
-      evt.target.value = "";
-    }
-
-    function resetClubLogo() {
-      try { localStorage.removeItem(LOGO_STORAGE_KEY); } catch (e) {}
-      const slot = document.getElementById("club-logo-slot");
-      const img = document.getElementById("club-logo-img");
-      const resetBtn = document.getElementById("btn-reset-logo");
-      if (resetBtn) resetBtn.classList.remove("visible");
-      if (slot && img) {
-        slot.classList.remove("is-fallback");
-        img.src = "./logo_club.png";
-      }
+    async function installPWA() {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      try { await deferredInstallPrompt.userChoice; } catch (e) {}
+      deferredInstallPrompt = null;
+      const btn = document.getElementById("btn-install-pwa");
+      if (btn) btn.classList.remove("visible");
     }
 
     // =========================================================
@@ -1441,8 +1285,11 @@
       document.querySelectorAll(".el-tab").forEach(btn => btn.classList.toggle("active", btn.dataset.view === viewName));
       const target = document.getElementById("view-" + viewName);
       if (target) target.classList.add("active");
-      if (viewName === "tendances" && typeof scadaChart !== "undefined") {
-        setTimeout(() => scadaChart.resize(), 30);
+      if (viewName === "tendances") {
+        setTimeout(() => {
+          if (typeof scadaChart !== "undefined") scadaChart.resize();
+          if (typeof powerWaterChart !== "undefined") powerWaterChart.resize();
+        }, 30);
       }
     }
 
@@ -1453,7 +1300,7 @@
     setInterval(majHorloge, 1000);
 
     // =========================================================
-    // 3. JOURNAL D'ÉVÉNEMENTS
+    // 3. JOURNAL D'ALARMES & D'ÉVÉNEMENTS HORODATÉ
     // =========================================================
     function ajouterLog(msg, type = "") {
       const list = document.getElementById("event-log");
@@ -1467,10 +1314,9 @@
     }
 
     // =========================================================
-    // 4. GRAPHIQUE TEMPS RÉEL (CHART.JS) + SPARKLINE
+    // 4. COURBES TEMPS RÉEL (CHART.JS)
     // =========================================================
-    const ctx = document.getElementById("scadaChart").getContext("2d");
-    const scadaChart = new Chart(ctx, {
+    const scadaChart = new Chart(document.getElementById("scadaChart").getContext("2d"), {
       type: "line",
       data: {
         labels: [],
@@ -1515,10 +1361,7 @@
           legend: {
             position: "top",
             align: "end",
-            labels: {
-              color: "#09090B",
-              font: { family: "'Inter', sans-serif", size: 11.5, weight: "600" }
-            }
+            labels: { color: "#09090B", font: { family: "'Inter', sans-serif", size: 11.5, weight: "600" } }
           }
         },
         scales: {
@@ -1546,36 +1389,184 @@
       }
     });
 
-    const powerHistory = [];
-    function majSparkline(powerW) {
-      powerHistory.push(powerW);
-      if (powerHistory.length > 20) powerHistory.shift();
-      const maxP = Math.max(25, ...powerHistory) * 1.2;
-      const n = powerHistory.length;
-      const pts = powerHistory.map((val, idx) => {
-        const x = n === 1 ? 220 : (idx / (n - 1)) * 220;
-        const y = 68 - Math.min(60, (val / maxP) * 58);
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-      });
-      if (n === 1) pts.unshift(`0,${pts[0].split(",")[1]}`);
-      document.getElementById("spark-line").setAttribute("points", pts.join(" "));
-      document.getElementById("spark-area").setAttribute("d", `M ${pts[0]} L ${pts.join(" L ")} L 220 74 L 0 74 Z`);
-    }
+    const powerWaterChart = new Chart(document.getElementById("powerWaterChart").getContext("2d"), {
+      type: "line",
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: "Puissance (W)",
+            data: [],
+            borderColor: "#09090B",
+            backgroundColor: "rgba(9, 9, 11, 0.06)",
+            fill: true,
+            borderWidth: 2,
+            yAxisID: "yP",
+            tension: 0.28,
+            pointRadius: 2
+          },
+          {
+            label: "Polytank (%)",
+            data: [],
+            borderColor: "#0284C7",
+            backgroundColor: "rgba(2, 132, 199, 0.10)",
+            borderWidth: 2,
+            yAxisID: "yW",
+            tension: 0.28,
+            pointRadius: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: {
+            position: "top",
+            align: "end",
+            labels: { color: "#09090B", font: { family: "'Inter', sans-serif", size: 11.5, weight: "600" } }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: "#71717A", maxTicksLimit: 8, font: { family: "'IBM Plex Mono', monospace", size: 10.5 } },
+            grid: { color: "#F4F4F5" }
+          },
+          yP: {
+            type: "linear",
+            position: "left",
+            min: 0,
+            suggestedMax: 30,
+            ticks: { color: "#09090B", font: { family: "'IBM Plex Mono', monospace", size: 10.5 } },
+            grid: { color: "#F4F4F5" }
+          },
+          yW: {
+            type: "linear",
+            position: "right",
+            min: 0,
+            max: 100,
+            ticks: { color: "#0284C7", font: { family: "'IBM Plex Mono', monospace", size: 10.5 } },
+            grid: { drawOnChartArea: false }
+          }
+        }
+      }
+    });
 
     // =========================================================
-    // 5. MOTEUR D'AFFICHAGE UNIFIÉ (MQTT DIRECT + SIMULATEUR)
+    // 5. CONNEXION MQTT RÉELLE (HIVEMQ) + COMMANDE 4 RELAIS
     // =========================================================
+    const TELEMETRY_TOPIC = "cge/uauben/david/smartgrid";
+    const COMMAND_TOPIC   = "cge/uauben/david/smartgrid/cmd";
+
+    let brokerOnline = false;
+    let rxCount = 0;
     let prevSrc = null, prevDisj = null, prevPompe = null;
 
-    function majBadgeRelais(elId, isOn, onTxt = "FERMÉ (ON)", offTxt = "OUVERT (OFF)", onCls = "bg-green") {
+    function setBrokerUI(state) {
+      const pill = document.getElementById("broker-pill");
+      const dot = document.getElementById("mqtt-dot");
+      const txt = document.getElementById("mqtt-status");
+      const cmdStatus = document.getElementById("cmd-status-txt");
+      const cmds = document.querySelectorAll(".mqtt-cmd-btn, #btn-cmd-auto");
+
+      brokerOnline = (state === "online");
+      cmds.forEach(btn => { btn.disabled = !brokerOnline; });
+
+      if (state === "online") {
+        pill.className = "broker-pill online";
+        dot.className = "dot online";
+        txt.textContent = "En ligne — Broker MQTT";
+        if (cmdStatus) cmdStatus.textContent = "Commandes MQTT actives";
+      } else if (state === "reconnecting") {
+        pill.className = "broker-pill";
+        dot.className = "dot";
+        txt.textContent = "Reconnexion au broker...";
+        if (cmdStatus) cmdStatus.textContent = "Reconnexion en cours";
+      } else {
+        pill.className = "broker-pill offline";
+        dot.className = "dot offline";
+        txt.textContent = "Hors ligne";
+        if (cmdStatus) cmdStatus.textContent = "Broker hors ligne";
+      }
+    }
+
+    let client = null;
+    if (typeof mqtt !== "undefined") {
+      client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt", {
+        clientId: "SCADA-UAUBEN-" + Math.random().toString(16).substring(2, 10),
+        keepalive: 20,
+        reconnectPeriod: 2500,
+        connectTimeout: 5000,
+        clean: true
+      });
+
+      client.on("connect", () => {
+        setBrokerUI("online");
+        client.subscribe(TELEMETRY_TOPIC, { qos: 0 });
+        ajouterLog("Connexion établie avec le broker HiveMQ. Abonnement actif sur " + TELEMETRY_TOPIC + ".", "ok");
+      });
+
+      client.on("reconnect", () => {
+        setBrokerUI("reconnecting");
+      });
+
+      client.on("offline", () => {
+        setBrokerUI("offline");
+        ajouterLog("Broker MQTT hors ligne — tentative de reconnexion automatique.", "warn");
+      });
+
+      client.on("error", () => {
+        setBrokerUI("offline");
+        ajouterLog("Erreur de connexion au broker MQTT HiveMQ.", "err");
+      });
+
+      client.on("message", (t, message) => {
+        try {
+          const d = JSON.parse(message.toString());
+          traiterTrameMQTT(d);
+        } catch (e) {
+          console.error("Trame JSON invalide :", e);
+        }
+      });
+    } else {
+      setBrokerUI("offline");
+      ajouterLog("Mode hors ligne détecté : client MQTT indisponible sans connexion réseau.", "warn");
+    }
+
+    function sendRelayCommand(relayId, gpio, cmd) {
+      if (!client || !brokerOnline) return;
+      const payload = JSON.stringify({
+        mode: "MANUAL",
+        relay: relayId,
+        gpio: gpio,
+        cmd: cmd,
+        ts: Date.now()
+      });
+      client.publish(COMMAND_TOPIC, payload, { qos: 0 });
+      ajouterLog(`Commande MQTT envoyée → ${relayId} (GPIO ${gpio}) : ${cmd}`, cmd === "ON" ? "ok" : "warn");
+    }
+
+    function sendAutoModeCommand() {
+      if (!client || !brokerOnline) return;
+      const payload = JSON.stringify({ mode: "AUTO", ts: Date.now() });
+      client.publish(COMMAND_TOPIC, payload, { qos: 0 });
+      ajouterLog("Commande MQTT envoyée → Retour en régulation automatique ESP32 (Mode AUTO).", "ok");
+    }
+
+    function majBadgeRelais(elId, isOn, onTxt, offTxt, onCls, offCls = "bg-gray") {
       const el = document.getElementById(elId);
       if (!el) return;
       el.textContent = isOn ? onTxt : offTxt;
-      el.className = "badge " + (isOn ? onCls : "bg-gray");
+      el.className = "badge " + (isOn ? onCls : offCls);
     }
 
-    function appliquerDonneesSCADA(d) {
+    function traiterTrameMQTT(d) {
       const nowStr = new Date().toLocaleTimeString();
+      rxCount += 1;
+      document.getElementById("rx-count").textContent = rxCount;
+      document.getElementById("last-update").textContent = nowStr;
+
       const v = Number(d.v) || 0;
       const i = Number(d.i) || 0;
       const t = Number(d.t) || 0;
@@ -1586,53 +1577,33 @@
       const disj = Number(d.disj) === 1 ? 1 : 0;
       const pompe = Number(d.pompe) === 1 ? 1 : 0;
 
-      // --- KPIs DASHBOARD ---
+      // 1. KPIs numériques
       document.getElementById("val-v").textContent = v.toFixed(1);
-      document.getElementById("val-i").textContent = i.toFixed(2);
-      document.getElementById("val-t").textContent = t.toFixed(1);
+      document.getElementById("val-v-detail").textContent = (d.v_sonabel !== undefined) ? `SONABEL ${Number(d.v_sonabel).toFixed(1)} V` : src;
       document.getElementById("val-batt").textContent = batt;
+      document.getElementById("val-batt-v").textContent = (d.v_batt !== undefined) ? `${Number(d.v_batt).toFixed(1)} V` : `${(10.5 + (batt / 100) * 2.1).toFixed(1)} V`;
+      document.getElementById("val-i").textContent = i.toFixed(2);
       document.getElementById("kpi-power").textContent = powerW;
+      document.getElementById("val-t").textContent = t.toFixed(1);
+      document.getElementById("val-t").className = "kpi-val " + (t > 60 ? "alert" : (t > 48 ? "warn" : ""));
+      document.getElementById("val-t-state").textContent = t > 60 ? "SURCHAUFFE" : "NOMINAL";
       document.getElementById("kpi-eau").textContent = eau;
-      majSparkline(powerW);
 
-      const gaugeArc = document.getElementById("batt-gauge-arc");
-      gaugeArc.setAttribute("stroke-dashoffset", (235 * (1 - batt / 100)).toFixed(1));
-      gaugeArc.setAttribute("stroke", batt < 25 ? "#EF4444" : (batt < 55 ? "#F59E0B" : "#16A34A"));
+      const barBatt = document.getElementById("bar-batt");
+      barBatt.style.width = batt + "%";
+      barBatt.style.background = batt < 25 ? "#DC2626" : (batt < 55 ? "#D97706" : "#16A34A");
 
-      const miniH = (eau / 100) * 68;
-      const miniY = 76 - miniH;
-      document.getElementById("mini-water-rect").setAttribute("y", miniY);
-      document.getElementById("mini-water-rect").setAttribute("height", miniH);
-      document.getElementById("mini-water-wave").setAttribute("transform", `translate(0, ${miniY})`);
+      const barEau = document.getElementById("bar-eau");
+      barEau.style.width = eau + "%";
+      barEau.style.background = eau < 30 ? "#DC2626" : (eau >= 85 ? "#16A34A" : "#2563EB");
 
-      // --- ÉTAT DES 4 RELAIS ---
+      // 2. État des 4 relais
       majBadgeRelais("rel-st-1", src === "SONABEL", "FERMÉ (ON)", "OUVERT", "bg-green");
       majBadgeRelais("rel-st-2", src === "SOLAIRE", "FERMÉ (ON)", "OUVERT", "bg-yellow");
-      majBadgeRelais("rel-st-3", disj === 1, "FERMÉ (OK)", "OUVERT (DÉFAUT)", "bg-green");
-      if (disj === 0) {
-        const r3 = document.getElementById("rel-st-3");
-        if (r3) r3.className = "badge bg-red";
-      }
+      majBadgeRelais("rel-st-3", disj === 1, "FERMÉ (OK)", "OUVERT (DÉFAUT)", "bg-green", "bg-red");
       majBadgeRelais("rel-st-4", pompe === 1, "EN MARCHE", "ARRÊTÉE", "bg-blue");
 
-      // --- VUES SECONDAIRES ---
-      document.getElementById("t-val-v").textContent = v.toFixed(1);
-      document.getElementById("t-val-i").textContent = i.toFixed(2);
-      document.getElementById("t-val-p").textContent = powerW;
-      document.getElementById("t-val-t").textContent = t.toFixed(1);
-      document.getElementById("t-val-batt").textContent = batt;
-      document.getElementById("t-val-eau").textContent = eau;
-
-      document.getElementById("eq-v").textContent = v.toFixed(1) + " V";
-      document.getElementById("eq-t").textContent = t.toFixed(1) + " °C";
-      document.getElementById("eq-batt").textContent = batt + " %";
-      document.getElementById("eq-src").textContent = src;
-      document.getElementById("eq-disj").textContent = disj === 1 ? "FERMÉ (OK)" : "OUVERT (DÉFAUT)";
-      document.getElementById("eq-i").textContent = `${i.toFixed(2)} A (${powerW} W)`;
-      document.getElementById("eq-eau").textContent = eau + " %";
-      document.getElementById("eq-pompe").textContent = pompe === 1 ? "EN MARCHE" : "ARRÊTÉE";
-
-      // --- SYNOPTIQUE P&ID ---
+      // 3. Synoptique P&ID
       const srcEl = document.getElementById("val-src");
       srcEl.textContent = src;
       document.getElementById("svg-v").textContent = v.toFixed(1) + " V";
@@ -1678,7 +1649,7 @@
         lAts.setAttribute("class", "flow-line flow-fault");
       }
 
-      // Disjoncteur mécanique Q1
+      // Disjoncteur Q1
       const disjEl = document.getElementById("val-disj");
       const svgDisj = document.getElementById("svg-disj");
       const boxDisj = document.getElementById("box-disj");
@@ -1695,8 +1666,8 @@
         cbBlade.style.transform = "rotate(0deg)";
         cbBlade.setAttribute("stroke", "#16A34A");
         banner.style.display = "none";
-        synState.textContent = sourceMode === "sim" ? "SIMULATION ACTIVE" : "MODE NOMINAL";
-        synState.className = sourceMode === "sim" ? "badge bg-blue" : "badge bg-green";
+        synState.textContent = "EXPLOITATION NOMINALE";
+        synState.className = "badge bg-green";
       } else {
         disjEl.textContent = "Q1 OUVERT";
         disjEl.className = "badge bg-red";
@@ -1710,7 +1681,7 @@
         synState.className = "badge bg-red";
       }
 
-      // Polytank P&ID & Pompe P-101
+      // Polytank & Pompe P-101
       const maxH = 176;
       const waterH = (eau / 100) * maxH;
       const waterY = 314 - waterH;
@@ -1754,16 +1725,16 @@
         pompeEl.textContent = "POMPE OFF";
         pompeEl.className = "badge bg-gray";
         pipePump.setAttribute("class", "flow-line");
-        pumpCircle.setAttribute("stroke", "#475569");
-        pumpCircle.setAttribute("fill", "#E2E8F0");
-        pumpImpeller.setAttribute("stroke", "#475569");
-        pumpLed.setAttribute("fill", "#94A3B8");
+        pumpCircle.setAttribute("stroke", "#52525B");
+        pumpCircle.setAttribute("fill", "#E4E4E7");
+        pumpImpeller.setAttribute("stroke", "#52525B");
+        pumpLed.setAttribute("fill", "#A1A1AA");
         svgPompeLbl.textContent = "Arrêtée";
         svgPompeLbl.setAttribute("fill", "#71717A");
         valveAct.setAttribute("fill", "#A1A1AA");
       }
 
-      // Alarmes actives
+      // 4. Calcul & affichage alarmes
       const activeAlarms = [];
       if (disj === 0) activeAlarms.push("Disjoncteur ouvert");
       if (i > 15)     activeAlarms.push("Surcharge (>15A)");
@@ -1773,37 +1744,19 @@
       const alarmCount = activeAlarms.length;
       const countEl = document.getElementById("kpi-alarm-count");
       const detailEl = document.getElementById("kpi-alarm-detail");
-      const bellPath = document.getElementById("alarm-bell-path");
-      const bellClap = document.getElementById("alarm-bell-clapper");
       const navBadge = document.getElementById("nav-alarm-badge");
       const viewBadge = document.getElementById("alarm-view-badge");
 
       countEl.textContent = alarmCount;
       navBadge.textContent = alarmCount;
+      countEl.className = "kpi-val " + (alarmCount > 0 ? "alert" : "ok");
+      detailEl.textContent = alarmCount > 0 ? activeAlarms.join(" • ") : "Système nominal";
+      detailEl.style.color = alarmCount > 0 ? "var(--red)" : "var(--green)";
+      navBadge.className = "nav-badge" + (alarmCount > 0 ? " has-alarm" : "");
+      viewBadge.textContent = alarmCount > 0 ? `${alarmCount} ALARME${alarmCount > 1 ? "S" : ""} ACTIVE${alarmCount > 1 ? "S" : ""}` : "0 ALARME ACTIVE";
+      viewBadge.className = "badge " + (alarmCount > 0 ? "bg-red" : "bg-green");
 
-      if (alarmCount > 0) {
-        countEl.className = "alarm-count alert";
-        detailEl.textContent = activeAlarms.join(" • ");
-        detailEl.className = "alarm-detail alert";
-        bellPath.setAttribute("fill", "#EF4444");
-        bellPath.setAttribute("stroke", "#DC2626");
-        bellClap.setAttribute("stroke", "#DC2626");
-        navBadge.className = "nav-badge has-alarm";
-        viewBadge.textContent = `${alarmCount} ALARME${alarmCount > 1 ? "S" : ""} ACTIVE${alarmCount > 1 ? "S" : ""}`;
-        viewBadge.className = "badge bg-red";
-      } else {
-        countEl.className = "alarm-count ok";
-        detailEl.textContent = "Système nominal";
-        detailEl.className = "alarm-detail";
-        bellPath.setAttribute("fill", "#CBD5E1");
-        bellPath.setAttribute("stroke", "#94A3B8");
-        bellClap.setAttribute("stroke", "#94A3B8");
-        navBadge.className = "nav-badge";
-        viewBadge.textContent = "0 ALARME ACTIVE";
-        viewBadge.className = "badge bg-green";
-      }
-
-      // Tableau Alarmes
+      // Tableaux Alarmes & Équipements
       document.getElementById("al-val-disj").textContent = disj === 1 ? "FERMÉ" : "OUVERT";
       document.getElementById("al-st-disj").textContent = disj === 1 ? "NOMINAL" : "ALARME";
       document.getElementById("al-st-disj").className = disj === 1 ? "badge bg-green" : "badge bg-red";
@@ -1824,19 +1777,28 @@
       document.getElementById("al-st-src").textContent = src === "SONABEL" ? "NOMINAL" : (src === "SOLAIRE" ? "SECOURS" : "DÉFAUT");
       document.getElementById("al-st-src").className = src === "SONABEL" ? "badge bg-green" : (src === "SOLAIRE" ? "badge bg-yellow" : "badge bg-red");
 
-      // Logs uniquement sur changement d'état
+      document.getElementById("eq-v").textContent = v.toFixed(1) + " V";
+      document.getElementById("eq-t").textContent = t.toFixed(1) + " °C";
+      document.getElementById("eq-batt").textContent = batt + " %";
+      document.getElementById("eq-src").textContent = src;
+      document.getElementById("eq-disj").textContent = disj === 1 ? "FERMÉ (OK)" : "OUVERT (DÉFAUT)";
+      document.getElementById("eq-i").textContent = `${i.toFixed(2)} A (${powerW} W)`;
+      document.getElementById("eq-eau").textContent = eau + " %";
+      document.getElementById("eq-pompe").textContent = pompe === 1 ? "EN MARCHE" : "ARRÊTÉE";
+
+      // 5. Journalisation sur changement d'état
       if (prevSrc !== null && prevSrc !== src) {
-        ajouterLog(`Bascule source : ${prevSrc} → ${src}`, src === "SONABEL" ? "ok" : (src === "SOLAIRE" ? "warn" : "err"));
+        ajouterLog(`Bascule source ATS : ${prevSrc} → ${src}`, src === "SONABEL" ? "ok" : (src === "SOLAIRE" ? "warn" : "err"));
       }
       if (prevDisj !== null && prevDisj !== disj) {
-        ajouterLog(disj === 0 ? "Déclenchement disjoncteur Q1 (défaut détecté)." : "Disjoncteur Q1 réarmé (retour nominal).", disj === 0 ? "err" : "ok");
+        ajouterLog(disj === 0 ? "Déclenchement disjoncteur Q1 (défaut critique détecté)." : "Disjoncteur Q1 réarmé (retour nominal).", disj === 0 ? "err" : "ok");
       }
       if (prevPompe !== null && prevPompe !== pompe) {
-        ajouterLog(pompe === 1 ? `Démarrage mini-pompe Polytank (niveau ${eau}%).` : `Arrêt mini-pompe Polytank (niveau ${eau}%).`, "ok");
+        ajouterLog(pompe === 1 ? `Démarrage pompe Polytank (niveau ${eau}%).` : `Arrêt pompe Polytank (niveau ${eau}%).`, "ok");
       }
       prevSrc = src; prevDisj = disj; prevPompe = pompe;
 
-      // Graphique Chart.js
+      // 6. Mise à jour des 2 graphiques Chart.js
       scadaChart.data.labels.push(nowStr);
       scadaChart.data.datasets[0].data.push(v);
       scadaChart.data.datasets[1].data.push(i);
@@ -1847,262 +1809,15 @@
       }
       scadaChart.update();
 
-      document.getElementById("last-update").textContent = nowStr;
-    }
-
-    // =========================================================
-    // 6. CONNEXION MQTT TEMPS RÉEL (HIVEMQ)
-    // =========================================================
-    let sourceMode = "mqtt"; // "mqtt" ou "sim"
-    let mqttConnected = false;
-
-    const topic = "cge/uauben/david/smartgrid";
-    const client = mqtt.connect("wss://broker.hivemq.com:8884/mqtt", {
-      clientId: "SCADA-UAUBEN-" + Math.random().toString(16).substring(2, 10),
-      keepalive: 20,
-      reconnectPeriod: 2500,
-      connectTimeout: 5000,
-      clean: true
-    });
-
-    function refreshStatusPill() {
-      const dot = document.getElementById("mqtt-dot");
-      const txt = document.getElementById("mqtt-status");
-      if (sourceMode === "sim") {
-        dot.className = "dot sim";
-        txt.textContent = "Mode Simulateur actif (hors ligne)";
-        return;
+      powerWaterChart.data.labels.push(nowStr);
+      powerWaterChart.data.datasets[0].data.push(powerW);
+      powerWaterChart.data.datasets[1].data.push(eau);
+      if (powerWaterChart.data.labels.length > 30) {
+        powerWaterChart.data.labels.shift();
+        powerWaterChart.data.datasets.forEach(ds => ds.data.shift());
       }
-      if (mqttConnected) {
-        dot.className = "dot online";
-        txt.textContent = "Connecté en direct (MQTT HiveMQ)";
-      } else {
-        dot.className = "dot";
-        txt.textContent = "En attente MQTT HiveMQ...";
-      }
+      powerWaterChart.update();
     }
-
-    client.on("connect", () => {
-      mqttConnected = true;
-      client.subscribe(topic, { qos: 0 });
-      refreshStatusPill();
-      ajouterLog("Connexion établie avec le broker HiveMQ (ESP32 / Wokwi).", "ok");
-    });
-
-    client.on("reconnect", () => {
-      mqttConnected = false;
-      refreshStatusPill();
-    });
-
-    client.on("offline", () => {
-      mqttConnected = false;
-      refreshStatusPill();
-    });
-
-    client.on("error", () => {
-      mqttConnected = false;
-      refreshStatusPill();
-    });
-
-    client.on("message", (t, message) => {
-      if (sourceMode !== "mqtt") return;
-      try {
-        const d = JSON.parse(message.toString());
-        appliquerDonneesSCADA(d);
-      } catch (e) {
-        console.error("Trame JSON invalide :", e);
-      }
-    });
-
-    // =========================================================
-    // 7. MODE SIMULATEUR HORS LIGNE (CHARGES + 5 SCÉNARIOS)
-    // =========================================================
-    const sim = {
-      timer: null,
-      sonabelPresent: true,
-      overloadFault: false,
-      overheatFault: false,
-      autoPumpActive: false,
-      loads: { led1: true, led2: true, fan: true, pump: false },
-      batt: 86,
-      eau: 68,
-      temp: 31.5
-    };
-
-    function syncSimulatorButtonsUI() {
-      const panel = document.getElementById("sim-panel");
-      const badge = document.getElementById("sim-state-badge");
-      const toggleBtn = document.getElementById("btn-toggle-sim-panel");
-      const btnMqtt = document.getElementById("btn-mode-mqtt");
-      const btnSim = document.getElementById("btn-mode-sim");
-      const isSim = sourceMode === "sim";
-
-      if (panel) panel.classList.toggle("is-sim-active", isSim);
-      if (badge) {
-        badge.textContent = isSim ? "SIMULATEUR ACTIF" : "VEILLE (ÉCOUTE MQTT)";
-        badge.className = "badge " + (isSim ? "bg-blue" : "bg-gray");
-      }
-      if (toggleBtn) toggleBtn.textContent = isSim ? "Revenir au direct MQTT" : "Activer le simulateur";
-      if (btnMqtt) btnMqtt.className = "mode-btn" + (!isSim ? " active" : "");
-      if (btnSim) btnSim.className = "mode-btn" + (isSim ? " sim-active" : "");
-
-      ["led1", "led2", "fan", "pump"].forEach(k => {
-        const el = document.getElementById("sw-" + k);
-        if (el) el.classList.toggle("on", !!sim.loads[k]);
-      });
-
-      const sum = document.getElementById("sim-live-summary");
-      if (sum) {
-        if (!isSim) {
-          sum.textContent = "En mode direct, le SCADA affiche les trames reçues de l'ESP32/Wokwi sur HiveMQ. Tout clic ci-dessus bascule instantanément sur le simulateur local.";
-        } else {
-          const actifs = [];
-          if (sim.loads.led1) actifs.push("LED #1");
-          if (sim.loads.led2) actifs.push("LED #2");
-          if (sim.loads.fan) actifs.push("Ventilateur");
-          if (sim.loads.pump) actifs.push("Pompe");
-          sum.textContent = `Simulation active — Charges engagées : ${actifs.length ? actifs.join(", ") : "aucune"} • Hystérésis Polytank active (30% → 85%).`;
-        }
-      }
-    }
-
-    function computeAndApplySimFrame(stepPhysics = false) {
-      if (stepPhysics) {
-        // Température progressive vers cible
-        const targetTemp = sim.overheatFault ? 68.5 : (30.5 + (sim.loads.led1 ? 0.6 : 0) + (sim.loads.led2 ? 0.6 : 0) + (sim.loads.fan ? 0.5 : 0));
-        sim.temp += (targetTemp - sim.temp) * 0.35;
-
-        // Dynamique batterie 3S (décharge douce sur Solaire, maintien/charge sous SONABEL)
-        if (!sim.sonabelPresent) {
-          sim.batt = Math.max(18, sim.batt - 0.35);
-        } else {
-          sim.batt = Math.min(96, sim.batt + 0.15);
-        }
-
-        // Hystérésis automatique Polytank (30% -> démarrage, 85% -> arrêt)
-        if (sim.eau < 30 && !sim.overloadFault && !sim.overheatFault) {
-          sim.autoPumpActive = true;
-          sim.loads.pump = true;
-        }
-        if (sim.loads.pump && !sim.overloadFault && !sim.overheatFault) {
-          sim.eau = Math.min(100, sim.eau + 4);
-          if (sim.autoPumpActive && sim.eau >= 85) {
-            sim.autoPumpActive = false;
-            sim.loads.pump = false;
-          }
-        }
-      }
-
-      const src = sim.sonabelPresent ? "SONABEL" : "SOLAIRE";
-      const vBase = sim.sonabelPresent ? 12.2 : (10.8 + (sim.batt / 100) * 1.6);
-      const v = +(vBase + (Math.random() - 0.5) * 0.08).toFixed(1);
-
-      let courantCharges = 0;
-      if (sim.loads.led1) courantCharges += 0.45;
-      if (sim.loads.led2) courantCharges += 0.45;
-      if (sim.loads.fan)  courantCharges += 0.35;
-      if (sim.loads.pump) courantCharges += 0.60;
-
-      const iMesure = sim.overloadFault ? 16.8 : +(courantCharges + (courantCharges > 0 ? (Math.random() - 0.5) * 0.04 : 0)).toFixed(2);
-      const disj = (!sim.overloadFault && !sim.overheatFault) ? 1 : 0;
-      const pompe = (disj === 1 && sim.loads.pump) ? 1 : 0;
-
-      syncSimulatorButtonsUI();
-      appliquerDonneesSCADA({
-        v,
-        i: iMesure,
-        t: +sim.temp.toFixed(1),
-        batt: Math.round(sim.batt),
-        eau: Math.round(sim.eau),
-        src,
-        disj,
-        pompe
-      });
-    }
-
-    function setSourceMode(mode) {
-      if (sourceMode === mode) return;
-      sourceMode = mode;
-      if (sim.timer) {
-        clearInterval(sim.timer);
-        sim.timer = null;
-      }
-      refreshStatusPill();
-      syncSimulatorButtonsUI();
-
-      if (mode === "sim") {
-        ajouterLog("Mode Simulateur hors ligne activé (démo sans matériel).", "ok");
-        computeAndApplySimFrame(false);
-        sim.timer = setInterval(() => computeAndApplySimFrame(true), 1200);
-      } else {
-        ajouterLog("Retour en mode Direct MQTT (écoute ESP32 / Wokwi).", "ok");
-      }
-    }
-
-    function toggleSimulatorMode() {
-      setSourceMode(sourceMode === "sim" ? "mqtt" : "sim");
-    }
-
-    function ensureSimActive() {
-      if (sourceMode !== "sim") setSourceMode("sim");
-    }
-
-    function toggleSimLoad(loadKey) {
-      ensureSimActive();
-      sim.loads[loadKey] = !sim.loads[loadKey];
-      if (loadKey === "pump") sim.autoPumpActive = false;
-      const labels = {
-        led1: "Lampe LED 12V #1",
-        led2: "Lampe LED 12V #2",
-        fan: "Mini Ventilateur 12V",
-        pump: "Mini Pompe Polytank"
-      };
-      ajouterLog(`[Simulateur] ${labels[loadKey]} : ${sim.loads[loadKey] ? "ACTIVÉE" : "COUPÉE"}.`, sim.loads[loadKey] ? "ok" : "");
-      computeAndApplySimFrame(false);
-    }
-
-    function triggerSimScenario(sc) {
-      ensureSimActive();
-      if (sc === "coupure") {
-        sim.sonabelPresent = false;
-        sim.overloadFault = false;
-        sim.overheatFault = false;
-        ajouterLog("[Simulateur] Coupure réseau SONABEL — bascule ATS automatique sur Solaire / Batterie 3S.", "warn");
-      } else if (sc === "surcharge") {
-        sim.overloadFault = true;
-        sim.loads.led1 = true;
-        sim.loads.led2 = true;
-        sim.loads.fan = true;
-        ajouterLog("[Simulateur] Pic de surcharge courant (16.8 A > 15 A) — ouverture disjoncteur Q1.", "err");
-      } else if (sc === "surchauffe") {
-        sim.overheatFault = true;
-        sim.temp = 68.4;
-        ajouterLog("[Simulateur] Surchauffe transformateur (68.4 °C > 60 °C) — mise en sécurité Q1.", "err");
-      } else if (sc === "vider") {
-        sim.overloadFault = false;
-        sim.overheatFault = false;
-        sim.eau = 22;
-        sim.autoPumpActive = true;
-        sim.loads.pump = true;
-        ajouterLog("[Simulateur] Niveau Polytank abaissé à 22% (< 30%) — démarrage automatique de la pompe jusqu'à 85%.", "warn");
-      } else if (sc === "reset") {
-        sim.sonabelPresent = true;
-        sim.overloadFault = false;
-        sim.overheatFault = false;
-        sim.autoPumpActive = false;
-        sim.loads = { led1: true, led2: true, fan: true, pump: false };
-        sim.batt = 86;
-        sim.eau = 68;
-        sim.temp = 31.5;
-        ajouterLog("[Simulateur] Réinitialisation complète en mode nominal (SONABEL 12.2V, Q1 fermé).", "ok");
-      }
-      computeAndApplySimFrame(false);
-    }
-
-    // Initialisation au chargement
-    initClubLogo();
-    refreshStatusPill();
-    syncSimulatorButtonsUI();
   </script>
 </body>
 </html>

@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Club U-AUBEN — Projet Smart Grid | Dossier Technique &amp; Maquette 3D</title>
   <meta name="description" content="Dossier technique complet du prototype Smart Grid &amp; Polytank 12V DC sur ESP32 (Club U-AUBEN) : planche de câblage interactive, nomenclature, maquette 3D cotée, spécifications électriques, code ESP32, protocole d'essais jury et supervision SCADA." />
+  <meta name="theme-color" content="#09090B" />
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="manifest" href="./manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
@@ -111,62 +115,32 @@
     }
 
     .club-logo-slot {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 10px;
       border: 1px solid var(--border-strong);
-      background: var(--ink);
+      background: #FFFFFF;
+      padding: 3px;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       flex-shrink: 0;
-      position: relative;
-      transition: border-color 0.2s var(--ease), transform 0.2s var(--ease);
-    }
-
-    .club-logo-slot:hover {
-      border-color: var(--ink);
-      transform: translateY(-1px);
+      box-shadow: var(--shadow-xs);
     }
 
     .club-logo-slot img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      background: #FFFFFF;
       display: block;
     }
-
-    .club-logo-fallback {
-      display: none;
-      width: 100%;
-      height: 100%;
-      align-items: center;
-      justify-content: center;
-      background: var(--ink);
-      color: var(--el-yellow);
-      font-family: var(--font-display);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-    }
-
-    .club-logo-slot.is-fallback img { display: none; }
-    .club-logo-slot.is-fallback .club-logo-fallback { display: flex; }
 
     .el-brand-text {
       display: flex;
       flex-direction: column;
       gap: 1px;
       min-width: 0;
-    }
-
-    .el-brand-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
     }
 
     .el-brand-name {
@@ -188,45 +162,27 @@
       text-overflow: ellipsis;
     }
 
-    .logo-actions {
-      display: inline-flex;
+    .header-actions {
+      display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
-    .logo-edit-btn {
-      border: 1px solid var(--border);
-      background: var(--surface-alt);
-      color: var(--ink-secondary);
-      font-family: var(--font-ui);
-      font-size: 10.5px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.16s var(--ease);
-    }
-
-    .logo-edit-btn:hover {
-      border-color: var(--ink);
-      color: var(--ink);
-      background: var(--surface);
-    }
-
-    .logo-reset-btn {
+    .btn-install-pwa {
       display: none;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: var(--muted);
-      font-family: var(--font-mono);
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 6px;
-      cursor: pointer;
+      background: var(--ink);
+      color: var(--surface);
+      border-color: var(--ink);
     }
 
-    .logo-reset-btn.visible { display: inline-flex; }
-    .logo-reset-btn:hover { color: var(--danger-ink); border-color: var(--danger-border); }
+    .btn-install-pwa:hover {
+      background: var(--el-yellow);
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
+    .btn-install-pwa.visible { display: inline-flex; }
 
     .el-nav-tabs {
       display: inline-flex;
@@ -1645,7 +1601,7 @@
     @media print {
       @page { size: A4 landscape; margin: 8mm; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      .el-nav-tabs, .el-btn-outline, .logo-actions, .filter-strip, .wizard-bar, .zoom-controls, .prod-go-btn, .site-footer, .controls-3d-bar, .conn-toolbar, .btn-primary-dark { display: none !important; }
+      .el-nav-tabs, .el-btn-outline, .btn-install-pwa, .filter-strip, .wizard-bar, .zoom-controls, .prod-go-btn, .site-footer, .controls-3d-bar, .conn-toolbar, .btn-primary-dark { display: none !important; }
       .el-header { position: static; background: #FFFFFF; }
       .workbench-grid { grid-template-columns: 1.75fr 1fr; padding: 8px 0; }
       .cirkit-viewport { height: 540px; }
@@ -1656,22 +1612,14 @@
 </head>
 <body>
   <div id="page-root">
-    <!-- EN-TÊTE STUDIO AVEC EMPLACEMENT LOGO DU CLUB -->
+    <!-- EN-TÊTE STUDIO AVEC LOGO OFFICIEL DU CLUB -->
     <header class="el-header">
       <div class="el-brand">
-        <div id="club-logo-slot" class="club-logo-slot" title="Logo Club U-AUBEN">
-          <img id="club-logo-img" src="./logo_club.png" alt="Logo Club U-AUBEN" onerror="handleClubLogoError()" />
-          <span class="club-logo-fallback" aria-hidden="true">UA</span>
+        <div class="club-logo-slot">
+          <img src="./logo_club.png" alt="Logo officiel Club U-AUBEN" />
         </div>
         <div class="el-brand-text">
-          <div class="el-brand-row">
-            <span class="el-brand-name">Club U-AUBEN — Projet Smart Grid</span>
-            <span class="logo-actions">
-              <button class="logo-edit-btn" type="button" onclick="triggerLogoUpload()">Changer le logo</button>
-              <button id="btn-reset-logo" class="logo-reset-btn" type="button" onclick="resetClubLogo()" title="Revenir à ./logo_club.png">Reset</button>
-              <input id="club-logo-input" type="file" accept="image/*" style="display:none;" onchange="handleLogoFileChange(event)" />
-            </span>
-          </div>
+          <span class="el-brand-name">Club U-AUBEN — Projet Smart Grid</span>
           <span class="el-brand-sub">Dossier technique 12V DC • Câblage ESP32, maquette 3D et supervision SCADA</span>
         </div>
       </div>
@@ -1689,7 +1637,10 @@
         <button class="el-tab" data-tab="scada" onclick="switchTab('scada')">Supervision SCADA</button>
       </nav>
 
-      <button class="el-btn-outline" type="button" onclick="window.print()">Exporter PDF</button>
+      <div class="header-actions">
+        <button id="btn-install-pwa" class="el-btn-outline btn-install-pwa" type="button" onclick="installPWA()">Installer l'application</button>
+        <button class="el-btn-outline" type="button" onclick="window.print()">Exporter PDF</button>
+      </div>
     </header>
 
     <!-- =========================================================
@@ -3052,64 +3003,36 @@
 
 
     // =========================================================
-    // GESTION DU LOGO DU CLUB (./logo_club.png + localStorage)
+    // PWA — SERVICE WORKER (MODE HORS LIGNE) & INSTALLATION
     // =========================================================
-    const LOGO_STORAGE_KEY = "uauben_club_logo_v1";
+    let deferredInstallPrompt = null;
 
-    function initClubLogo() {
-      const slot = document.getElementById("club-logo-slot");
-      const img = document.getElementById("club-logo-img");
-      const resetBtn = document.getElementById("btn-reset-logo");
-      if (!slot || !img) return;
-      let saved = null;
-      try { saved = localStorage.getItem(LOGO_STORAGE_KEY); } catch (e) {}
-      if (saved) {
-        slot.classList.remove("is-fallback");
-        img.src = saved;
-        if (resetBtn) resetBtn.classList.add("visible");
-      }
+    if ("serviceWorker" in navigator && (location.protocol === "https:" || location.protocol === "http:")) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
     }
 
-    function handleClubLogoError() {
-      const slot = document.getElementById("club-logo-slot");
-      if (slot) slot.classList.add("is-fallback");
-    }
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredInstallPrompt = e;
+      const btn = document.getElementById("btn-install-pwa");
+      if (btn) btn.classList.add("visible");
+    });
 
-    function triggerLogoUpload() {
-      const inp = document.getElementById("club-logo-input");
-      if (inp) inp.click();
-    }
+    window.addEventListener("appinstalled", () => {
+      deferredInstallPrompt = null;
+      const btn = document.getElementById("btn-install-pwa");
+      if (btn) btn.classList.remove("visible");
+    });
 
-    function handleLogoFileChange(evt) {
-      const file = evt.target.files && evt.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const dataUrl = e.target.result;
-        const slot = document.getElementById("club-logo-slot");
-        const img = document.getElementById("club-logo-img");
-        const resetBtn = document.getElementById("btn-reset-logo");
-        if (img && slot) {
-          slot.classList.remove("is-fallback");
-          img.src = dataUrl;
-        }
-        if (resetBtn) resetBtn.classList.add("visible");
-        try { localStorage.setItem(LOGO_STORAGE_KEY, dataUrl); } catch (err) {}
-      };
-      reader.readAsDataURL(file);
-      evt.target.value = "";
-    }
-
-    function resetClubLogo() {
-      try { localStorage.removeItem(LOGO_STORAGE_KEY); } catch (e) {}
-      const slot = document.getElementById("club-logo-slot");
-      const img = document.getElementById("club-logo-img");
-      const resetBtn = document.getElementById("btn-reset-logo");
-      if (resetBtn) resetBtn.classList.remove("visible");
-      if (slot && img) {
-        slot.classList.remove("is-fallback");
-        img.src = "./logo_club.png";
-      }
+    async function installPWA() {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      try { await deferredInstallPrompt.userChoice; } catch (e) {}
+      deferredInstallPrompt = null;
+      const btn = document.getElementById("btn-install-pwa");
+      if (btn) btn.classList.remove("visible");
     }
 
     // =========================================================
@@ -3855,9 +3778,10 @@
 const char* WIFI_SSID     = "VOTRE_WIFI_SSID";
 const char* WIFI_PASS     = "VOTRE_MOT_DE_PASSE";
 
-const char* MQTT_BROKER   = "broker.hivemq.com";
-const int   MQTT_PORT     = 1883;
-const char* MQTT_TOPIC    = "cge/uauben/david/smartgrid";
+const char* MQTT_BROKER    = "broker.hivemq.com";
+const int   MQTT_PORT      = 1883;
+const char* MQTT_TOPIC     = "cge/uauben/david/smartgrid";
+const char* MQTT_CMD_TOPIC = "cge/uauben/david/smartgrid/cmd";
 
 // -------------------- 2. DÉFINITION DES BROCHES GPIO -------------------
 #define PIN_I2C_SDA       21
@@ -3928,6 +3852,7 @@ int   eauPct         = 50;
 String sourceActive  = "COUPURE";
 bool   disjFerme     = true;
 bool   pompeActive   = false;
+bool   modeManuel    = false;
 
 unsigned long lastSensorMs    = 0;
 unsigned long lastMqttMs      = 0;
@@ -3970,40 +3895,42 @@ int lireNiveauPolytankPct() {
 
 // -------------------- 6. LOGIQUE ATS, PROTECTION & POMPE ---------------
 void appliquerSorties() {
-  String nouvelleSrc = "COUPURE";
-  if (vSonabel >= V_SONABEL_MIN) {
-    nouvelleSrc = "SONABEL";
-    vActive = vSonabel;
-  } else if (vBatterie >= V_BATT_MIN) {
-    nouvelleSrc = "SOLAIRE";
-    vActive = vBatterie;
-  } else {
-    nouvelleSrc = "COUPURE";
-    vActive = 0.0;
+  if (!modeManuel) {
+    String nouvelleSrc = "COUPURE";
+    if (vSonabel >= V_SONABEL_MIN) {
+      nouvelleSrc = "SONABEL";
+      vActive = vSonabel;
+    } else if (vBatterie >= V_BATT_MIN) {
+      nouvelleSrc = "SOLAIRE";
+      vActive = vBatterie;
+    } else {
+      nouvelleSrc = "COUPURE";
+      vActive = 0.0;
+    }
+
+    if (nouvelleSrc != sourceActive) {
+      // Sécurité Break-Before-Make : ouverture préalable des deux sources
+      digitalWrite(PIN_REL_SONABEL, RELAY_OFF);
+      digitalWrite(PIN_REL_SOLAIRE, RELAY_OFF);
+      delay(150);
+      sourceActive = nouvelleSrc;
+    }
+
+    digitalWrite(PIN_REL_SONABEL, (sourceActive == "SONABEL") ? RELAY_ON : RELAY_OFF);
+    digitalWrite(PIN_REL_SOLAIRE, (sourceActive == "SOLAIRE") ? RELAY_ON : RELAY_OFF);
+
+    bool defautCritique = (iCharge > I_MAX_SURCHARGE) || (tempTransfo > TEMP_MAX_CRIT) || (sourceActive == "COUPURE");
+    disjFerme = !defautCritique;
+    digitalWrite(PIN_REL_DISJ, disjFerme ? RELAY_ON : RELAY_OFF);
+
+    // Hystérésis Polytank : démarrage < 30%, arrêt >= 85%
+    if (eauPct < EAU_SEUIL_BAS && disjFerme) {
+      pompeActive = true;
+    } else if (eauPct >= EAU_SEUIL_HAUT || !disjFerme) {
+      pompeActive = false;
+    }
+    digitalWrite(PIN_REL_POMPE, pompeActive ? RELAY_ON : RELAY_OFF);
   }
-
-  if (nouvelleSrc != sourceActive) {
-    // Sécurité Break-Before-Make : ouverture préalable des deux sources
-    digitalWrite(PIN_REL_SONABEL, RELAY_OFF);
-    digitalWrite(PIN_REL_SOLAIRE, RELAY_OFF);
-    delay(150);
-    sourceActive = nouvelleSrc;
-  }
-
-  digitalWrite(PIN_REL_SONABEL, (sourceActive == "SONABEL") ? RELAY_ON : RELAY_OFF);
-  digitalWrite(PIN_REL_SOLAIRE, (sourceActive == "SOLAIRE") ? RELAY_ON : RELAY_OFF);
-
-  bool defautCritique = (iCharge > I_MAX_SURCHARGE) || (tempTransfo > TEMP_MAX_CRIT) || (sourceActive == "COUPURE");
-  disjFerme = !defautCritique;
-  digitalWrite(PIN_REL_DISJ, disjFerme ? RELAY_ON : RELAY_OFF);
-
-  // Hystérésis Polytank : démarrage < 30%, arrêt >= 85%
-  if (eauPct < EAU_SEUIL_BAS && disjFerme) {
-    pompeActive = true;
-  } else if (eauPct >= EAU_SEUIL_HAUT || !disjFerme) {
-    pompeActive = false;
-  }
-  digitalWrite(PIN_REL_POMPE, pompeActive ? RELAY_ON : RELAY_OFF);
 
   bool alarmeSonore = (!disjFerme) || (eauPct < EAU_SEUIL_BAS);
   digitalWrite(PIN_LED_VERT,  (disjFerme && sourceActive == "SONABEL") ? HIGH : LOW);
@@ -4026,7 +3953,38 @@ void majEcranLCD() {
   lcd.setCursor(0, 3); lcd.print(l4);
 }
 
-// -------------------- 8. WI-FI & PUBLICATION MQTT ----------------------
+// -------------------- 8. WI-FI, COMMANDE & PUBLICATION MQTT ------------
+void mqttCallback(char* topic, byte* payload, unsigned int len) {
+  String msg = "";
+  for (unsigned int i = 0; i < len; i++) msg += (char)payload[i];
+  Serial.println("[MQTT CMD] " + msg);
+
+  if (msg.indexOf("\"AUTO\"") >= 0) {
+    modeManuel = false;
+    return;
+  }
+
+  modeManuel = true;
+  bool on = (msg.indexOf("\"ON\"") >= 0);
+  if (msg.indexOf("\"IN1\"") >= 0) {
+    digitalWrite(PIN_REL_SOLAIRE, RELAY_OFF);
+    delay(150);
+    digitalWrite(PIN_REL_SONABEL, on ? RELAY_ON : RELAY_OFF);
+    sourceActive = on ? "SONABEL" : "COUPURE";
+  } else if (msg.indexOf("\"IN2\"") >= 0) {
+    digitalWrite(PIN_REL_SONABEL, RELAY_OFF);
+    delay(150);
+    digitalWrite(PIN_REL_SOLAIRE, on ? RELAY_ON : RELAY_OFF);
+    sourceActive = on ? "SOLAIRE" : "COUPURE";
+  } else if (msg.indexOf("\"IN3\"") >= 0) {
+    disjFerme = on;
+    digitalWrite(PIN_REL_DISJ, on ? RELAY_ON : RELAY_OFF);
+  } else if (msg.indexOf("\"IN4\"") >= 0) {
+    pompeActive = on;
+    digitalWrite(PIN_REL_POMPE, on ? RELAY_ON : RELAY_OFF);
+  }
+}
+
 void connecterWiFi() {
   if (WiFi.status() == WL_CONNECTED) return;
   WiFi.mode(WIFI_STA);
@@ -4039,7 +3997,8 @@ void verifierMQTT() {
     lastReconnectMs = millis();
     String clientId = "ESP32-UAUBEN-" + String((uint32_t)ESP.getEfuseMac(), HEX);
     if (mqtt.connect(clientId.c_str())) {
-      Serial.println("[MQTT] Connecte au broker HiveMQ.");
+      mqtt.subscribe(MQTT_CMD_TOPIC);
+      Serial.println("[MQTT] Connecte au broker HiveMQ (RX+TX).");
     }
   }
 }
@@ -4093,6 +4052,7 @@ void setup() {
 
   connecterWiFi();
   mqtt.setServer(MQTT_BROKER, MQTT_PORT);
+  mqtt.setCallback(mqttCallback);
   lcd.clear();
 }
 
@@ -5327,7 +5287,6 @@ void loop() {
     }
 
     // Initialisation globale
-    initClubLogo();
     buildCirkitSVG();
     renderQuickPins();
     renderInspector("esp32");

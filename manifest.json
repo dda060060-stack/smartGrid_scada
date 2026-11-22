@@ -1,0 +1,32 @@
+{
+  "name": "Club U-AUBEN — Smart Grid",
+  "short_name": "Smart Grid",
+  "description": "Dossier technique, planche de câblage interactive, maquette 3D cotée et supervision SCADA temps réel du prototype Smart Grid & Polytank (Club U-AUBEN).",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FAFAFA",
+  "theme_color": "#09090B",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./logo_club.png",
+      "sizes": "207x219",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
