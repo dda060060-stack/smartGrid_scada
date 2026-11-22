@@ -2398,7 +2398,8 @@
     }
 
     async function sendWhatsAppMessage(msg, isTest = false) {
-      const phone = alertConfig.waPhone.trim();
+      const rawPhone = alertConfig.waPhone.trim();
+      const phone = rawPhone.replace(/\+/g, "").replace(/\s+/g, "");
       const apikey = alertConfig.waApiKey.trim();
       if (!phone || !apikey) {
         setChannelStatus("wa", "Numéro WhatsApp ou clé API manquant", "err");
@@ -2410,27 +2411,14 @@
       setChannelStatus("wa", "Envoi vers TextMeBot…", "warn");
 
       try {
-        const resp = await fetch(url, { method: "GET" });
-        if (resp.ok) {
-          setChannelStatus("wa", `${isTest ? "Test envoyé" : "Alerte envoyée"} (${new Date().toLocaleTimeString()})`, "ok");
-          ajouterLog(`WhatsApp (TextMeBot) envoyé vers ${phone}${isTest ? " [TEST]" : ""}.`, "ok");
-          return true;
-        }
-        setChannelStatus("wa", `Erreur HTTP ${resp.status}`, "err");
-        ajouterLog(`Erreur WhatsApp TextMeBot (HTTP ${resp.status}).`, "err");
-        return false;
+        await fetch(url, { method: "GET", mode: "no-cors" });
+        setChannelStatus("wa", `Transmise à TextMeBot (${new Date().toLocaleTimeString()})`, "ok");
+        ajouterLog(`Alerte WhatsApp transmise à TextMeBot${isTest ? " [TEST]" : ""} (${phone}).`, "ok");
+        return true;
       } catch (err) {
-        // Repli no-cors si TextMeBot n'expose pas d'en-tête CORS au navigateur
-        try {
-          await fetch(url, { method: "GET", mode: "no-cors" });
-          setChannelStatus("wa", `${isTest ? "Test transmis" : "Alerte transmise"} (${new Date().toLocaleTimeString()})`, "ok");
-          ajouterLog(`WhatsApp (TextMeBot) transmis vers ${phone}${isTest ? " [TEST]" : ""}.`, "ok");
-          return true;
-        } catch (err2) {
-          setChannelStatus("wa", "Échec réseau TextMeBot", "err");
-          ajouterLog("Échec réseau lors de l'envoi WhatsApp TextMeBot.", "err");
-          return false;
-        }
+        setChannelStatus("wa", "Échec réseau TextMeBot", "err");
+        ajouterLog("Échec réseau lors de l'envoi WhatsApp TextMeBot.", "err");
+        return false;
       }
     }
 
