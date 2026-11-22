@@ -234,6 +234,37 @@
       color: var(--ink);
     }
 
+    .el-nav-sep {
+      width: 1px;
+      height: 18px;
+      background: var(--border-strong);
+      margin: 0 4px;
+      flex-shrink: 0;
+    }
+
+    .el-tab-link {
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 11px;
+      border-radius: 9px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: background-color 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
+    }
+
+    .el-tab-link:hover {
+      background: var(--el-yellow);
+      color: var(--ink);
+      border-color: var(--ink);
+    }
+
     .el-btn-outline {
       background: var(--surface);
       color: var(--ink);
@@ -1575,9 +1606,12 @@
       font-weight: 600;
       cursor: pointer;
       padding: 3px 0;
+      text-decoration: none;
       border-bottom: 1px solid transparent;
       transition: color 0.15s ease, border-color 0.15s ease;
     }
+
+    .footer-link-ext { color: var(--el-yellow); }
 
     .footer-link:hover { color: var(--el-yellow); border-bottom-color: var(--el-yellow); }
 
@@ -1588,6 +1622,7 @@
 
     @media (max-width: 760px) {
       .el-header { padding: 10px 14px; }
+      .el-nav-sep { display: none; }
       .section-wrap, .gallery-wrap, .workbench-grid { padding: 14px; }
       .workshop-notes { padding: 0 14px; }
       .wizard-bar { margin: 12px 14px 0; }
@@ -1635,6 +1670,9 @@
         <button class="el-tab" data-tab="code" onclick="switchTab('code')">Code ESP32</button>
         <button class="el-tab" data-tab="defauts" onclick="switchTab('defauts')">Simulation Défauts</button>
         <button class="el-tab" data-tab="scada" onclick="switchTab('scada')">Supervision SCADA</button>
+        <span class="el-nav-sep" aria-hidden="true"></span>
+        <a class="el-tab-link" href="./demo_3d_smartgrid.html">Démo 3D Jury →</a>
+        <a class="el-tab-link" href="./motion_9_16.html">Motion 9:16 →</a>
       </nav>
 
       <div class="header-actions">
@@ -2177,6 +2215,8 @@
           <button class="footer-link" type="button" onclick="switchTab('code'); window.scrollTo({top:0, behavior:'smooth'});">Code ESP32</button>
           <button class="footer-link" type="button" onclick="switchTab('defauts'); window.scrollTo({top:0, behavior:'smooth'});">Simulation Défauts</button>
           <button class="footer-link" type="button" onclick="switchTab('scada'); window.scrollTo({top:0, behavior:'smooth'});">SCADA</button>
+          <a class="footer-link footer-link-ext" href="./demo_3d_smartgrid.html">Démo 3D Jury →</a>
+          <a class="footer-link footer-link-ext" href="./motion_9_16.html">Motion 9:16 →</a>
           <button class="footer-link" type="button" onclick="window.print()">Imprimer</button>
         </nav>
       </div>
