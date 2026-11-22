@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>CGE-U-AUBEN — Pitch Motion 9:16 | Smart Grid Solaire &amp; Polytank</title>
-  <meta name="description" content="Pitch vidéo vertical 9:16 de 2 minutes avec voix off française : Smart Grid hybride SONABEL / Solaire 12V DC et supervision automatisée de Polytank, par le Club de Génie Électrique CGE-U-AUBEN." />
+  <title>Club du Génie Électrique — Aube Nouvelle Ouaga | Pitch Motion 9:16 Smart Grid &amp; Polytank</title>
+  <meta name="description" content="Pitch motion design vertical 9:16 avec voix neurale française, aperçus réels de la maquette 3D et du Web SCADA, et téléchargement MP4 : Smart Grid hybride 12V DC &amp; Polytank — Club du Génie Électrique Aube Nouvelle Ouaga." />
   <meta name="theme-color" content="#07080A" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
@@ -54,8 +54,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 14px;
-      padding: 14px 12px calc(14px + env(safe-area-inset-bottom));
+      gap: 12px;
+      padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
       background:
         radial-gradient(900px 600px at 50% -10%, rgba(234, 179, 8, 0.06), transparent 60%),
         var(--bg);
@@ -108,7 +108,7 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      opacity: 0.07;
+      opacity: 0.06;
       mix-blend-mode: overlay;
       z-index: 2;
     }
@@ -117,6 +117,13 @@
     .frame.paused *::before,
     .frame.paused *::after {
       animation-play-state: paused !important;
+    }
+
+    /* Mode rendu vidéo déterministe (désactive transitions lentes lors du capture frame-par-frame) */
+    .frame.rec-mode .scene,
+    .frame.rec-mode .rv,
+    .frame.rec-mode .subs-box {
+      transition: none !important;
     }
 
     /* Segments de progression type "stories" */
@@ -149,7 +156,7 @@
     /* En-tête dans le cadre */
     .frame-head {
       position: absolute;
-      top: 84px;
+      top: 82px;
       left: 60px;
       right: 60px;
       display: flex;
@@ -162,14 +169,14 @@
     .fh-brand {
       display: flex;
       align-items: center;
-      gap: 22px;
+      gap: 20px;
       min-width: 0;
     }
 
     .fh-logo {
-      width: 96px;
-      height: 96px;
-      border-radius: 24px;
+      width: 92px;
+      height: 92px;
+      border-radius: 22px;
       background: #FFFFFF;
       padding: 7px;
       flex-shrink: 0;
@@ -180,25 +187,24 @@
 
     .fh-name {
       font-family: var(--font-display);
-      font-size: 40px;
+      font-size: 36px;
       font-weight: 700;
       letter-spacing: -0.02em;
-      line-height: 1.05;
+      line-height: 1.08;
     }
 
     .fh-sub {
-      font-size: 23px;
+      font-size: 22px;
       color: var(--muted);
       font-weight: 500;
-      margin-top: 6px;
-      letter-spacing: 0.005em;
+      margin-top: 5px;
     }
 
     .fh-right { text-align: right; flex-shrink: 0; }
 
     .fh-count {
       font-family: var(--font-mono);
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 600;
       color: var(--ink);
     }
@@ -206,9 +212,9 @@
     .fh-count em { font-style: normal; color: var(--dim); }
 
     .fh-tag {
-      margin-top: 6px;
+      margin-top: 5px;
       font-family: var(--font-mono);
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 600;
       letter-spacing: 0.1em;
       color: var(--accent);
@@ -222,47 +228,129 @@
       z-index: 10;
       opacity: 0;
       visibility: hidden;
-      transform: translateY(36px) scale(0.985);
-      transition: opacity 0.6s ease, transform 0.9s var(--ease), visibility 0s linear 0.6s;
+      transform: translateY(28px) scale(0.988);
+      transition: opacity 0.45s ease, transform 0.7s var(--ease), visibility 0s linear 0.45s;
     }
 
     .scene.active {
       opacity: 1;
       visibility: visible;
       transform: none;
-      transition: opacity 0.6s ease, transform 0.9s var(--ease), visibility 0s;
+      transition: opacity 0.45s ease, transform 0.7s var(--ease), visibility 0s;
     }
 
     .scene-body {
       position: absolute;
       left: 0;
       right: 0;
-      top: 232px;
-      height: 1260px;
+      top: 222px;
+      height: 1270px;
     }
 
     .scene-body > svg { position: absolute; left: 0; width: 1080px; overflow: visible; }
 
-    /* Révélations temporelles génériques (data-at / data-out) */
+    /* Révélations temporelles (data-at / data-out) */
     .rv {
       opacity: 0;
-      transform: translateY(22px);
-      transition: opacity 0.55s ease, transform 0.75s var(--ease);
+      transform: translateY(20px);
+      transition: opacity 0.45s ease, transform 0.65s var(--ease);
       transform-box: fill-box;
       transform-origin: center;
     }
 
-    .rv.pop { transform: scale(0.82); }
-    .rv.left { transform: translateX(-30px); }
+    .rv.pop { transform: scale(0.86); }
+    .rv.left { transform: translateX(-26px); }
     .rv.fade { transform: none; }
-
     .rv.on { opacity: 1; transform: none; }
+
+    /* Cadre vitré studio pour vrais aperçus 3D & SCADA */
+    .media-stage {
+      position: absolute;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #0B0D12;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      box-shadow:
+        0 26px 60px -22px rgba(0, 0, 0, 0.88),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    .media-stage img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .media-stage::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, rgba(8, 9, 12, 0.08) 0%, rgba(8, 9, 12, 0) 45%, rgba(8, 9, 12, 0.62) 100%);
+    }
+
+    .media-badge {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      z-index: 3;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(9, 9, 11, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
+      font-family: var(--font-mono);
+      font-size: 19px;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.05em;
+    }
+
+    .media-badge .mb-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    .media-badge.green .mb-dot {
+      background: var(--green);
+      box-shadow: 0 0 12px var(--green);
+    }
+
+    .media-caption {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 16px;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: #F4F4F5;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .media-caption span:last-child {
+      color: var(--accent);
+    }
 
     /* Typo de scène */
     .s-head {
       position: absolute;
-      left: 72px;
-      right: 72px;
+      left: 64px;
+      right: 64px;
       top: 0;
     }
 
@@ -270,54 +358,53 @@
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      padding: 10px 20px;
+      padding: 9px 18px;
       border-radius: 12px;
       background: var(--accent);
       color: #09090B;
       font-family: var(--font-mono);
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 700;
       letter-spacing: 0.08em;
     }
 
     .s-title {
-      margin-top: 18px;
+      margin-top: 14px;
       font-family: var(--font-display);
-      font-size: 70px;
+      font-size: 66px;
       font-weight: 700;
       line-height: 1.02;
       letter-spacing: -0.03em;
     }
 
     .s-sub {
-      margin-top: 12px;
-      font-size: 28px;
+      margin-top: 10px;
+      font-size: 26px;
       color: var(--muted);
       font-weight: 500;
-      letter-spacing: 0.002em;
     }
 
     .kicker {
       font-family: var(--font-mono);
-      font-size: 26px;
+      font-size: 25px;
       font-weight: 600;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.11em;
       text-transform: uppercase;
       color: var(--accent);
     }
 
     .banner {
       position: absolute;
-      left: 72px;
-      right: 72px;
-      height: 84px;
+      left: 64px;
+      right: 64px;
+      height: 80px;
       border-radius: 18px;
       display: flex;
       align-items: center;
       gap: 18px;
-      padding: 0 28px;
+      padding: 0 26px;
       font-family: var(--font-mono);
-      font-size: 27px;
+      font-size: 26px;
       font-weight: 600;
       letter-spacing: 0.02em;
       border: 1px solid var(--line-strong);
@@ -338,21 +425,17 @@
     .banner.bad { color: #FCA5A5; border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.14); }
     .banner.neutral { color: var(--ink-2); }
 
-    .banner.blink .dot { animation: blink 0.6s steps(2, start) infinite; }
-
-    @keyframes blink { to { visibility: hidden; } }
-
     /* Éléments SVG communs */
     svg text { font-family: var(--font-ui); }
 
-    .nbox { fill: #13151B; stroke: rgba(255, 255, 255, 0.11); stroke-width: 2; }
-    .nbox.hl { stroke: rgba(234, 179, 8, 0.7); stroke-width: 3; }
-    .nt { font-family: var(--font-display); font-size: 36px; font-weight: 700; fill: var(--ink); letter-spacing: -0.01em; }
-    .ns { font-size: 23px; font-weight: 500; fill: var(--muted); }
-    .nm { font-family: var(--font-mono); font-size: 22px; font-weight: 600; fill: var(--accent); }
-    .lbl { font-family: var(--font-mono); font-size: 21px; font-weight: 600; fill: var(--muted); letter-spacing: 0.06em; }
+    .nbox { fill: #13151B; stroke: rgba(255, 255, 255, 0.12); stroke-width: 2; }
+    .nbox.hl { stroke: rgba(234, 179, 8, 0.72); stroke-width: 3; }
+    .nt { font-family: var(--font-display); font-size: 34px; font-weight: 700; fill: var(--ink); letter-spacing: -0.01em; }
+    .ns { font-size: 22px; font-weight: 500; fill: var(--muted); }
+    .nm { font-family: var(--font-mono); font-size: 21px; font-weight: 600; fill: var(--accent); }
+    .lbl { font-family: var(--font-mono); font-size: 20px; font-weight: 600; fill: var(--muted); letter-spacing: 0.06em; }
 
-    .wire { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+    .wire { fill: none; stroke: rgba(255, 255, 255, 0.11); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
 
     .flow {
       fill: none;
@@ -360,14 +443,11 @@
       stroke-linecap: round;
       stroke-linejoin: round;
       stroke-dasharray: 16 24;
-      animation: flow 0.9s linear infinite;
       opacity: 0;
-      transition: opacity 0.35s ease;
+      transition: opacity 0.25s ease;
     }
 
     .flow.on { opacity: 1; }
-
-    @keyframes flow { to { stroke-dashoffset: -40; } }
 
     .c-red { stroke: var(--red); }
     .c-amber { stroke: var(--amber); }
@@ -376,12 +456,12 @@
     .c-green { stroke: var(--green); }
     .c-yellow { stroke: var(--accent); }
 
-    .bulb { fill: #2A2D35; stroke: rgba(255, 255, 255, 0.16); stroke-width: 3; transition: fill 0.18s ease; }
+    .bulb { fill: #2A2D35; stroke: rgba(255, 255, 255, 0.16); stroke-width: 3; }
     .bulb.lit { fill: #FEF3C7; }
-    .glow { opacity: 0; transition: opacity 0.18s ease; }
+    .glow { opacity: 0; }
     .glow.lit { opacity: 1; }
 
-    .lamp { fill: #24262D; transition: fill 0.12s ease; }
+    .lamp { fill: #24262D; }
     .lamp.g.on { fill: var(--green); filter: drop-shadow(0 0 16px rgba(34, 197, 94, 0.9)); }
     .lamp.y.on { fill: #FACC15; filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.9)); }
     .lamp.r.on { fill: var(--red); filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.95)); }
@@ -391,17 +471,6 @@
       stroke: var(--red);
       stroke-width: 5;
       opacity: 0;
-      transform-box: fill-box;
-      transform-origin: center;
-    }
-
-    .buzz.on .bwave { animation: bwave 1.1s ease-out infinite; }
-    .buzz.on .bwave:nth-child(2) { animation-delay: 0.36s; }
-    .buzz.on .bwave:nth-child(3) { animation-delay: 0.72s; }
-
-    @keyframes bwave {
-      0% { transform: scale(0.55); opacity: 0.95; }
-      100% { transform: scale(1.75); opacity: 0; }
     }
 
     .chip-g rect { fill: rgba(255, 255, 255, 0.05); stroke: rgba(255, 255, 255, 0.14); stroke-width: 2; }
@@ -413,49 +482,49 @@
     .chip-g.warn rect { fill: rgba(245, 158, 11, 0.12); stroke: rgba(245, 158, 11, 0.5); }
     .chip-g.warn text { fill: #FCD34D; }
 
-    .panel-r { fill: #0F1116; stroke: rgba(255, 255, 255, 0.1); stroke-width: 2; }
+    .panel-r { fill: #0F1116; stroke: rgba(255, 255, 255, 0.11); stroke-width: 2; }
     .gridl { stroke: rgba(255, 255, 255, 0.08); stroke-width: 2; stroke-dasharray: 6 10; }
     .thr { stroke: var(--red); stroke-width: 3; stroke-dasharray: 14 10; }
     .trace { fill: none; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
 
     /* =========================================================
-       2. SCÈNE 1 — ACCROCHE
+       2. SCÈNE 1 — ACCROCHE + VRAI APERÇU MAQUETTE 3D ATELIER
        ========================================================= */
-    .s1-block { position: absolute; left: 72px; right: 72px; top: 40px; }
+    .s1-block { position: absolute; left: 64px; right: 64px; top: 18px; }
 
-    .pcards { display: flex; flex-direction: column; gap: 28px; margin-top: 40px; }
+    .pcards { display: flex; flex-direction: column; gap: 26px; margin-top: 34px; }
 
     .pcard {
       display: flex;
       align-items: center;
-      gap: 32px;
-      padding: 34px 36px;
-      border-radius: 30px;
-      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+      gap: 30px;
+      padding: 32px 34px;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.02));
       border: 1px solid var(--line);
       box-shadow: 0 20px 40px -24px rgba(0, 0, 0, 0.8);
     }
 
     .pc-ico {
-      width: 108px;
-      height: 108px;
-      border-radius: 26px;
+      width: 102px;
+      height: 102px;
+      border-radius: 24px;
       display: grid;
       place-items: center;
       flex-shrink: 0;
     }
 
-    .pc-ico svg { width: 58px; height: 58px; }
+    .pc-ico svg { width: 54px; height: 54px; }
     .pc-ico.red { background: rgba(239, 68, 68, 0.14); color: var(--red); }
     .pc-ico.cyan { background: rgba(34, 211, 238, 0.12); color: var(--cyan); }
 
-    .pc-title { font-family: var(--font-display); font-size: 54px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; }
-    .pc-desc { font-size: 28px; color: var(--muted); margin-top: 8px; }
+    .pc-title { font-family: var(--font-display); font-size: 50px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; }
+    .pc-desc { font-size: 26px; color: var(--muted); margin-top: 8px; }
 
     .mega {
-      margin-top: 26px;
+      margin-top: 18px;
       font-family: var(--font-display);
-      font-size: 136px;
+      font-size: 112px;
       font-weight: 700;
       line-height: 0.98;
       letter-spacing: -0.04em;
@@ -465,48 +534,79 @@
     .mega .accent { color: var(--accent); }
 
     .mega-sig {
-      margin-top: 26px;
+      margin-top: 18px;
       font-family: var(--font-mono);
-      font-size: 38px;
+      font-size: 28px;
       font-weight: 600;
       color: var(--ink-2);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
     }
 
-    .lead { margin-top: 30px; font-size: 32px; line-height: 1.45; color: var(--ink-2); max-width: 900px; }
-
-    .pills { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+    .pills { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
 
     .pill {
-      padding: 12px 22px;
+      padding: 10px 20px;
       border-radius: 999px;
       border: 1px solid var(--line-strong);
       font-family: var(--font-mono);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 600;
       color: var(--ink-2);
-      background: rgba(255, 255, 255, 0.03);
+      background: rgba(255, 255, 255, 0.04);
     }
 
-    .win { fill: #1D2028; transition: fill 0.25s ease; }
+    .win { fill: #1D2028; }
     .win.lit { fill: #FACC15; }
     .bldg { fill: #111319; stroke: rgba(255, 255, 255, 0.06); stroke-width: 2; }
 
     /* =========================================================
-       3. SCÈNES 4 / 5 — RELEVÉS
+       3. SCÈNE 2 — ARCHITECTURE 12V + VUE INTERNE 3D + 4 CAPTEURS
+       ========================================================= */
+    .s2-sensors {
+      position: absolute;
+      left: 60px;
+      right: 60px;
+      top: 1015px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .s2-card {
+      padding: 18px 22px;
+      border-radius: 20px;
+      background: #13151B;
+      border: 1px solid var(--line-strong);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .s2-card.lit {
+      border-color: rgba(234, 179, 8, 0.82);
+      background: rgba(234, 179, 8, 0.11);
+      box-shadow: 0 0 28px -10px rgba(234, 179, 8, 0.55);
+    }
+
+    .s2-card-title { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--ink); }
+    .s2-card-sub { font-family: var(--font-mono); font-size: 19px; color: var(--accent); font-weight: 600; margin-top: 3px; }
+    .s2-dot { width: 14px; height: 14px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 12px var(--cyan); flex-shrink: 0; }
+
+    /* =========================================================
+       4. SCÈNES 4 / 5 — RELEVÉS
        ========================================================= */
     .readout {
       position: absolute;
-      left: 72px;
+      left: 64px;
       font-family: var(--font-mono);
       font-weight: 700;
       letter-spacing: -0.02em;
-      transition: color 0.2s ease;
     }
 
     .readout small {
       display: block;
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 600;
       color: var(--muted);
       letter-spacing: 0.06em;
@@ -517,7 +617,7 @@
 
     .side-chips {
       position: absolute;
-      right: 72px;
+      right: 64px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -537,120 +637,153 @@
     }
 
     .hchip.bad { color: #FCA5A5; border-color: rgba(239, 68, 68, 0.5); background: rgba(239, 68, 68, 0.12); }
-    .hchip.ok { color: #86EFAC; border-color: rgba(34, 197, 94, 0.45); background: rgba(34, 197, 94, 0.1); }
 
     /* =========================================================
-       4. SCÈNE 6 — SCADA
+       5. SCÈNE 6 — POLYTANK + VRAI WEB SCADA
        ========================================================= */
-    .scada-card {
+    .scada-real-wrap {
       position: absolute;
       left: 60px;
       right: 60px;
-      top: 850px;
-      height: 400px;
-      border-radius: 30px;
-      background: linear-gradient(180deg, #11131A, #0C0D12);
-      border: 1px solid var(--line-strong);
-      padding: 28px 32px;
-      box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.9);
+      top: 744px;
+      height: 516px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #0F1117;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: 0 30px 64px -26px rgba(0, 0, 0, 0.92);
       display: flex;
       flex-direction: column;
-      gap: 14px;
     }
 
-    .sc-top { display: flex; align-items: center; justify-content: space-between; }
+    .scada-bar {
+      padding: 16px 24px;
+      background: #12151D;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-shrink: 0;
+    }
 
     .sc-title {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       font-family: var(--font-display);
-      font-size: 32px;
+      font-size: 27px;
       font-weight: 700;
     }
 
     .live-dot {
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: var(--green);
-      box-shadow: 0 0 16px var(--green);
-      animation: pulse 1.4s ease-in-out infinite;
+      box-shadow: 0 0 14px var(--green);
     }
 
-    @keyframes pulse { 50% { opacity: 0.35; } }
-
-    .sc-live { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: #86EFAC; letter-spacing: 0.1em; }
-    .sc-topic { font-family: var(--font-mono); font-size: 23px; color: var(--accent); font-weight: 600; }
-
-    .sc-json {
+    .sc-live {
       font-family: var(--font-mono);
-      font-size: 23px;
-      line-height: 1.45;
-      color: #A5F3FC;
-      background: rgba(0, 0, 0, 0.35);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px 18px;
-      white-space: pre-wrap;
-      word-break: break-word;
-      min-height: 110px;
+      font-size: 19px;
+      font-weight: 700;
+      color: #86EFAC;
+      letter-spacing: 0.06em;
     }
 
-    .sc-spark { flex: 1; min-height: 0; }
-    .sc-spark svg { width: 100%; height: 100%; display: block; }
+    .scada-shot {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    .scada-shot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      transform-origin: center top;
+    }
+
+    .scada-telemetry-foot {
+      padding: 12px 22px;
+      background: #0B0D12;
+      border-top: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 20px;
+      color: #A5F3FC;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex-shrink: 0;
+    }
 
     /* =========================================================
-       5. SCÈNE 7 — CONCLUSION
+       6. SCÈNE 7 — CONCLUSION
        ========================================================= */
-    .s7 { position: absolute; left: 72px; right: 72px; top: 30px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .s7 { position: absolute; left: 64px; right: 64px; top: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
 
-    .logo-stage { position: relative; width: 380px; height: 380px; display: grid; place-items: center; }
+    .logo-stage { position: relative; width: 356px; height: 356px; display: grid; place-items: center; }
 
     .logo-ring {
       position: absolute;
       inset: 0;
       border-radius: 50%;
-      border: 3px dashed rgba(234, 179, 8, 0.55);
-      animation: spin 18s linear infinite;
+      border: 3px dashed rgba(234, 179, 8, 0.6);
     }
 
-    .logo-ring.r2 { inset: 26px; border: 2px solid rgba(255, 255, 255, 0.08); animation: none; }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
+    .logo-ring.r2 { inset: 24px; border: 2px solid rgba(255, 255, 255, 0.09); }
 
     .logo-disc {
-      width: 270px;
-      height: 270px;
+      width: 256px;
+      height: 256px;
       border-radius: 50%;
       background: #FFFFFF;
-      padding: 26px;
+      padding: 24px;
       box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.04), 0 30px 70px rgba(0, 0, 0, 0.6);
     }
 
     .logo-disc img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
-    .s7-name { margin-top: 34px; font-family: var(--font-display); font-size: 104px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
-    .s7-sub { margin-top: 16px; font-size: 30px; color: var(--muted); }
+    .s7-name {
+      margin-top: 28px;
+      font-family: var(--font-display);
+      font-size: 62px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.06;
+    }
 
-    .checks { margin-top: 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; width: 100%; }
+    .s7-sub {
+      margin-top: 12px;
+      font-family: var(--font-mono);
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+
+    .checks { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%; }
 
     .check {
       display: flex;
       align-items: center;
-      gap: 18px;
-      padding: 22px 24px;
+      gap: 16px;
+      padding: 20px 22px;
       border-radius: 20px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--line);
-      font-size: 30px;
+      font-size: 29px;
       font-weight: 600;
       text-align: left;
     }
 
     .check i {
-      width: 48px;
-      height: 48px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       background: var(--accent);
       color: #09090B;
@@ -660,17 +793,17 @@
       font-style: normal;
     }
 
-    .check i svg { width: 26px; height: 26px; }
+    .check i svg { width: 25px; height: 25px; }
 
     .mention {
-      margin-top: 40px;
+      margin-top: 34px;
       width: 100%;
-      padding: 30px 34px;
+      padding: 28px 32px;
       border-radius: 22px;
       background: var(--accent-soft);
       border-left: 8px solid var(--accent);
       font-family: var(--font-display);
-      font-size: 40px;
+      font-size: 38px;
       font-weight: 700;
       line-height: 1.2;
       letter-spacing: -0.015em;
@@ -678,13 +811,13 @@
     }
 
     .cta {
-      margin-top: 36px;
-      padding: 24px 44px;
+      margin-top: 32px;
+      padding: 22px 40px;
       border-radius: 999px;
       background: var(--accent);
       color: #09090B;
       font-family: var(--font-display);
-      font-size: 38px;
+      font-size: 34px;
       font-weight: 700;
       letter-spacing: -0.01em;
     }
@@ -692,9 +825,9 @@
     /* Sous-titres & signature */
     .subs {
       position: absolute;
-      left: 70px;
-      right: 70px;
-      bottom: 150px;
+      left: 60px;
+      right: 60px;
+      bottom: 138px;
       height: 230px;
       display: flex;
       align-items: flex-end;
@@ -704,53 +837,55 @@
     }
 
     .subs-box {
-      max-width: 940px;
-      padding: 22px 32px;
+      max-width: 960px;
+      padding: 20px 30px;
       border-radius: 22px;
-      background: rgba(5, 6, 8, 0.72);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(5, 6, 8, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      font-size: 44px;
+      font-size: 40px;
       font-weight: 600;
       line-height: 1.3;
       text-align: center;
       letter-spacing: -0.005em;
       opacity: 0;
       transform: translateY(14px);
-      transition: opacity 0.3s ease, transform 0.45s var(--ease);
+      transition: opacity 0.25s ease, transform 0.35s var(--ease);
     }
 
     .subs-box.show { opacity: 1; transform: none; }
 
     .signature {
       position: absolute;
-      left: 60px;
-      right: 60px;
-      bottom: 62px;
+      left: 56px;
+      right: 56px;
+      bottom: 58px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 18px;
+      gap: 16px;
       z-index: 25;
       font-family: var(--font-mono);
-      font-size: 23px;
+      font-size: 22px;
       font-weight: 600;
       color: var(--muted);
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
+      text-align: center;
     }
 
     .signature::before {
       content: "";
-      width: 36px;
+      width: 32px;
       height: 6px;
       border-radius: 3px;
       background: var(--accent);
+      flex-shrink: 0;
     }
 
     .signature b { color: var(--ink); font-weight: 700; }
 
-    /* Écran d'accueil (clic utilisateur requis pour la voix) */
+    /* Écran d'accueil */
     .intro {
       position: absolute;
       inset: 0;
@@ -759,26 +894,26 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 36px;
+      gap: 32px;
       text-align: center;
-      padding: 0 90px;
-      background: rgba(7, 8, 10, 0.78);
+      padding: 0 84px;
+      background: rgba(7, 8, 10, 0.82);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+      transition: opacity 0.45s ease, visibility 0s linear 0.45s;
     }
 
     .intro.hidden { opacity: 0; visibility: hidden; }
 
-    .intro-logo { width: 190px; height: 190px; border-radius: 46px; background: #FFFFFF; padding: 16px; }
+    .intro-logo { width: 186px; height: 186px; border-radius: 44px; background: #FFFFFF; padding: 16px; }
     .intro-logo img { width: 100%; height: 100%; object-fit: contain; }
 
-    .intro h2 { font-size: 84px; font-weight: 700; line-height: 1.02; letter-spacing: -0.035em; }
-    .intro p { font-size: 30px; color: var(--muted); line-height: 1.45; }
+    .intro h2 { font-size: 78px; font-weight: 700; line-height: 1.03; letter-spacing: -0.035em; }
+    .intro p { font-size: 29px; color: var(--muted); line-height: 1.45; }
 
     .intro-play {
-      width: 200px;
-      height: 200px;
+      width: 196px;
+      height: 196px;
       border-radius: 50%;
       background: var(--accent);
       display: grid;
@@ -788,27 +923,27 @@
     }
 
     .intro-play:hover { transform: scale(1.05); }
-    .intro-play svg { width: 84px; height: 84px; margin-left: 12px; }
+    .intro-play svg { width: 82px; height: 82px; margin-left: 12px; }
 
-    .intro-meta { font-family: var(--font-mono); font-size: 24px; color: var(--ink-2); letter-spacing: 0.06em; }
+    .intro-meta { font-family: var(--font-mono); font-size: 23px; color: var(--ink-2); letter-spacing: 0.06em; }
 
     /* =========================================================
-       6. BARRE DE CONTRÔLE (HORS CADRE)
+       7. BARRE DE CONTRÔLE (HORS CADRE) + TÉLÉCHARGEMENT MP4
        ========================================================= */
     .controls {
       width: 100%;
-      max-width: 640px;
+      max-width: 680px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      padding: 12px 14px;
+      gap: 9px;
+      padding: 11px 14px;
       border-radius: 16px;
-      background: rgba(18, 20, 26, 0.92);
+      background: rgba(18, 20, 26, 0.94);
       border: 1px solid var(--line);
       box-shadow: 0 14px 40px -18px rgba(0, 0, 0, 0.8);
     }
 
-    .ctl-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .ctl-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .ctl-row.space { justify-content: space-between; }
 
     .time { font-size: 12px; color: var(--muted); min-width: 34px; }
@@ -863,14 +998,15 @@
     .ctl-btn {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
-      padding: 8px 12px;
+      gap: 6px;
+      padding: 7px 11px;
       border-radius: 10px;
       border: 1px solid var(--line-strong);
       background: rgba(255, 255, 255, 0.04);
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--ink);
+      text-decoration: none;
       white-space: nowrap;
       transition: background-color 0.15s ease, border-color 0.15s ease;
     }
@@ -881,20 +1017,31 @@
     .ctl-btn.primary { background: var(--accent); color: #09090B; border-color: var(--accent); }
     .ctl-btn.primary:hover { background: #FACC15; }
 
+    .ctl-btn.dl-btn {
+      background: rgba(34, 197, 94, 0.14);
+      border-color: rgba(34, 197, 94, 0.5);
+      color: #86EFAC;
+    }
+
+    .ctl-btn.dl-btn:hover {
+      background: var(--green);
+      border-color: var(--green);
+      color: #052E16;
+    }
+
     .ctl-btn.off { color: var(--muted); }
-    .ctl-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
     .scene-chips { display: flex; gap: 4px; flex-wrap: wrap; }
 
     .scene-chip {
-      min-width: 30px;
-      height: 30px;
-      padding: 0 8px;
+      min-width: 28px;
+      height: 28px;
+      padding: 0 7px;
       border-radius: 8px;
       border: 1px solid var(--line);
       background: rgba(255, 255, 255, 0.03);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
       color: var(--muted);
       transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -906,18 +1053,13 @@
     .ctl-meta { justify-content: space-between; font-size: 11.5px; color: var(--dim); }
     .ctl-meta a { color: var(--muted); text-decoration: none; font-weight: 600; }
     .ctl-meta a:hover { color: var(--accent); }
-    #voice-name { font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 70%; }
+    #voice-name { font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 68%; }
 
-    @media (max-width: 420px) {
-      body { gap: 10px; padding-top: 10px; }
-      .controls { padding: 10px; gap: 8px; }
-      .ctl-btn { padding: 7px 9px; font-size: 12px; }
-      .scene-chip { min-width: 28px; height: 28px; padding: 0 6px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .flow { animation-duration: 2.4s; }
-      .logo-ring { animation: none; }
+    @media (max-width: 480px) {
+      body { gap: 8px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom)); }
+      .controls { padding: 9px 10px; gap: 7px; }
+      .ctl-btn { padding: 6px 8px; font-size: 11.5px; }
+      .scene-chip { min-width: 26px; height: 26px; padding: 0 5px; font-size: 11px; }
     }
   </style>
 </head>
@@ -926,21 +1068,17 @@
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
       <radialGradient id="gLed">
-        <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.85" />
+        <stop offset="0%" stop-color="#FDE68A" stop-opacity="0.88" />
         <stop offset="100%" stop-color="#FDE68A" stop-opacity="0" />
       </radialGradient>
       <radialGradient id="gHeat">
-        <stop offset="0%" stop-color="#EF4444" stop-opacity="0.85" />
-        <stop offset="55%" stop-color="#F97316" stop-opacity="0.35" />
+        <stop offset="0%" stop-color="#EF4444" stop-opacity="0.88" />
+        <stop offset="55%" stop-color="#F97316" stop-opacity="0.36" />
         <stop offset="100%" stop-color="#F97316" stop-opacity="0" />
       </radialGradient>
       <linearGradient id="gWater" x1="0" y1="0" x2="0" y2="1">
         <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.95" />
         <stop offset="100%" stop-color="#0369A1" stop-opacity="0.95" />
-      </linearGradient>
-      <linearGradient id="gSpark" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#22D3EE" stop-opacity="0.35" />
-        <stop offset="100%" stop-color="#22D3EE" stop-opacity="0" />
       </linearGradient>
     </defs>
   </svg>
@@ -953,10 +1091,10 @@
 
       <header class="frame-head">
         <div class="fh-brand">
-          <div class="fh-logo"><img src="./logo_club.png" alt="Logo CGE-U-AUBEN" /></div>
+          <div class="fh-logo"><img src="./logo_club.png" alt="Logo Club du Génie Électrique" /></div>
           <div>
-            <div class="fh-name">CGE-U-AUBEN</div>
-            <div class="fh-sub">Club de Génie Électrique · Univ. Aube Nouvelle</div>
+            <div class="fh-name">Club du Génie Électrique</div>
+            <div class="fh-sub">Aube Nouvelle Ouaga · Smart Grid 12V DC</div>
           </div>
         </div>
         <div class="fh-right">
@@ -965,13 +1103,14 @@
         </div>
       </header>
 
-      <!-- ============ SCÈNE 1 — ACCROCHE (15 s) ============ -->
+      <!-- ============ SCÈNE 1 — ACCROCHE + VRAI APERÇU MAQUETTE 3D ATELIER ============ -->
       <section class="scene" data-scene="0">
         <div class="scene-body">
+          <!-- Phase 1 (0 -> 4.8s) : Constat terrain Burkina Faso -->
           <div class="s1-block">
-            <div class="kicker rv fade" data-at="0.3" data-out="5.6">Burkina Faso · Défi quotidien</div>
+            <div class="kicker rv fade" data-at="0.05" data-out="4.85">Burkina Faso · Défi quotidien</div>
             <div class="pcards">
-              <div class="pcard rv" data-at="0.9" data-out="5.6">
+              <div class="pcard rv" data-at="1.15" data-out="4.85">
                 <div class="pc-ico red">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z" /></svg>
                 </div>
@@ -980,7 +1119,7 @@
                   <div class="pc-desc">Coupures réseau répétées, activités à l'arrêt</div>
                 </div>
               </div>
-              <div class="pcard rv" data-at="2.3" data-out="5.6">
+              <div class="pcard rv" data-at="2.25" data-out="4.85">
                 <div class="pc-ico cyan">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z" /></svg>
                 </div>
@@ -992,153 +1131,130 @@
             </div>
           </div>
 
-          <div class="s1-block">
-            <div class="kicker rv fade" data-at="5.9">Université Aube Nouvelle · Ouagadougou</div>
-            <h1 class="mega">
-              <span class="rv" data-at="6.3">Smart Grid</span>
-              <span class="rv accent" data-at="6.7">Solaire &amp;</span>
-              <span class="rv" data-at="7.1">Polytank</span>
-            </h1>
-            <div class="mega-sig rv" data-at="7.7">— CGE-U-AUBEN</div>
-            <p class="lead rv" data-at="9.2">Une solution souveraine : micro-réseau hybride 12V DC et supervision automatisée de Polytank.</p>
-            <div class="pills rv" data-at="11.0">
-              <span class="pill">ESP32</span>
-              <span class="pill">SONABEL + Solaire</span>
-              <span class="pill">MQTT · SCADA</span>
-            </div>
-          </div>
-
-          <svg id="s1-city" viewBox="0 0 1080 420" style="top:840px;height:420px;" aria-hidden="true">
+          <svg id="s1-city" class="rv fade" data-at="0.0" data-out="4.85" viewBox="0 0 1080 420" style="top:770px;height:420px;" aria-hidden="true">
             <g id="s1-bldgs"></g>
             <line x1="0" y1="414" x2="1080" y2="414" stroke="rgba(255,255,255,0.14)" stroke-width="3" />
           </svg>
+
+          <!-- Phase 2 (4.9s -> fin) : Solution + Vrai aperçu Maquette 3D Atelier -->
+          <div class="s1-block">
+            <div class="kicker rv fade" data-at="4.9">Aube Nouvelle Ouaga · Solution souveraine</div>
+            <h1 class="mega">
+              <span class="rv" data-at="5.1">Smart Grid</span>
+              <span class="rv accent" data-at="5.45">Solaire &amp;</span>
+              <span class="rv" data-at="5.8">Polytank</span>
+            </h1>
+            <div class="mega-sig rv" data-at="6.1">Club du Génie Électrique · Aube Nouvelle Ouaga</div>
+            <div class="pills rv" data-at="7.4">
+              <span class="pill">ESP32 · 12V DC</span>
+              <span class="pill">SONABEL + Solaire 3S</span>
+              <span class="pill">SCADA MQTT</span>
+            </div>
+          </div>
+
+          <div class="media-stage rv" data-at="6.4" style="left:64px;right:64px;top:635px;height:595px;">
+            <img id="img-s1-3d" src="./media/maquette_3d_atelier.png" alt="Aperçu réel de la maquette 3D Smart Grid sur socle 60 × 40 cm" />
+            <div class="media-badge"><span class="mb-dot"></span>APERÇU RÉEL · MAQUETTE 3D</div>
+            <div class="media-caption">
+              <span>Socle contreplaqué 60 × 40 cm · Coffret 3D &amp; Polytank</span>
+              <span>demo_3d_smartgrid.html</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- ============ SCÈNE 2 — ARCHITECTURE 12V & CAPTEURS (20 s) ============ -->
+      <!-- ============ SCÈNE 2 — ARCHITECTURE 12V + VUE INTERNE 3D + CAPTEURS ============ -->
       <section class="scene" data-scene="1">
         <div class="scene-body">
           <div class="s-head">
-            <div class="kicker rv fade" data-at="0.2">Architecture</div>
-            <div class="s-title rv" data-at="0.4">12V DC sécurisé &amp; capteurs</div>
-            <div class="s-sub rv" data-at="0.8">Puissance 12V · Logique 5V / 3,3V · Masse commune</div>
+            <div class="kicker rv fade" data-at="0.05">Architecture</div>
+            <div class="s-title rv" data-at="0.2">12V DC sécurisé &amp; capteurs</div>
+            <div class="s-sub rv" data-at="0.5">Puissance 12V · Logique LM2596 5,00 V · Masse commune</div>
           </div>
 
-          <svg viewBox="0 0 1080 1060" style="top:200px;height:1060px;" aria-hidden="true">
-            <!-- Fils de fond -->
-            <path class="wire" d="M260 180 L260 335 L340 335" />
-            <path class="wire" d="M820 180 L820 335 L740 335" />
-            <path class="wire" d="M540 400 L540 480" />
-            <path class="wire" d="M260 480 L260 560" />
-            <path class="wire" d="M820 480 L820 560" />
-            <path class="wire" d="M820 700 L820 740 L620 740 L620 780" />
-            <path class="wire" d="M330 810 L380 810" />
-            <path class="wire" d="M330 940 L380 940" />
-            <path class="wire" d="M750 810 L700 810" />
-            <path class="wire" d="M750 940 L700 940" />
+          <!-- Flux synthétique SONABEL + Solaire -> ATS -> Bus 12V -> LM2596 / Charges -->
+          <svg viewBox="0 0 1080 340" style="top:185px;height:340px;" aria-hidden="true">
+            <path class="wire" d="M240 108 L240 165 L400 165" />
+            <path class="wire" d="M840 108 L840 165 L680 165" />
+            <path class="wire" d="M540 218 L540 264" />
+            <path class="wire" d="M260 264 L260 315" />
+            <path class="wire" d="M820 264 L820 315" />
 
-            <!-- Flux animés -->
-            <path class="flow c-red rv fade" data-at="1.3" d="M260 180 L260 335 L340 335" />
-            <path class="flow c-amber rv fade" data-at="2.3" d="M820 180 L820 335 L740 335" />
-            <path class="flow c-red rv fade" data-at="3.7" d="M540 400 L540 480" />
-            <path class="flow c-red rv fade" data-at="5.0" d="M540 480 L260 480 L260 560" />
-            <path class="flow c-red rv fade" data-at="5.6" d="M540 480 L820 480 L820 560" />
-            <path class="flow c-orange rv fade" data-at="7.2" d="M820 700 L820 740 L620 740 L620 780" />
-            <path class="flow c-cyan rv fade" data-at="9.6" d="M330 810 L380 810" />
-            <path class="flow c-cyan rv fade" data-at="10.6" d="M330 940 L380 940" />
-            <path class="flow c-cyan rv fade" data-at="11.6" d="M750 810 L700 810" />
-            <path class="flow c-cyan rv fade" data-at="12.6" d="M750 940 L700 940" />
+            <path id="s2-f1" class="flow c-red rv fade" data-at="1.4" d="M240 108 L240 165 L400 165" />
+            <path id="s2-f2" class="flow c-amber rv fade" data-at="3.6" d="M840 108 L840 165 L680 165" />
+            <path id="s2-f3" class="flow c-yellow rv fade" data-at="2.4" d="M540 218 L540 264" />
+            <path id="s2-f4" class="flow c-red rv fade" data-at="2.8" d="M540 264 L260 264 L260 315" />
+            <path id="s2-f5" class="flow c-orange rv fade" data-at="4.8" d="M540 264 L820 264 L820 315" />
 
-            <!-- Bus 12V -->
-            <g class="rv fade" data-at="4.2">
-              <line x1="120" y1="480" x2="960" y2="480" stroke="#EAB308" stroke-width="10" stroke-linecap="round" />
-              <rect x="430" y="444" width="220" height="40" rx="10" fill="#0D0E13" />
-              <text x="540" y="472" text-anchor="middle" class="nm">BUS 12V DC</text>
-            </g>
-
-            <!-- Nœuds -->
-            <g transform="translate(60,30)"><g class="rv" data-at="0.8">
-              <rect class="nbox" width="400" height="150" rx="24" />
-              <rect x="0" y="24" width="8" height="102" rx="4" fill="#EF4444" />
-              <text x="40" y="66" class="nt">SONABEL 12V</text>
-              <text x="40" y="108" class="ns">Réseau principal</text>
+            <g transform="translate(60,8)"><g class="rv" data-at="0.8">
+              <rect class="nbox" width="360" height="100" rx="20" />
+              <rect x="0" y="18" width="8" height="64" rx="4" fill="#EF4444" />
+              <text x="30" y="46" class="nt" style="font-size:30px">SONABEL 12V</text>
+              <text x="30" y="79" class="ns" style="font-size:20px">Réseau principal 5A</text>
             </g></g>
 
-            <g transform="translate(620,30)"><g class="rv" data-at="1.8">
-              <rect class="nbox" width="400" height="150" rx="24" />
-              <rect x="0" y="24" width="8" height="102" rx="4" fill="#F59E0B" />
-              <text x="40" y="66" class="nt">Solaire + 3S</text>
-              <text x="40" y="108" class="ns">Batterie lithium · BMS 3S</text>
+            <g transform="translate(660,8)"><g class="rv" data-at="3.2">
+              <rect class="nbox" width="360" height="100" rx="20" />
+              <rect x="0" y="18" width="8" height="64" rx="4" fill="#F59E0B" />
+              <text x="30" y="46" class="nt" style="font-size:30px">Solaire + 3S BMS</text>
+              <text x="30" y="79" class="ns" style="font-size:20px">2× PV + 3× 18650 Li-Ion</text>
             </g></g>
 
-            <g transform="translate(340,270)"><g class="rv" data-at="3.1">
-              <rect class="nbox" width="400" height="130" rx="24" />
-              <text x="200" y="58" text-anchor="middle" class="nt">ATS · Relais</text>
-              <text x="200" y="98" text-anchor="middle" class="ns">IN1 / IN2 · bascule 150 ms</text>
+            <g transform="translate(400,122)"><g class="rv pop" data-at="2.1">
+              <rect class="nbox hl" width="280" height="96" rx="20" />
+              <text x="140" y="46" text-anchor="middle" class="nt" style="font-size:28px">ATS · 4 Relais</text>
+              <text x="140" y="77" text-anchor="middle" class="nm" style="font-size:18px">BUS 12V / LM2596 5V</text>
             </g></g>
 
-            <g transform="translate(60,560)"><g class="rv" data-at="5.0">
-              <rect class="nbox" width="400" height="140" rx="24" />
-              <text x="40" y="62" class="nt">Charges 12V</text>
-              <text x="40" y="102" class="ns">2× LED + ventilateur (Q1)</text>
-            </g></g>
-
-            <g transform="translate(620,560)"><g class="rv" data-at="5.6">
-              <rect class="nbox" width="400" height="140" rx="24" />
-              <rect x="0" y="24" width="8" height="92" rx="4" fill="#FB923C" />
-              <text x="40" y="62" class="nt">LM2596 → 5,00 V</text>
-              <text x="40" y="102" class="ns">Logique ESP32 · relais · LCD</text>
-            </g></g>
-
-            <g transform="translate(380,780)"><g class="rv pop" data-at="7.2">
-              <rect class="nbox hl" width="320" height="170" rx="26" />
-              <text x="160" y="78" text-anchor="middle" class="nt" style="font-size:46px">ESP32</text>
-              <text x="160" y="122" text-anchor="middle" class="ns">Mesure · Décision</text>
-            </g></g>
-
-            <!-- Capteurs -->
-            <g transform="translate(40,760)"><g class="rv left" data-at="9.4">
-              <rect class="nbox" width="290" height="100" rx="20" />
-              <text x="24" y="44" class="nt" style="font-size:28px">Tension 0–25V</text>
-              <text x="24" y="78" class="nm" style="font-size:19px">GPIO 34 / 32</text>
-            </g></g>
-            <g transform="translate(40,890)"><g class="rv left" data-at="10.4">
-              <rect class="nbox" width="290" height="100" rx="20" />
-              <text x="24" y="44" class="nt" style="font-size:28px">Courant ACS712</text>
-              <text x="24" y="78" class="nm" style="font-size:19px">GPIO 35 / 33</text>
-            </g></g>
-            <g transform="translate(750,760)"><g class="rv" data-at="11.4">
-              <rect class="nbox" width="290" height="100" rx="20" />
-              <text x="24" y="44" class="nt" style="font-size:28px">Temp. DS18B20</text>
-              <text x="24" y="78" class="nm" style="font-size:19px">GPIO 4 · OneWire</text>
-            </g></g>
-            <g transform="translate(750,890)"><g class="rv" data-at="12.4">
-              <rect class="nbox" width="290" height="100" rx="20" />
-              <text x="24" y="44" class="nt" style="font-size:28px">Niveau HC-SR04</text>
-              <text x="24" y="78" class="nm" style="font-size:19px">GPIO 5 / 18</text>
-            </g></g>
-
-            <g class="rv fade" data-at="14.0">
-              <line x1="120" y1="1020" x2="960" y2="1020" stroke="rgba(255,255,255,0.22)" stroke-width="3" stroke-dasharray="10 12" />
-              <rect x="350" y="1000" width="380" height="40" rx="10" fill="#0D0E13" />
-              <text x="540" y="1028" text-anchor="middle" class="lbl">GND COMMUN · 0 V</text>
+            <g class="rv fade" data-at="2.4">
+              <line x1="120" y1="264" x2="960" y2="264" stroke="#EAB308" stroke-width="8" stroke-linecap="round" />
             </g>
           </svg>
+
+          <!-- Vrai aperçu interne X-Ray de la maquette 3D -->
+          <div class="media-stage rv" data-at="1.0" style="left:60px;right:60px;top:510px;height:482px;">
+            <img id="img-s2-3d" src="./media/maquette_3d_interne.png" alt="Vue interne transparente du coffret 3D : ESP32, 4 Relais, LM2596 et pack 3S" />
+            <div class="media-badge"><span class="mb-dot"></span>VUE INTERNE 3D · COFFRET TRANSPARENT</div>
+            <div class="media-caption">
+              <span>ESP32 · Module 4 Relais · LM2596 5V · Pack 3× 18650 + LCD 2004</span>
+              <span>X-RAY STUDIO</span>
+            </div>
+          </div>
+
+          <!-- 4 Capteurs synchronisés sur les mots clés de la voix off -->
+          <div class="s2-sensors">
+            <div class="s2-card rv" id="s2-c1" data-at="6.4">
+              <div><div class="s2-card-title">Tension DC 0–25V</div><div class="s2-card-sub">SONABEL &amp; 3S · GPIO 34 / 32</div></div>
+              <span class="s2-dot"></span>
+            </div>
+            <div class="s2-card rv" id="s2-c2" data-at="6.9">
+              <div><div class="s2-card-title">Courant ACS712</div><div class="s2-card-sub">Charges &amp; PV · GPIO 35 / 33</div></div>
+              <span class="s2-dot"></span>
+            </div>
+            <div class="s2-card rv" id="s2-c3" data-at="7.4">
+              <div><div class="s2-card-title">Temp. DS18B20</div><div class="s2-card-sub">Transformateur · GPIO 4</div></div>
+              <span class="s2-dot"></span>
+            </div>
+            <div class="s2-card rv" id="s2-c4" data-at="7.9">
+              <div><div class="s2-card-title">Niveau HC-SR04</div><div class="s2-card-sub">Pont 10kΩ/10kΩ · GPIO 5 / 18</div></div>
+              <span class="s2-dot"></span>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- ============ SCÈNE 3 — TEST A : COUPURE SONABEL (20 s) ============ -->
+      <!-- ============ SCÈNE 3 — TEST A : COUPURE SONABEL ============ -->
       <section class="scene" data-scene="2">
         <div class="scene-body">
           <div class="s-head">
-            <span class="test-tag rv fade" data-at="0.2">TEST A</span>
-            <div class="s-title rv" data-at="0.4">Coupure SONABEL</div>
+            <span class="test-tag rv fade" data-at="0.05">TEST A</span>
+            <div class="s-title rv" data-at="0.2">Coupure SONABEL</div>
           </div>
-          <div class="banner ok rv fade" data-at="0.8" data-out="6.0" style="top:170px"><span class="dot"></span>RÉGIME NOMINAL · SOURCE SONABEL</div>
-          <div class="banner bad blink rv fade" data-at="6.0" data-out="7.6" style="top:170px"><span class="dot"></span>COUPURE DÉTECTÉE · V &lt; 9,5 V</div>
-          <div class="banner warn rv fade" data-at="7.6" style="top:170px"><span class="dot"></span>SECOURS SOLAIRE / BATTERIE ACTIF</div>
+          <div class="banner ok rv fade" data-at="0.3" data-out="1.95" style="top:156px"><span class="dot"></span>RÉGIME NOMINAL · SOURCE SONABEL</div>
+          <div class="banner bad rv fade" data-at="1.95" data-out="3.45" style="top:156px"><span class="dot"></span>COUPURE DÉTECTÉE · V &lt; 9,5 V</div>
+          <div class="banner warn rv fade" data-at="3.45" style="top:156px"><span class="dot"></span>SECOURS SOLAIRE / BATTERIE ACTIF</div>
 
-          <svg viewBox="0 0 1080 1000" style="top:280px;height:1000px;" aria-hidden="true">
+          <svg viewBox="0 0 1080 1000" style="top:266px;height:1000px;" aria-hidden="true">
             <path class="wire" d="M250 130 L250 250 L426 250" />
             <path class="wire" d="M830 130 L830 250 L654 250" />
             <path class="wire" d="M540 396 L540 470 L300 470 L300 512 M540 470 L780 470 L780 512" />
@@ -1155,7 +1271,7 @@
                 <text x="36" y="60" class="nt">SONABEL</text>
                 <text id="s3-son-v" x="36" y="100" class="ns">12,2 V · présent</text>
               </g>
-              <g class="rv pop" data-at="6.0">
+              <g class="rv pop" data-at="1.95">
                 <line x1="300" y1="30" x2="350" y2="80" stroke="#EF4444" stroke-width="9" stroke-linecap="round" />
                 <line x1="350" y1="30" x2="300" y2="80" stroke="#EF4444" stroke-width="9" stroke-linecap="round" />
               </g>
@@ -1176,15 +1292,15 @@
             <line id="s3-lever" x1="540" y1="380" x2="446" y2="262" stroke="#F4F4F5" stroke-width="10" stroke-linecap="round" />
             <circle cx="540" cy="380" r="17" fill="#F4F4F5" />
 
-            <g transform="translate(40,300)"><g class="chip-g bad rv left" data-at="6.0">
+            <g transform="translate(40,300)"><g class="chip-g bad rv left" data-at="2.0">
               <rect width="280" height="56" rx="14" />
               <text x="140" y="36" text-anchor="middle">ESP32 : V &lt; 9,5 V</text>
             </g></g>
-            <g transform="translate(760,290)"><g class="chip-g warn rv" data-at="6.4">
+            <g transform="translate(760,290)"><g class="chip-g warn rv" data-at="3.4">
               <rect width="280" height="56" rx="14" />
               <text x="140" y="36" text-anchor="middle">Bascule 150 ms</text>
             </g></g>
-            <g transform="translate(760,360)"><g class="chip-g ok rv" data-at="8.6">
+            <g transform="translate(760,360)"><g class="chip-g ok rv" data-at="6.1">
               <rect width="280" height="56" rx="14" />
               <text x="140" y="36" text-anchor="middle">Coupure : 0 ms</text>
             </g></g>
@@ -1196,40 +1312,40 @@
             <circle class="bulb lit" cx="780" cy="560" r="48" />
             <text x="300" y="648" text-anchor="middle" class="lbl">LED 12V #1</text>
             <text x="780" y="648" text-anchor="middle" class="lbl">LED 12V #2</text>
-            <text x="540" y="700" text-anchor="middle" class="nt rv fade" data-at="9.6" style="font-size:32px;fill:#86EFAC">Charges toujours alimentées</text>
+            <text x="540" y="700" text-anchor="middle" class="nt rv fade" data-at="6.2" style="font-size:32px;fill:#86EFAC">Charges toujours alimentées</text>
 
             <!-- Oscilloscope tension charges -->
             <g transform="translate(60,730)">
-              <rect class="panel-r" width="960" height="260" rx="24" />
+              <rect class="panel-r" width="960" height="255" rx="24" />
               <text x="30" y="44" class="lbl">TENSION AUX CHARGES (V)</text>
               <text id="s3-vread" x="930" y="46" text-anchor="end" class="nm" style="font-size:28px">12,2 V</text>
               <line class="gridl" x1="30" y1="96" x2="930" y2="96" />
-              <line class="gridl" x1="30" y1="230" x2="930" y2="230" />
+              <line class="gridl" x1="30" y1="226" x2="930" y2="226" />
               <text x="30" y="88" class="lbl" style="font-size:17px">12 V</text>
-              <text x="30" y="222" class="lbl" style="font-size:17px">0 V</text>
-              <line id="s3-cut" x1="0" y1="70" x2="0" y2="240" stroke="rgba(239,68,68,0.6)" stroke-width="3" stroke-dasharray="6 8" opacity="0" />
+              <text x="30" y="218" class="lbl" style="font-size:17px">0 V</text>
+              <line id="s3-cut" x1="0" y1="70" x2="0" y2="236" stroke="rgba(239,68,68,0.65)" stroke-width="3" stroke-dasharray="6 8" opacity="0" />
               <polyline id="s3-trace" class="trace" stroke="#22C55E" points="" />
             </g>
           </svg>
         </div>
       </section>
 
-      <!-- ============ SCÈNE 4 — TEST B : SURCHARGE (20 s) ============ -->
+      <!-- ============ SCÈNE 4 — TEST B : SURCHARGE COURANT ============ -->
       <section class="scene" data-scene="3">
         <div class="scene-body">
           <div class="s-head">
-            <span class="test-tag rv fade" data-at="0.2">TEST B</span>
-            <div class="s-title rv" data-at="0.4">Surcharge courant</div>
+            <span class="test-tag rv fade" data-at="0.05">TEST B</span>
+            <div class="s-title rv" data-at="0.2">Surcharge courant</div>
           </div>
 
-          <div class="readout rv" id="s4-read" data-at="0.8" style="top:172px;font-size:96px;">1,35 A<small>ACS712 #1 · GPIO 35</small></div>
-          <div class="side-chips" style="top:162px">
-            <div class="hchip bad rv" data-at="8.3">Pic 16,0 A &gt; 15,0 A</div>
-            <div class="hchip bad rv" data-at="8.7">Q1 ouvert · GPIO 14</div>
-            <div class="hchip bad rv" data-at="9.1">Alarme · GPIO 13 / 15</div>
+          <div class="readout rv" id="s4-read" data-at="0.4" style="top:166px;font-size:94px;">1,35 A<small>ACS712 #1 · GPIO 35</small></div>
+          <div class="side-chips" style="top:158px">
+            <div class="hchip bad rv" data-at="5.7">Pic 16,4 A &gt; 15,0 A</div>
+            <div class="hchip bad rv" data-at="6.55">Q1 ouvert · GPIO 14</div>
+            <div class="hchip bad rv" data-at="8.1">Alarme · GPIO 13 / 15</div>
           </div>
 
-          <svg viewBox="0 0 1080 396" style="top:372px;height:396px;" aria-hidden="true">
+          <svg viewBox="0 0 1080 396" style="top:368px;height:396px;" aria-hidden="true">
             <rect class="panel-r" x="60" y="0" width="960" height="386" rx="24" />
             <text x="90" y="44" class="lbl">COURANT CHARGES (A)</text>
             <line class="gridl" x1="90" y1="356" x2="990" y2="356" />
@@ -1239,7 +1355,7 @@
             <polyline id="s4-trace" class="trace" stroke="#22D3EE" points="" />
           </svg>
 
-          <svg viewBox="0 0 1080 470" style="top:800px;height:470px;" aria-hidden="true">
+          <svg viewBox="0 0 1080 470" style="top:792px;height:470px;" aria-hidden="true">
             <!-- Q1 -->
             <rect x="60" y="10" width="480" height="230" rx="24" class="nbox" />
             <text x="300" y="50" text-anchor="middle" class="lbl">DISJONCTEUR Q1 · RELAIS IN3</text>
@@ -1263,30 +1379,30 @@
             <circle id="s4-lr" class="lamp r" cx="320" cy="365" r="38" />
             <text x="225" y="458" text-anchor="middle" class="lbl">FEU TRICOLORE</text>
 
-            <!-- Buzzer -->
-            <g id="s4-buzz" class="buzz">
-              <circle class="bwave" cx="960" cy="360" r="60" />
-              <circle class="bwave" cx="960" cy="360" r="60" />
-              <circle class="bwave" cx="960" cy="360" r="60" />
-              <circle cx="960" cy="360" r="46" fill="#0F1116" stroke="rgba(255,255,255,0.2)" stroke-width="3" />
-              <circle cx="960" cy="360" r="12" fill="#3F3F46" />
+            <!-- Buzzer (ondes animées en JS déterministe) -->
+            <g id="s4-buzz">
+              <circle class="bwave" cx="950" cy="360" r="54" />
+              <circle class="bwave" cx="950" cy="360" r="54" />
+              <circle class="bwave" cx="950" cy="360" r="54" />
+              <circle cx="950" cy="360" r="46" fill="#0F1116" stroke="rgba(255,255,255,0.2)" stroke-width="3" />
+              <circle cx="950" cy="360" r="12" fill="#3F3F46" />
             </g>
-            <text x="960" y="458" text-anchor="middle" class="lbl">BUZZER</text>
+            <text x="950" y="458" text-anchor="middle" class="lbl">BUZZER</text>
           </svg>
         </div>
       </section>
 
-      <!-- ============ SCÈNE 5 — TEST C : SURCHAUFFE (15 s) ============ -->
+      <!-- ============ SCÈNE 5 — TEST C : SURCHAUFFE THERMIQUE ============ -->
       <section class="scene" data-scene="4">
         <div class="scene-body">
           <div class="s-head">
-            <span class="test-tag rv fade" data-at="0.2">TEST C</span>
-            <div class="s-title rv" data-at="0.4">Surchauffe thermique</div>
+            <span class="test-tag rv fade" data-at="0.05">TEST C</span>
+            <div class="s-title rv" data-at="0.2">Surchauffe thermique</div>
           </div>
-          <div class="banner neutral" id="s5-banner-n" style="top:170px"><span class="dot" style="color:#22D3EE"></span>DS18B20 · ONEWIRE GPIO 4 · SURVEILLANCE</div>
-          <div class="banner bad blink" id="s5-banner-a" style="top:170px;opacity:0"><span class="dot"></span>ALERTE THERMIQUE · T &gt; 60 °C</div>
+          <div class="banner neutral" id="s5-banner-n" style="top:158px"><span class="dot" style="color:#22D3EE"></span>DS18B20 · ONEWIRE GPIO 4 · SURVEILLANCE</div>
+          <div class="banner bad" id="s5-banner-a" style="top:158px;opacity:0"><span class="dot"></span>ALERTE THERMIQUE · T &gt; 60 °C</div>
 
-          <svg viewBox="0 0 1080 1000" style="top:280px;height:1000px;" aria-hidden="true">
+          <svg viewBox="0 0 1080 1000" style="top:268px;height:1000px;" aria-hidden="true">
             <!-- Thermomètre -->
             <rect x="90" y="30" width="70" height="500" rx="35" fill="#0F1116" stroke="rgba(255,255,255,0.18)" stroke-width="3" />
             <rect id="s5-fill" x="104" y="300" width="42" height="240" rx="21" fill="#22D3EE" />
@@ -1312,116 +1428,118 @@
             </g>
             <text x="790" y="370" text-anchor="middle" class="lbl">TRANSFORMATEUR · SONDE DS18B20</text>
 
-            <text id="s5-read" x="330" y="470" class="nt" style="font-family:'IBM Plex Mono',monospace;font-size:92px">29,5 °C</text>
+            <text id="s5-read" x="315" y="470" class="nt" style="font-family:'IBM Plex Mono',monospace;font-size:92px">29,5 °C</text>
 
-            <g transform="translate(600,510)"><g class="chip-g bad rv" data-after-cross="0.4">
+            <g transform="translate(600,505)"><g class="chip-g bad rv" data-after-cross="0.2">
               <rect width="420" height="50" rx="12" /><text x="210" y="33" text-anchor="middle">Alerte préventive SCADA</text>
             </g></g>
-            <g transform="translate(600,570)"><g class="chip-g warn rv" data-after-cross="0.9">
+            <g transform="translate(600,565)"><g class="chip-g warn rv" data-after-cross="0.6">
               <rect width="420" height="50" rx="12" /><text x="210" y="33" text-anchor="middle">Ventilation forcée</text>
             </g></g>
-            <g transform="translate(600,630)"><g class="chip-g warn rv" data-after-cross="1.4">
+            <g transform="translate(600,625)"><g class="chip-g warn rv" data-after-cross="1.0">
               <rect width="420" height="50" rx="12" /><text x="210" y="33" text-anchor="middle">Départ Q1 sécurisé</text>
             </g></g>
 
             <!-- Courbe -->
-            <g transform="translate(60,700)">
-              <rect class="panel-r" width="960" height="290" rx="24" />
+            <g transform="translate(60,698)">
+              <rect class="panel-r" width="960" height="286" rx="24" />
               <text x="30" y="44" class="lbl">TEMPÉRATURE TRANSFORMATEUR (°C)</text>
-              <line class="thr" x1="30" y1="122" x2="930" y2="122" />
-              <text x="930" y="110" text-anchor="end" class="nm" style="fill:#FCA5A5">SEUIL 60 °C</text>
-              <line class="gridl" x1="30" y1="262" x2="930" y2="262" />
+              <line class="thr" x1="30" y1="120" x2="930" y2="120" />
+              <text x="930" y="108" text-anchor="end" class="nm" style="fill:#FCA5A5">SEUIL 60 °C</text>
+              <line class="gridl" x1="30" y1="260" x2="930" y2="260" />
               <polyline id="s5-trace" class="trace" stroke="#F59E0B" points="" />
             </g>
           </svg>
         </div>
       </section>
 
-      <!-- ============ SCÈNE 6 — TEST D : POLYTANK & SCADA (20 s) ============ -->
+      <!-- ============ SCÈNE 6 — TEST D : POLYTANK + VRAI APERÇU WEB SCADA ============ -->
       <section class="scene" data-scene="5">
         <div class="scene-body">
           <div class="s-head">
-            <span class="test-tag rv fade" data-at="0.2">TEST D</span>
-            <div class="s-title rv" data-at="0.4">Polytank &amp; SCADA</div>
+            <span class="test-tag rv fade" data-at="0.05">TEST D</span>
+            <div class="s-title rv" data-at="0.2">Polytank &amp; Web SCADA</div>
           </div>
 
-          <svg viewBox="0 0 1080 660" style="top:180px;height:660px;" aria-hidden="true">
-            <!-- Cuve -->
-            <rect x="120" y="90" width="340" height="510" rx="30" fill="rgba(186,230,253,0.05)" stroke="rgba(186,230,253,0.45)" stroke-width="4" />
-            <rect id="s6-water" x="136" y="380" width="308" height="204" rx="18" fill="url(#gWater)" />
-            <line x1="120" y1="443.6" x2="460" y2="443.6" stroke="#F59E0B" stroke-width="3" stroke-dasharray="10 8" />
-            <line x1="120" y1="186.2" x2="460" y2="186.2" stroke="#22C55E" stroke-width="3" stroke-dasharray="10 8" />
-            <text x="104" y="452" text-anchor="end" class="nm" style="fill:#FCD34D">30%</text>
-            <text x="104" y="195" text-anchor="end" class="nm" style="fill:#86EFAC">85%</text>
-            <rect x="110" y="60" width="360" height="34" rx="12" fill="#1E293B" />
-            <rect x="220" y="24" width="140" height="40" rx="8" fill="#1D4ED8" />
-            <circle cx="262" cy="64" r="18" fill="#E2E8F0" />
-            <circle cx="318" cy="64" r="18" fill="#E2E8F0" />
-            <text x="290" y="16" text-anchor="middle" class="lbl" style="font-size:17px">HC-SR04</text>
+          <!-- Animation Polytank + HC-SR04 + Pompe 12V -->
+          <svg viewBox="0 0 1080 560" style="top:168px;height:560px;" aria-hidden="true">
+            <!-- Cuve graduée -->
+            <rect x="96" y="74" width="290" height="456" rx="26" fill="rgba(186,230,253,0.05)" stroke="rgba(186,230,253,0.45)" stroke-width="4" />
+            <rect id="s6-water" x="110" y="340" width="262" height="176" rx="16" fill="url(#gWater)" />
+            <line x1="96" y1="392" x2="386" y2="392" stroke="#F59E0B" stroke-width="3" stroke-dasharray="10 8" />
+            <line x1="96" y1="158" x2="386" y2="158" stroke="#22C55E" stroke-width="3" stroke-dasharray="10 8" />
+            <text x="82" y="400" text-anchor="end" class="nm" style="fill:#FCD34D">30%</text>
+            <text x="82" y="166" text-anchor="end" class="nm" style="fill:#86EFAC">85%</text>
+            <rect x="86" y="48" width="310" height="30" rx="10" fill="#1E293B" />
+            <rect x="176" y="16" width="130" height="36" rx="8" fill="#1D4ED8" />
+            <circle cx="216" cy="52" r="16" fill="#E2E8F0" />
+            <circle cx="266" cy="52" r="16" fill="#E2E8F0" />
+            <text x="241" y="10" text-anchor="middle" class="lbl" style="font-size:16px">HC-SR04</text>
             <g id="s6-waves">
-              <ellipse cx="290" cy="120" rx="40" ry="10" fill="none" stroke="#22D3EE" stroke-width="4" />
-              <ellipse cx="290" cy="120" rx="40" ry="10" fill="none" stroke="#22D3EE" stroke-width="4" />
-              <ellipse cx="290" cy="120" rx="40" ry="10" fill="none" stroke="#22D3EE" stroke-width="4" />
-              <ellipse cx="290" cy="120" rx="40" ry="10" fill="none" stroke="#22D3EE" stroke-width="4" />
+              <ellipse cx="241" cy="110" rx="36" ry="9" fill="none" stroke="#22D3EE" stroke-width="4" />
+              <ellipse cx="241" cy="110" rx="36" ry="9" fill="none" stroke="#22D3EE" stroke-width="4" />
+              <ellipse cx="241" cy="110" rx="36" ry="9" fill="none" stroke="#22D3EE" stroke-width="4" />
+              <ellipse cx="241" cy="110" rx="36" ry="9" fill="none" stroke="#22D3EE" stroke-width="4" />
             </g>
 
-            <!-- Pompe & bac bas -->
-            <path class="wire" d="M700 520 L700 410 L520 410 L520 20 L400 20 L400 100" style="stroke:rgba(186,230,253,0.18);stroke-width:12" />
-            <path id="s6-pipe" class="flow c-cyan" d="M700 520 L700 410 L520 410 L520 20 L400 20 L400 100" style="stroke-width:8" />
-            <rect x="620" y="440" width="380" height="170" rx="22" fill="rgba(186,230,253,0.05)" stroke="rgba(186,230,253,0.4)" stroke-width="3" />
-            <rect id="s6-sump" x="632" y="500" width="356" height="98" rx="14" fill="url(#gWater)" opacity="0.8" />
-            <rect x="650" y="520" width="120" height="60" rx="14" fill="#0F172A" stroke="rgba(255,255,255,0.25)" stroke-width="3" />
-            <circle id="s6-pled" cx="750" cy="536" r="8" fill="#3F3F46" />
-            <text x="810" y="636" text-anchor="middle" class="lbl">POMPE 12V · IN4</text>
+            <!-- Pompe & tuyauterie -->
+            <path class="wire" d="M565 446 L565 362 L444 362 L444 22 L338 22 L338 86" style="stroke:rgba(186,230,253,0.18);stroke-width:11" />
+            <path id="s6-pipe" class="flow c-cyan" d="M565 446 L565 362 L444 362 L444 22 L338 22 L338 86" style="stroke-width:7" />
+            <rect x="498" y="380" width="210" height="148" rx="18" fill="rgba(186,230,253,0.05)" stroke="rgba(186,230,253,0.4)" stroke-width="3" />
+            <rect id="s6-sump" x="508" y="438" width="190" height="80" rx="12" fill="url(#gWater)" opacity="0.82" />
+            <rect x="524" y="452" width="104" height="52" rx="12" fill="#0F172A" stroke="rgba(255,255,255,0.25)" stroke-width="3" />
+            <circle id="s6-pled" cx="610" cy="466" r="7" fill="#3F3F46" />
+            <text x="603" y="550" text-anchor="middle" class="lbl" style="font-size:18px">POMPE 12V · IN4</text>
 
             <!-- Relevés -->
-            <text x="620" y="130" class="lbl">NIVEAU POLYTANK</text>
-            <text id="s6-level" x="620" y="220" class="nt" style="font-family:'IBM Plex Mono',monospace;font-size:88px">42 %</text>
-            <text id="s6-dist" x="620" y="268" class="ns">Distance ultrason : 13,7 cm</text>
-            <g transform="translate(620,300)">
-              <rect id="s6-badge-r" width="380" height="72" rx="16" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)" stroke-width="2" />
-              <text id="s6-badge" x="190" y="46" text-anchor="middle" class="nm" style="font-size:25px;fill:#D4D4D8">POMPE · ARRÊT</text>
+            <text x="500" y="96" class="lbl">NIVEAU POLYTANK</text>
+            <text id="s6-level" x="500" y="176" class="nt" style="font-family:'IBM Plex Mono',monospace;font-size:80px">38 %</text>
+            <text id="s6-dist" x="500" y="218" class="ns" style="font-size:21px">Ultrason : 14,3 cm</text>
+            <g transform="translate(500,242)">
+              <rect id="s6-badge-r" width="320" height="62" rx="14" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)" stroke-width="2" />
+              <text id="s6-badge" x="160" y="39" text-anchor="middle" class="nm" style="font-size:21px;fill:#D4D4D8">POMPE · ARRÊT</text>
             </g>
           </svg>
 
-          <div class="scada-card rv" data-at="4.6">
-            <div class="sc-top">
-              <div class="sc-title"><span class="live-dot"></span>Supervision SCADA</div>
+          <!-- Vignette réelle 3D Polytank en médaillon à droite -->
+          <div class="media-stage rv" data-at="1.4" style="right:60px;top:495px;width:296px;height:218px;border-radius:20px;">
+            <img id="img-s6-3d" src="./media/maquette_3d_polytank.png" alt="Vue 3D réelle du Polytank et de la pompe 12V" />
+            <div class="media-badge" style="top:10px;left:10px;padding:5px 10px;font-size:14px;"><span class="mb-dot" style="width:8px;height:8px;"></span>MAQUETTE 3D</div>
+          </div>
+
+          <!-- Vrai aperçu de l'interface Web SCADA (scada_smartgrid.html) -->
+          <div class="scada-real-wrap rv" data-at="5.4">
+            <div class="scada-bar">
+              <div class="sc-title"><span class="live-dot"></span>Web SCADA Temps Réel · scada_smartgrid.html</div>
               <span class="sc-live">MQTT LIVE</span>
             </div>
-            <div class="sc-topic">cge/uauben/david/smartgrid</div>
-            <div class="sc-json" id="s6-json">{}</div>
-            <div class="sc-spark">
-              <svg viewBox="0 0 900 120" preserveAspectRatio="none">
-                <line x1="0" y1="85.8" x2="900" y2="85.8" stroke="rgba(245,158,11,0.45)" stroke-width="2" stroke-dasharray="8 8" />
-                <line x1="0" y1="20.4" x2="900" y2="20.4" stroke="rgba(34,197,94,0.45)" stroke-width="2" stroke-dasharray="8 8" />
-                <polygon id="s6-area" fill="url(#gSpark)" points="" />
-                <polyline id="s6-spark" fill="none" stroke="#22D3EE" stroke-width="4" stroke-linejoin="round" points="" />
-              </svg>
+            <div class="scada-shot">
+              <img id="img-s6-scada" src="./media/scada_dashboard.png" alt="Capture réelle de l'interface Web SCADA temps réel" />
             </div>
+            <div class="scada-telemetry-foot" id="s6-json">MQTT cge/uauben/david/smartgrid → {}</div>
           </div>
         </div>
       </section>
 
-      <!-- ============ SCÈNE 7 — CONCLUSION (10 s) ============ -->
+      <!-- ============ SCÈNE 7 — CONCLUSION ============ -->
       <section class="scene" data-scene="6">
         <div class="scene-body">
           <div class="s7">
-            <div class="logo-stage rv pop" data-at="0.2">
-              <div class="logo-ring"></div>
+            <div class="logo-stage rv pop" data-at="0.1">
+              <div class="logo-ring" id="s7-ring"></div>
               <div class="logo-ring r2"></div>
-              <div class="logo-disc"><img src="./logo_club.png" alt="Logo CGE-U-AUBEN" /></div>
+              <div class="logo-disc"><img src="./logo_club.png" alt="Logo Club du Génie Électrique Aube Nouvelle Ouaga" /></div>
             </div>
-            <div class="s7-name rv" data-at="0.7">CGE-U-AUBEN</div>
-            <div class="s7-sub rv" data-at="1.1">Club de Génie Électrique · Université Aube Nouvelle</div>
+            <div class="s7-name rv" data-at="0.4">Club du Génie Électrique</div>
+            <div class="s7-sub rv" data-at="0.7">Aube Nouvelle Ouaga</div>
             <div class="checks">
-              <div class="check rv" data-at="1.6"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>Architecture 12V</div>
-              <div class="check rv" data-at="2.1"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>Câblage complet</div>
-              <div class="check rv" data-at="2.6"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>Code ESP32</div>
-              <div class="check rv" data-at="3.1"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>SCADA MQTT</div>
+              <div class="check rv" data-at="0.15"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>Architecture 12V</div>
+              <div class="check rv" data-at="1.3"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>Câblage complet</div>
+              <div class="check rv" data-at="2.3"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>Code ESP32</div>
+              <div class="check rv" data-at="3.6"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7.5" /></svg></i>SCADA MQTT</div>
             </div>
-            <div class="mention rv" data-at="4.4">Maquette 100 % réalisable localement à Ouagadougou</div>
-            <div class="cta rv pop" data-at="6.2">Soutenez le CGE-U-AUBEN →</div>
+            <div class="mention rv" data-at="4.9">Maquette 100 % réalisable localement à Ouagadougou</div>
+            <div class="cta rv pop" data-at="6.0">Soutenez le Club du Génie Électrique →</div>
           </div>
         </div>
       </section>
@@ -1429,31 +1547,31 @@
       <!-- Sous-titres synchronisés -->
       <div class="subs" aria-live="polite"><div class="subs-box" id="subs-box"></div></div>
 
-      <div class="signature">Club de Génie Électrique — <b>CGE-U-AUBEN</b> | DA DAVID</div>
+      <div class="signature"><b>Club du Génie Électrique — Aube Nouvelle Ouaga</b> | DA DAVID</div>
 
       <!-- Accueil -->
       <div class="intro" id="intro">
-        <div class="intro-logo"><img src="./logo_club.png" alt="Logo CGE-U-AUBEN" /></div>
+        <div class="intro-logo"><img src="./logo_club.png" alt="Logo Club du Génie Électrique" /></div>
         <h2>Smart Grid Solaire &amp; Polytank</h2>
-        <p>Pitch motion design de 2 minutes avec voix off française et sous-titres synchronisés.</p>
-        <button type="button" class="intro-play" id="intro-play" aria-label="Lancer le pitch">
+        <p>Pitch vidéo 9:16 avec voix neurale française, aperçus réels de la maquette 3D et du Web SCADA.</p>
+        <button type="button" class="intro-play" id="intro-play" aria-label="Lancer le pitch avec voix off">
           <svg viewBox="0 0 24 24" fill="#09090B"><path d="M7 4.5v15l12.5-7.5z" /></svg>
         </button>
-        <div class="intro-meta">7 SCÈNES · 2:00 · 9:16</div>
+        <div class="intro-meta">7 SCÈNES · VOIX NEURALE FR · 9:16</div>
       </div>
     </div>
   </main>
 
-  <!-- Barre de contrôle -->
-  <nav class="controls" id="controls" aria-label="Contrôles de lecture">
+  <!-- Barre de contrôle + Bouton Télécharger en MP4 -->
+  <nav class="controls" id="controls" aria-label="Contrôles de lecture et téléchargement">
     <div class="ctl-row">
       <span class="time mono" id="t-cur">0:00</span>
-      <div class="progress" id="progress" role="slider" aria-label="Progression" aria-valuemin="0" aria-valuemax="120" aria-valuenow="0" tabindex="0">
+      <div class="progress" id="progress" role="slider" aria-label="Progression" aria-valuemin="0" aria-valuemax="80" aria-valuenow="0" tabindex="0">
         <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
         <div id="progress-ticks"></div>
         <div class="progress-knob" id="progress-knob"></div>
       </div>
-      <span class="time mono right" id="t-tot">2:00</span>
+      <span class="time mono right" id="t-tot">1:20</span>
     </div>
     <div class="ctl-row space">
       <div class="ctl-group">
@@ -1462,11 +1580,14 @@
         <button type="button" class="ctl-btn" id="btn-replay">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>Rejouer
         </button>
+        <a class="ctl-btn dl-btn" id="btn-download-mp4" href="./motion_9_16.mp4" download="SmartGrid_Aube_Nouvelle_Ouaga_9_16.mp4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M4 20h16" /></svg>Télécharger en MP4
+        </a>
       </div>
       <div class="scene-chips" id="scene-chips" role="group" aria-label="Sélection directe des scènes"></div>
     </div>
     <div class="ctl-row ctl-meta">
-      <span id="voice-name">Voix : recherche…</span>
+      <span id="voice-name">Voix neurale studio FR (audio/scene1–7.mp3)</span>
       <a href="./index.html">← Portail Smart Grid</a>
     </div>
   </nav>
@@ -1476,67 +1597,104 @@
       "use strict";
 
       /* =====================================================================
-         1. SCÉNARIO : 7 SCÈNES, VOIX OFF DÉCOUPÉE EN SEGMENTS HORODATÉS
+         1. SCÉNARIO CALÉ SUR LES DURÉES RÉELLES DES 7 MP3 (+ 0.8s TRANSITION)
          ===================================================================== */
+      const TRANSITION_PAD = 0.8;
+
       const SCENES = [
         {
-          label: "Accroche", dur: 15,
+          label: "Accroche",
+          audio: "./audio/scene1.mp3",
+          mp3Dur: 13.224,
+          dur: 14.024,
           chunks: [
-            { a: 0.4, b: 5.0, text: "Au Burkina Faso, les délestages et le gaspillage d'eau sont un défi quotidien." },
-            { a: 5.0, b: 10.4, text: "Le Club de Génie Électrique de l'Université Aube Nouvelle a conçu une solution souveraine :" },
-            { a: 10.4, b: 14.7, text: "un Smart Grid hybride avec supervision automatisée de Polytank." }
+            { a: 0.05, b: 4.80, text: "Au Burkina Faso, les délestages et le gaspillage d'eau sont un défi quotidien." },
+            { a: 4.90, b: 9.25, text: "Le Club du Génie Électrique Aube Nouvelle Ouaga a conçu une solution souveraine :" },
+            { a: 9.35, b: 13.20, text: "un Smart Grid hybride avec supervision automatisée de Polytank." }
           ]
         },
         {
-          label: "Architecture 12V", dur: 20,
+          label: "Architecture 12V",
+          audio: "./audio/scene2.mp3",
+          mp3Dur: 12.216,
+          dur: 13.016,
           chunks: [
-            { a: 0.5, b: 9.0, text: "Notre architecture sécurisée en 12 volts combine le réseau SONABEL et le solaire avec batterie lithium." },
-            { a: 9.0, b: 16.5, text: "L'ESP32 surveille en continu la tension, le courant, la température et le niveau d'eau." }
+            { a: 0.08, b: 6.00, text: "Notre architecture sécurisée en 12 volts combine le réseau SONABEL et le solaire avec batterie lithium." },
+            { a: 6.15, b: 12.20, text: "L'ESP32 surveille en continu la tension, le courant, la température et le niveau d'eau." }
           ]
         },
         {
-          label: "Test A · Coupure", dur: 20,
+          label: "Test A · Coupure",
+          audio: "./audio/scene3.mp3",
+          mp3Dur: 8.616,
+          dur: 9.416,
           chunks: [
-            { a: 0.5, b: 3.6, text: "Premier test : coupure SONABEL." },
-            { a: 5.8, b: 9.8, text: "L'ESP32 bascule instantanément sur la batterie solaire" },
-            { a: 9.8, b: 13.8, text: "sans aucune micro-coupure pour les charges." }
+            { a: 0.08, b: 2.60, text: "Premier test : coupure SONABEL." },
+            { a: 2.72, b: 6.22, text: "L'ESP32 bascule instantanément sur la batterie solaire" },
+            { a: 6.24, b: 8.60, text: "sans aucune micro-coupure pour les charges." }
           ]
         },
         {
-          label: "Test B · Surcharge", dur: 20,
+          label: "Test B · Surcharge",
+          audio: "./audio/scene4.mp3",
+          mp3Dur: 10.032,
+          dur: 10.832,
           chunks: [
-            { a: 0.5, b: 3.6, text: "Deuxième test : surcharge électrique." },
-            { a: 6.8, b: 10.0, text: "Le capteur ACS712 détecte le pic de courant," },
-            { a: 10.0, b: 14.6, text: "coupe la ligne par sécurité et déclenche l'alarme sonore." }
+            { a: 0.08, b: 2.95, text: "Deuxième test : surcharge électrique." },
+            { a: 3.10, b: 6.50, text: "Le capteur ACS712 détecte le pic de courant," },
+            { a: 6.60, b: 10.00, text: "coupe la ligne par sécurité et déclenche l'alarme sonore." }
           ]
         },
         {
-          label: "Test C · Thermique", dur: 15,
+          label: "Test C · Thermique",
+          audio: "./audio/scene5.mp3",
+          mp3Dur: 8.928,
+          dur: 9.728,
           chunks: [
-            { a: 0.5, b: 4.6, text: "Troisième test : surchauffe du transformateur." },
-            { a: 5.0, b: 12.4, text: "La sonde étanche DS18B20 déclenche immédiatement l'alerte thermique préventive." }
+            { a: 0.08, b: 3.30, text: "Troisième test : surchauffe du transformateur." },
+            { a: 3.45, b: 8.90, text: "La sonde étanche DS18B20 déclenche immédiatement l'alerte thermique préventive." }
           ]
         },
         {
-          label: "Test D · Polytank", dur: 20,
+          label: "Test D · Polytank",
+          audio: "./audio/scene6.mp3",
+          mp3Dur: 10.680,
+          dur: 11.480,
           chunks: [
-            { a: 0.5, b: 3.8, text: "Quatrième test : niveau bas dans le Polytank." },
-            { a: 3.8, b: 10.6, text: "Le capteur ultrason démarre automatiquement la pompe 12 volts jusqu'au remplissage," },
-            { a: 11.0, b: 15.6, text: "le tout supervisé à distance sur notre SCADA." }
+            { a: 0.08, b: 3.20, text: "Quatrième test : niveau bas dans le Polytank." },
+            { a: 3.32, b: 7.75, text: "Le capteur ultrason démarre automatiquement la pompe 12 volts jusqu'au remplissage," },
+            { a: 7.88, b: 10.66, text: "le tout supervisé à distance sur notre SCADA." }
           ]
         },
         {
-          label: "Conclusion", dur: 10,
+          label: "Conclusion",
+          audio: "./audio/scene7.mp3",
+          mp3Dur: 10.608,
+          dur: 11.408,
           chunks: [
-            { a: 0.4, b: 4.4, text: "Architecture, câblage, code ESP32 et SCADA sont prêts." },
-            { a: 4.4, b: 9.7, text: "Soutenez le CGE-U-AUBEN pour concrétiser cette vitrine technologique." }
+            { a: 0.08, b: 4.80, text: "Architecture, câblage, code ESP32 et SCADA sont prêts." },
+            { a: 4.92, b: 10.60, text: "Soutenez le Club du Génie Électrique Aube Nouvelle Ouaga pour concrétiser cette vitrine technologique." }
           ]
         }
       ];
 
       const STARTS = [];
       let TOTAL = 0;
-      SCENES.forEach((s) => { STARTS.push(TOTAL); TOTAL += s.dur; });
+
+      function recalcTimeline() {
+        STARTS.length = 0;
+        TOTAL = 0;
+        SCENES.forEach((s) => {
+          STARTS.push(TOTAL);
+          TOTAL += s.dur;
+        });
+        $("t-tot").textContent = fmtTime(TOTAL);
+        $("progress").setAttribute("aria-valuemax", Math.round(TOTAL));
+        const ticks = $("progress-ticks").children;
+        for (let i = 1; i < SCENES.length; i++) {
+          if (ticks[i - 1]) ticks[i - 1].style.left = (STARTS[i] / TOTAL * 100).toFixed(3) + "%";
+        }
+      }
 
       /* =====================================================================
          2. OUTILS
@@ -1576,46 +1734,110 @@
       };
 
       /* =====================================================================
-         3. MODÈLES PHYSIQUES DES TESTS
+         3. MODÈLES PHYSIQUES SYNCHRONISÉS SUR LA VOIX OFF RÉELLE
          ===================================================================== */
+      // Scène 3 : coupure SONABEL à 2.0s, bascule ATS à 3.40s
+      const CUT3 = 2.0;
+      const SWITCH3 = 3.40;
       const V3 = (t) => {
-        if (t < 6) return 12.2 + 0.03 * Math.sin(t * 3);
-        if (t < 6.15) return 12.2 - 0.3 * Math.sin(Math.PI * (t - 6) / 0.15);
-        return 12.4 + 0.03 * Math.sin(t * 3);
+        if (t < SWITCH3) return 12.2 + 0.03 * Math.sin(t * 4);
+        if (t < SWITCH3 + 0.15) return 12.2 - 0.25 * Math.sin(Math.PI * (t - SWITCH3) / 0.15);
+        return 12.4 + 0.03 * Math.sin(t * 4);
       };
 
-      const TRIP4 = 8.2;
+      // Scène 4 : pic courant ACS712 4.8s -> 6.55s, disjonction Q1 à 6.55s
+      const TRIP4 = 6.55;
       const I4 = (t) => {
-        if (t < 7) return 1.35 + 0.05 * Math.sin(t * 5);
-        if (t < TRIP4) return 1.35 + ((t - 7) / 1.4) * 17.05;
-        const peak = 1.35 + ((TRIP4 - 7) / 1.4) * 17.05;
-        if (t < TRIP4 + 0.1) return peak * (1 - (t - TRIP4) / 0.1);
+        if (t < 4.7) return 1.35 + 0.05 * Math.sin(t * 5);
+        if (t < TRIP4) return 1.35 + ((t - 4.7) / (TRIP4 - 4.7)) * 15.15;
+        if (t < TRIP4 + 0.12) return 16.5 * (1 - (t - TRIP4) / 0.12);
         return 0;
       };
 
+      // Scène 5 : montée thermique 29.5°C -> 73.5°C, franchissement 60°C à ~5.6s
       const T5 = (t) => {
-        const p = clamp(t / 12, 0, 1);
-        return 29.5 + 44.5 * (p * p * (3 - 2 * p));
+        const p = clamp(t / 7.8, 0, 1);
+        return 29.5 + 44.0 * (p * p * (3 - 2 * p));
       };
-      let CROSS5 = 12;
-      for (let t = 0; t <= 12; t += 0.01) { if (T5(t) >= 60) { CROSS5 = t; break; } }
+      let CROSS5 = 7.8;
+      for (let t = 0; t <= 7.8; t += 0.01) { if (T5(t) >= 60) { CROSS5 = t; break; } }
 
-      const PUMP_ON6 = 3, PUMP_OFF6 = 15;
+      // Scène 6 : niveau bas <30% à 2.4s, pompe ON 3.8s -> 8.8s (remplissage 26% -> 85%)
+      const PUMP_ON6 = 3.8, PUMP_OFF6 = 8.8;
       const L6 = (t) => {
-        if (t < PUMP_ON6) return 42 - (14 / 3) * t;
-        if (t < PUMP_OFF6) return 28 + (57 / 12) * (t - PUMP_ON6);
+        if (t < PUMP_ON6) return Math.max(26, 38 - (12 / 3.0) * t);
+        if (t < PUMP_OFF6) return 26 + (59 / (PUMP_OFF6 - PUMP_ON6)) * (t - PUMP_ON6);
         return 85;
       };
 
       /* =====================================================================
-         4. INITIALISATION DOM
+         4. LECTEUR AUDIO HTML5 (<audio>) — REMPLACEMENT TOTAL SPEECHSYNTHESIS
+         ===================================================================== */
+      const audios = SCENES.map((s, idx) => {
+        const a = new Audio();
+        a.src = s.audio;
+        a.preload = "auto";
+        a.playsInline = true;
+        a.addEventListener("loadedmetadata", () => {
+          if (Number.isFinite(a.duration) && a.duration > 1) {
+            SCENES[idx].mp3Dur = a.duration;
+            SCENES[idx].dur = Number((a.duration + TRANSITION_PAD).toFixed(3));
+            recalcTimeline();
+          }
+        });
+        return a;
+      });
+
+      let activeAudioIdx = -1;
+
+      function stopAllAudio() {
+        audios.forEach((a) => {
+          try { if (!a.paused) a.pause(); } catch (e) {}
+        });
+        activeAudioIdx = -1;
+      }
+
+      function syncAudioPlayback(sceneIdx, localTime) {
+        if (!state.playing || !state.voiceOn || state.recording) {
+          stopAllAudio();
+          return;
+        }
+        const sc = SCENES[sceneIdx];
+        const a = audios[sceneIdx];
+
+        if (activeAudioIdx !== sceneIdx) {
+          stopAllAudio();
+          activeAudioIdx = sceneIdx;
+        }
+
+        // Pendant la plage de transition (+0.8s après fin du MP3), laisser silencieux
+        if (localTime >= sc.mp3Dur - 0.05) {
+          if (!a.paused) a.pause();
+          return;
+        }
+
+        if (a.paused) {
+          try {
+            if (Math.abs((a.currentTime || 0) - localTime) > 0.15) {
+              a.currentTime = clamp(localTime, 0, Math.max(0, sc.mp3Dur - 0.1));
+            }
+            const p = a.play();
+            if (p && typeof p.catch === "function") p.catch(() => {});
+          } catch (e) {}
+        } else if (Math.abs(a.currentTime - localTime) > 0.35) {
+          try { a.currentTime = clamp(localTime, 0, Math.max(0, sc.mp3Dur - 0.1)); } catch (e) {}
+        }
+      }
+
+      /* =====================================================================
+         5. INITIALISATION DOM
          ===================================================================== */
       const frame = $("frame");
       const host = $("frame-host");
       const controls = $("controls");
       const sceneEls = Array.from(document.querySelectorAll(".scene"));
+      const allFlows = Array.from(document.querySelectorAll(".flow"));
 
-      // Seuils dépendant du croisement thermique calculé
       document.querySelectorAll("[data-after-cross]").forEach((el) => {
         el.dataset.at = (CROSS5 + parseFloat(el.dataset.afterCross)).toFixed(2);
       });
@@ -1628,7 +1850,7 @@
         }))
       );
 
-      // Texture de grain
+      // Texture de grain subtile
       (function makeNoise() {
         const c = document.createElement("canvas");
         c.width = c.height = 160;
@@ -1654,12 +1876,11 @@
         return fill;
       });
 
-      // Repères de scènes sur la barre de progression + puces de sélection
+      // Repères de scènes & puces
       const chipEls = SCENES.map((s, i) => {
         if (i > 0) {
           const tick = document.createElement("div");
           tick.className = "progress-tick";
-          tick.style.left = (STARTS[i] / TOTAL * 100) + "%";
           $("progress-ticks").appendChild(tick);
         }
         const chip = document.createElement("button");
@@ -1673,9 +1894,9 @@
         return chip;
       });
 
-      $("t-tot").textContent = fmtTime(TOTAL);
+      recalcTimeline();
 
-      // Silhouette urbaine (scène 1)
+      // Silhouette urbaine (Scène 1 phase délestage)
       const cityWins = [];
       (function buildCity() {
         const g = $("s1-bldgs");
@@ -1710,72 +1931,84 @@
       })();
 
       /* =====================================================================
-         5. MISE À JOUR PAR SCÈNE (temps local en secondes)
+         6. MISE À JOUR DÉTERMINISTE PAR SCÈNE (PC, ANDROID & EXPORT MP4 30FPS)
          ===================================================================== */
       const E = {
+        imgS1: $("img-s1-3d"), imgS2: $("img-s2-3d"), imgS63d: $("img-s6-3d"), imgS6Scada: $("img-s6-scada"),
+        s2Cards: [$("s2-c1"), $("s2-c2"), $("s2-c3"), $("s2-c4")],
         s3fSon: $("s3-f-son"), s3fBat: $("s3-f-bat"), s3fOutR: $("s3-f-out-r"), s3fOutA: $("s3-f-out-a"),
         s3Lever: $("s3-lever"), s3Son: $("s3-son"), s3SonV: $("s3-son-v"), s3Trace: $("s3-trace"),
         s3VRead: $("s3-vread"), s3Cut: $("s3-cut"),
         s4Read: $("s4-read"), s4Trace: $("s4-trace"), s4Lever: $("s4-lever"), s4FOut: $("s4-f-out"),
         s4G: [$("s4-g1"), $("s4-g2")], s4B: [$("s4-b1"), $("s4-b2")],
-        s4Lg: $("s4-lg"), s4Ly: $("s4-ly"), s4Lr: $("s4-lr"), s4Buzz: $("s4-buzz"),
+        s4Lg: $("s4-lg"), s4Ly: $("s4-ly"), s4Lr: $("s4-lr"),
+        s4Bwaves: Array.from(document.querySelectorAll("#s4-buzz .bwave")),
         s5Fill: $("s5-fill"), s5Bulb: $("s5-bulb"), s5Heat: $("s5-heat"), s5Read: $("s5-read"),
         s5Trace: $("s5-trace"), s5BanN: $("s5-banner-n"), s5BanA: $("s5-banner-a"),
         s6Water: $("s6-water"), s6Sump: $("s6-sump"), s6Level: $("s6-level"), s6Dist: $("s6-dist"),
         s6Badge: $("s6-badge"), s6BadgeR: $("s6-badge-r"), s6Pipe: $("s6-pipe"), s6PLed: $("s6-pled"),
         s6Waves: Array.from(document.querySelectorAll("#s6-waves ellipse")),
-        s6Json: $("s6-json"), s6Spark: $("s6-spark"), s6Area: $("s6-area")
+        s6Json: $("s6-json"),
+        s7Ring: $("s7-ring")
       };
 
       let cityBucket = -1;
-      let jsonBucket = -1;
 
       const UPDATERS = [
-        // Scène 1 : délestage (fenêtres qui s'éteignent) puis retour de l'énergie
+        // Scène 1 : blackout urbain (0..4.8s) puis zoom studio lent sur la vraie Maquette 3D Atelier
         function (t) {
-          const bucket = Math.floor(t * 5);
-          if (bucket === cityBucket) return;
-          cityBucket = bucket;
-          let offProb;
-          if (t < 1.0) offProb = 0.05;
-          else if (t < 5.6) offProb = clamp((t - 1.0) / 3.2, 0, 0.88);
-          else if (t < 9.0) offProb = 0.88;
-          else offProb = 0.88 * (1 - clamp((t - 9.0) / 2.2, 0, 1));
-          cityWins.forEach((w) => {
-            const flick = t < 5.6 ? hash01(w.i, bucket) * 0.18 : 0;
-            const lit = hash01(w.i, 3) + flick > offProb;
-            if (lit !== w.lit) { w.lit = lit; w.el.classList.toggle("lit", lit); }
+          const bucket = Math.floor(t * 6);
+          if (bucket !== cityBucket && t < 5.0) {
+            cityBucket = bucket;
+            const offProb = t < 0.7 ? 0.06 : clamp((t - 0.7) / 2.8, 0, 0.9);
+            cityWins.forEach((w) => {
+              const flick = hash01(w.i, bucket) * 0.16;
+              const lit = hash01(w.i, 3) + flick > offProb;
+              if (lit !== w.lit) { w.lit = lit; w.el.classList.toggle("lit", lit); }
+            });
+          }
+          const zp = clamp((t - 6.4) / 7.5, 0, 1);
+          const sc = 1.0 + zp * 0.085;
+          E.imgS1.style.transform = `scale(${sc.toFixed(4)})`;
+        },
+        // Scène 2 : zoom lent sur la vue interne 3D + allumage des 4 capteurs sur la voix
+        function (t) {
+          const zp = clamp(t / 13.0, 0, 1);
+          E.imgS2.style.transform = `scale(${(1.0 + zp * 0.08).toFixed(4)})`;
+          const sensorTimes = [8.25, 9.25, 10.20, 11.15];
+          E.s2Cards.forEach((c, idx) => {
+            c.classList.toggle("lit", t >= sensorTimes[idx]);
           });
         },
-        // Scène 2 : révélations uniquement
-        function () {},
-        // Scène 3 : coupure SONABEL et bascule ATS
+        // Scène 3 : coupure SONABEL (2.0s) et bascule ATS (3.40s)
         function (t) {
-          const cut = t >= 6.0;
-          const k = clamp((t - 6.0) / 0.15, 0, 1);
+          const cut = t >= CUT3;
+          const k = clamp((t - SWITCH3) / 0.18, 0, 1);
           E.s3Lever.setAttribute("x2", lerp(446, 634, k).toFixed(1));
           E.s3Lever.setAttribute("y2", "262");
           E.s3fSon.classList.toggle("on", !cut);
-          E.s3fBat.classList.toggle("on", t >= 6.1);
-          E.s3fOutR.classList.toggle("on", t < 6.1);
-          E.s3fOutA.classList.toggle("on", t >= 6.1);
-          E.s3Son.style.opacity = cut ? "0.45" : "1";
+          E.s3fBat.classList.toggle("on", t >= SWITCH3 + 0.05);
+          E.s3fOutR.classList.toggle("on", t < SWITCH3 + 0.05);
+          E.s3fOutA.classList.toggle("on", t >= SWITCH3 + 0.05);
+          E.s3Son.style.opacity = cut ? "0.42" : "1";
           E.s3SonV.textContent = cut ? "0,0 V · absent" : "12,2 V · présent";
-          E.s3Trace.setAttribute("points", trace(V3, t, 20, 30, 930, 70, 230, 0, 14, 0.05));
-          E.s3VRead.textContent = frNum(V3(Math.min(t, 20)), 1) + " V";
-          const cx = 30 + (6 / 20) * 900;
-          E.s3Cut.setAttribute("x1", cx); E.s3Cut.setAttribute("x2", cx);
+          const maxT = SCENES[2].dur;
+          E.s3Trace.setAttribute("points", trace(V3, t, maxT, 30, 930, 70, 226, 0, 14, 0.04));
+          E.s3VRead.textContent = frNum(V3(Math.min(t, maxT)), 1) + " V";
+          const cx = 30 + (CUT3 / maxT) * 900;
+          E.s3Cut.setAttribute("x1", cx.toFixed(1)); E.s3Cut.setAttribute("x2", cx.toFixed(1));
           E.s3Cut.setAttribute("opacity", cut ? "1" : "0");
         },
-        // Scène 4 : surcharge ACS712 → Q1 ouvert, feu rouge, buzzer
+        // Scène 4 : surcharge ACS712 -> Q1 ouvert (6.55s), feu rouge, buzzer
         function (t) {
           const i = I4(t);
           const trip = t >= TRIP4;
+          const maxT = SCENES[3].dur;
           E.s4Read.firstChild.nodeValue = frNum(i, i >= 10 ? 1 : 2) + " A";
-          E.s4Read.classList.toggle("bad", i > 15 || (trip && t < TRIP4 + 1.5));
-          E.s4Trace.setAttribute("points", trace(I4, t, 20, 90, 990, 56, 356, 0, 20, 0.04));
+          E.s4Read.classList.toggle("bad", i > 15 || (trip && t < TRIP4 + 1.8));
+          E.s4Trace.setAttribute("points", trace(I4, t, maxT, 90, 990, 56, 356, 0, 20, 0.04));
           E.s4Trace.setAttribute("stroke", trip ? "#EF4444" : "#22D3EE");
-          const k = clamp((t - TRIP4) / 0.12, 0, 1);
+          const k = clamp((t - TRIP4) / 0.14, 0, 1);
           const ang = -k * 0.44;
           E.s4Lever.setAttribute("x2", (150 + Math.cos(ang) * 186).toFixed(1));
           E.s4Lever.setAttribute("y2", (160 + Math.sin(ang) * 186).toFixed(1));
@@ -1783,13 +2016,20 @@
           E.s4G.forEach((g) => g.classList.toggle("lit", !trip));
           E.s4B.forEach((b) => b.classList.toggle("lit", !trip));
           E.s4Lg.classList.toggle("on", !trip);
-          E.s4Lr.classList.toggle("on", trip && Math.floor((t - TRIP4) * 3) % 2 === 0);
-          E.s4Buzz.classList.toggle("on", trip);
+          E.s4Lr.classList.toggle("on", trip && Math.floor((t - TRIP4) * 3.5) % 2 === 0);
+
+          E.s4Bwaves.forEach((bw, idx) => {
+            if (!trip) { bw.setAttribute("opacity", "0"); return; }
+            const p = ((t - TRIP4) * 1.1 + idx / 3) % 1;
+            bw.setAttribute("r", (48 + p * 60).toFixed(1));
+            bw.setAttribute("opacity", ((1 - p) * 0.92).toFixed(2));
+          });
         },
-        // Scène 5 : montée en température DS18B20
+        // Scène 5 : montée thermique DS18B20 > 60 °C
         function (t) {
           const T = T5(t);
           const alert = T >= 60;
+          const maxT = SCENES[4].dur;
           const frac = clamp((T - 20) / 60, 0, 1);
           const yTop = 520 - frac * 430;
           E.s5Fill.setAttribute("y", yTop.toFixed(1));
@@ -1797,150 +2037,83 @@
           const col = alert ? "#EF4444" : (T > 45 ? "#F59E0B" : "#22D3EE");
           E.s5Fill.setAttribute("fill", col);
           E.s5Bulb.setAttribute("fill", col);
-          E.s5Heat.setAttribute("opacity", clamp((T - 38) / 30, 0, 1).toFixed(2));
+          E.s5Heat.setAttribute("opacity", clamp((T - 36) / 30, 0, 1).toFixed(2));
           E.s5Read.textContent = frNum(T, 1) + " °C";
           E.s5Read.style.fill = alert ? "#EF4444" : "#F4F4F5";
-          E.s5Trace.setAttribute("points", trace(T5, t, 15, 30, 930, 52, 262, 20, 80, 0.05));
+          E.s5Trace.setAttribute("points", trace(T5, t, maxT, 30, 930, 50, 260, 20, 80, 0.04));
           E.s5Trace.setAttribute("stroke", alert ? "#EF4444" : "#F59E0B");
           E.s5BanA.style.opacity = alert ? "1" : "0";
           E.s5BanN.style.opacity = alert ? "0" : "1";
         },
-        // Scène 6 : ultrasons, pompe, remplissage et télémétrie
+        // Scène 6 : Polytank + HC-SR04 + pompe 12V + Vrai aperçu Web SCADA
         function (t) {
           const L = L6(t);
           const pumpOn = t >= PUMP_ON6 && t < PUMP_OFF6;
-          const innerTop = 106, innerBot = 584, innerH = innerBot - innerTop;
+          const innerTop = 88, innerBot = 516, innerH = innerBot - innerTop;
           const surfY = innerBot - (L / 100) * innerH;
           E.s6Water.setAttribute("y", surfY.toFixed(1));
           E.s6Water.setAttribute("height", (innerBot - surfY).toFixed(1));
-          const sumpH = 98 - (L - 28) * 0.9;
-          E.s6Sump.setAttribute("y", (598 - sumpH).toFixed(1));
+          const sumpH = 84 - (L - 26) * 0.65;
+          E.s6Sump.setAttribute("y", (518 - sumpH).toFixed(1));
           E.s6Sump.setAttribute("height", sumpH.toFixed(1));
-          const startY = 90;
-          const travel = Math.max(20, surfY - startY);
+
+          const startY = 76;
+          const travel = Math.max(18, surfY - startY);
           E.s6Waves.forEach((w, n) => {
-            const p = (t * 0.9 + n / 4) % 1;
+            const p = (t * 0.95 + n / 4) % 1;
             const down = p < 0.5;
             const q = down ? p * 2 : (p - 0.5) * 2;
             const y = down ? startY + q * travel : surfY - q * travel;
             w.setAttribute("cy", y.toFixed(1));
-            w.setAttribute("rx", (down ? 30 + q * 90 : 120 - q * 80).toFixed(1));
-            w.setAttribute("ry", (down ? 8 + q * 10 : 18 - q * 10).toFixed(1));
+            w.setAttribute("rx", (down ? 26 + q * 82 : 108 - q * 72).toFixed(1));
+            w.setAttribute("ry", (down ? 7 + q * 9 : 16 - q * 8).toFixed(1));
             w.setAttribute("stroke", down ? "#22D3EE" : "#A5F3FC");
-            w.setAttribute("opacity", (Math.sin(q * Math.PI) * (down ? 0.95 : 0.6)).toFixed(2));
+            w.setAttribute("opacity", (Math.sin(q * Math.PI) * (down ? 0.95 : 0.62)).toFixed(2));
           });
+
           E.s6Level.textContent = Math.round(L) + " %";
           E.s6Level.style.fill = L < 30 ? "#FCD34D" : (L >= 85 ? "#86EFAC" : "#F4F4F5");
-          E.s6Dist.textContent = "Distance ultrason : " + frNum(21 - (L / 100) * 17.5, 1) + " cm";
+          E.s6Dist.textContent = "Ultrason : " + frNum(21 - (L / 100) * 17.5, 1) + " cm";
           E.s6Pipe.classList.toggle("on", pumpOn);
           E.s6PLed.setAttribute("fill", pumpOn ? "#22D3EE" : "#3F3F46");
+
           if (pumpOn) {
             E.s6Badge.textContent = "POMPE · MARCHE (IN4)";
             E.s6Badge.style.fill = "#A5F3FC";
-            E.s6BadgeR.setAttribute("stroke", "rgba(34,211,238,0.6)");
+            E.s6BadgeR.setAttribute("stroke", "rgba(34,211,238,0.65)");
             E.s6BadgeR.setAttribute("fill", "rgba(34,211,238,0.12)");
           } else {
             E.s6Badge.textContent = t >= PUMP_OFF6 ? "POMPE · ARRÊT À 85 %" : "POMPE · ARRÊT";
             E.s6Badge.style.fill = t >= PUMP_OFF6 ? "#86EFAC" : "#D4D4D8";
-            E.s6BadgeR.setAttribute("stroke", t >= PUMP_OFF6 ? "rgba(34,197,94,0.5)" : "rgba(255,255,255,0.16)");
+            E.s6BadgeR.setAttribute("stroke", t >= PUMP_OFF6 ? "rgba(34,197,94,0.55)" : "rgba(255,255,255,0.16)");
             E.s6BadgeR.setAttribute("fill", t >= PUMP_OFF6 ? "rgba(34,197,94,0.1)" : "rgba(255,255,255,0.05)");
           }
-          const jb = Math.floor(t * 2);
-          if (jb !== jsonBucket) {
-            jsonBucket = jb;
-            E.s6Json.textContent = JSON.stringify({
-              v: 12.2, i: 1.35, t: 31.2, src: "SONABEL",
-              eau: Math.round(L), pompe: pumpOn ? 1 : 0, disj: 1
-            }).replace(/,/g, ", ");
-          }
-          const pts = trace(L6, t, 20, 0, 900, 0, 120, 0, 100, 0.1);
-          E.s6Spark.setAttribute("points", pts);
-          if (pts) {
-            const lastX = (Math.min(t, 20) / 20) * 900;
-            E.s6Area.setAttribute("points", "0,120 " + pts + " " + lastX.toFixed(1) + ",120");
-          }
+
+          E.s6Json.textContent = "MQTT cge/uauben/david/smartgrid → " + JSON.stringify({
+            v: 12.2, i: pumpOn ? 1.44 : 1.32, t: 31.2, src: "SONABEL", eau: Math.round(L), pompe: pumpOn ? 1 : 0, disj: 1
+          });
+
+          const zp = clamp((t - 5.4) / 6.0, 0, 1);
+          E.imgS6Scada.style.transform = `scale(${(1.0 + zp * 0.065).toFixed(4)})`;
+          E.imgS63d.style.transform = `scale(${(1.0 + clamp(t / 11.4, 0, 1) * 0.07).toFixed(4)})`;
         },
-        // Scène 7 : révélations uniquement
-        function () {}
+        // Scène 7 : rotation douce de l'anneau autour du logo
+        function (t) {
+          E.s7Ring.style.transform = `rotate(${(t * 22).toFixed(1)}deg)`;
+        }
       ];
 
       /* =====================================================================
-         6. VOIX OFF (window.speechSynthesis) — choix de la meilleure voix FR
-         ===================================================================== */
-      const synth = ("speechSynthesis" in window) ? window.speechSynthesis : null;
-      let bestVoice = null;
-      const liveUtterances = [];
-      let spokenKey = null;
-      let lastCancelAt = 0;
-
-      function scoreVoice(v) {
-        let s = 0;
-        const lang = (v.lang || "").replace("_", "-").toLowerCase();
-        const name = v.name || "";
-        if (lang === "fr-fr") s += 30;
-        else if (lang.startsWith("fr-be") || lang.startsWith("fr-ch")) s += 18;
-        else if (lang.startsWith("fr-ca")) s += 12;
-        else if (lang.startsWith("fr")) s += 15;
-        if (/natural|neural|online/i.test(name)) s += 40;
-        if (/google/i.test(name)) s += 34;
-        if (/premium|enhanced|amélie|amelie|thomas|audrey|aurélie|aurelie|marie|denise|henri|eloise|vivienne|rémy|remy|julie|paul/i.test(name)) s += 14;
-        if (v.localService === false) s += 4;
-        if (/espeak|compact/i.test(name)) s -= 30;
-        return s;
-      }
-
-      function pickVoice() {
-        if (!synth) return;
-        const voices = synth.getVoices().filter((v) => /^fr/i.test(v.lang || ""));
-        if (voices.length) {
-          voices.sort((a, b) => scoreVoice(b) - scoreVoice(a));
-          bestVoice = voices[0];
-        }
-        updateVoiceLabel();
-      }
-
-      function speakChunk(text, avail) {
-        if (!synth) return;
-        const go = () => {
-          try {
-            synth.resume();
-            const u = new SpeechSynthesisUtterance(text);
-            if (bestVoice) { u.voice = bestVoice; u.lang = bestVoice.lang; } else { u.lang = "fr-FR"; }
-            const est = text.length / 14.5;
-            u.rate = clamp(est / Math.max(0.8, avail), 1.0, 1.3);
-            u.pitch = 1;
-            u.volume = 1;
-            u.onend = u.onerror = () => {
-              const k = liveUtterances.indexOf(u);
-              if (k >= 0) liveUtterances.splice(k, 1);
-            };
-            liveUtterances.push(u);
-            synth.speak(u);
-          } catch (e) { /* voix indisponible : sous-titres seuls */ }
-        };
-        if (performance.now() - lastCancelAt < 90) setTimeout(go, 90);
-        else go();
-      }
-
-      function stopVoice() {
-        spokenKey = null;
-        if (!synth) return;
-        try { synth.cancel(); } catch (e) {}
-        lastCancelAt = performance.now();
-      }
-
-      /* =====================================================================
-         7. MOTEUR DE LECTURE
+         7. MOTEUR DE LECTURE SYNCHRONISÉ
          ===================================================================== */
       const state = {
         t: 0,
         playing: false,
-        voiceOn: !!synth,
+        voiceOn: true,
         scene: -1,
-        hold: 0,
-        started: false,
         dirty: true,
-        subKey: ""
+        subKey: "",
+        recording: false
       };
 
       function sceneAt(t) {
@@ -1954,24 +2127,6 @@
         $("fh-count").innerHTML = String(i + 1).padStart(2, "0") + " <em>/ " + String(SCENES.length).padStart(2, "0") + "</em>";
         $("fh-tag").textContent = SCENES[i].label;
         cityBucket = -1;
-        jsonBucket = -1;
-      }
-
-      function syncSpeech(lt) {
-        if (!state.voiceOn || !state.playing || !synth) return;
-        const chunks = SCENES[state.scene].chunks;
-        for (let c = 0; c < chunks.length; c++) {
-          const ch = chunks[c];
-          if (lt >= ch.a && lt < ch.b) {
-            const key = state.scene + ":" + c;
-            if (key !== spokenKey) {
-              spokenKey = key;
-              const frac = (lt - ch.a) / (ch.b - ch.a);
-              if (frac < 0.5) speakChunk(ch.text, ch.b - lt);
-            }
-            return;
-          }
-        }
       }
 
       function updateSubs(lt) {
@@ -1981,16 +2136,14 @@
         for (let c = 0; c < chunks.length; c++) {
           const ch = chunks[c];
           const next = chunks[c + 1];
-          const hideAt = next ? Math.min(ch.b + 0.5, next.a) : ch.b + 0.5;
+          const hideAt = next ? Math.min(ch.b + 0.35, next.a) : ch.b + 0.55;
           if (lt >= ch.a && lt < hideAt) { text = ch.text; key = state.scene + ":" + c; break; }
         }
         if (key === state.subKey) return;
         state.subKey = key;
         const box = $("subs-box");
         if (!text) { box.classList.remove("show"); return; }
-        box.classList.remove("show");
         box.textContent = text;
-        void box.offsetWidth;
         box.classList.add("show");
       }
 
@@ -1999,39 +2152,46 @@
         if (i !== state.scene) { state.scene = i; activateScene(i); }
         const lt = state.t - STARTS[i];
 
+        // Animation déterministe des flux de courant (marche en live ET en export MP4 30fps)
+        const dashOff = (-(state.t * 48) % 40).toFixed(1);
+        allFlows.forEach((f) => { f.style.strokeDashoffset = dashOff; });
+
         reveals[i].forEach((r) => {
           const on = lt >= r.at && lt < r.out;
           if (r.el.classList.contains("on") !== on) r.el.classList.toggle("on", on);
         });
         UPDATERS[i](lt);
         updateSubs(lt);
-        syncSpeech(lt);
+        syncAudioPlayback(i, lt);
 
         storyFills.forEach((f, n) => {
           const p = n < i ? 1 : (n > i ? 0 : clamp(lt / SCENES[n].dur, 0, 1));
           f.style.width = (p * 100).toFixed(2) + "%";
         });
         const pct = clamp(state.t / TOTAL, 0, 1) * 100;
-        $("progress-fill").style.width = pct + "%";
-        $("progress-knob").style.left = pct + "%";
+        $("progress-fill").style.width = pct.toFixed(3) + "%";
+        $("progress-knob").style.left = pct.toFixed(3) + "%";
         $("progress").setAttribute("aria-valuenow", Math.round(state.t));
         $("t-cur").textContent = fmtTime(state.t);
       }
 
       function advance(dt) {
         const i = sceneAt(state.t);
-        const end = STARTS[i] + SCENES[i].dur;
+        const a = audios[i];
         let nt = state.t + dt;
-        // Si la voix déborde légèrement, on retient la fin de scène (max 2,5 s) pour rester synchronisé
-        if (nt >= end && state.voiceOn && synth && synth.speaking && state.hold < 2.5) {
-          nt = end - 0.0001;
-          state.hold += dt;
-        } else if (nt >= end) {
-          state.hold = 0;
+
+        // Calage fin sur l'horloge matérielle de l'audio HTML5 quand la voix tourne
+        if (state.voiceOn && !state.recording && a && !a.paused && !a.ended && a.currentTime > 0) {
+          const audioGlobalT = STARTS[i] + a.currentTime;
+          if (Math.abs(audioGlobalT - nt) < 0.8) {
+            nt = audioGlobalT;
+          }
         }
+
         if (nt >= TOTAL) {
-          nt = TOTAL - 0.0001;
+          nt = TOTAL - 0.001;
           state.playing = false;
+          stopAllAudio();
           updatePlayUI();
         }
         state.t = nt;
@@ -2041,35 +2201,31 @@
       function loop(now) {
         const dt = Math.min(0.1, (now - lastNow) / 1000);
         lastNow = now;
-        if (state.playing) { advance(dt); state.dirty = true; }
+        if (state.playing && !state.recording) { advance(dt); state.dirty = true; }
         if (state.dirty) { render(); state.dirty = false; }
         requestAnimationFrame(loop);
       }
 
       function play() {
-        if (state.t >= TOTAL - 0.05) seek(0);
+        if (state.t >= TOTAL - 0.08) seek(0);
         state.playing = true;
-        state.started = true;
         $("intro").classList.add("hidden");
-        spokenKey = null;
         updatePlayUI();
-        // Premier appel dans le geste utilisateur (déverrouille la synthèse vocale iOS / Android)
         render();
       }
 
       function pause() {
         state.playing = false;
-        stopVoice();
+        stopAllAudio();
         updatePlayUI();
       }
 
       function togglePlay() { state.playing ? pause() : play(); }
 
       function seek(t) {
-        state.t = clamp(t, 0, TOTAL - 0.0001);
-        state.hold = 0;
+        state.t = clamp(t, 0, TOTAL - 0.001);
         state.subKey = "#";
-        stopVoice();
+        stopAllAudio();
         state.dirty = true;
       }
 
@@ -2085,28 +2241,20 @@
           : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg>';
         btn.innerHTML = icon + (state.playing ? "Pause" : "Lecture");
         btn.setAttribute("aria-label", state.playing ? "Pause" : "Lecture");
-        frame.classList.toggle("paused", !state.playing);
+        frame.classList.toggle("paused", !state.playing && !state.recording);
       }
 
-      function updateVoiceLabel() {
+      function updateVoiceUI() {
         const btn = $("btn-voice");
-        const nameEl = $("voice-name");
-        if (!synth) {
-          btn.disabled = true;
-          btn.innerHTML = "Voix off indisponible";
-          nameEl.textContent = "Synthèse vocale non supportée · sous-titres actifs";
-          return;
-        }
         const ico = state.voiceOn
           ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>'
           : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>';
         btn.innerHTML = ico + "Voix off " + (state.voiceOn ? "ON" : "OFF");
         btn.classList.toggle("off", !state.voiceOn);
         btn.setAttribute("aria-pressed", state.voiceOn ? "true" : "false");
-        nameEl.textContent = bestVoice
-          ? "Voix : " + bestVoice.name + " (" + bestVoice.lang + ")"
-          : "Voix : français système (fr-FR)";
-        nameEl.title = nameEl.textContent;
+        $("voice-name").textContent = state.voiceOn
+          ? "Voix neurale FR studio · audio/scene1–7.mp3"
+          : "Voix off coupée · sous-titres synchronisés actifs";
       }
 
       /* =====================================================================
@@ -2117,8 +2265,8 @@
       $("btn-replay").addEventListener("click", () => { seek(0); play(); });
       $("btn-voice").addEventListener("click", () => {
         state.voiceOn = !state.voiceOn;
-        if (!state.voiceOn) stopVoice(); else { spokenKey = null; state.dirty = true; }
-        updateVoiceLabel();
+        if (!state.voiceOn) stopAllAudio(); else state.dirty = true;
+        updateVoiceUI();
       });
 
       frame.addEventListener("click", (e) => {
@@ -2139,7 +2287,7 @@
         seekFromEvent(e);
       });
       prog.addEventListener("pointermove", (e) => { if (dragging) seekFromEvent(e); });
-      prog.addEventListener("pointerup", () => { dragging = false; spokenKey = null; });
+      prog.addEventListener("pointerup", () => { dragging = false; state.dirty = true; });
       prog.addEventListener("keydown", (e) => {
         if (e.key === "ArrowRight") { seek(state.t + 5); e.preventDefault(); }
         if (e.key === "ArrowLeft") { seek(state.t - 5); e.preventDefault(); }
@@ -2148,42 +2296,34 @@
       window.addEventListener("keydown", (e) => {
         if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
         if (e.code === "Space") { e.preventDefault(); togglePlay(); }
-        else if (e.key === "PageDown" || (e.key === "ArrowDown")) { e.preventDefault(); goScene(state.scene + 1); }
-        else if (e.key === "PageUp" || (e.key === "ArrowUp")) { e.preventDefault(); goScene(state.scene - 1); }
+        else if (e.key === "PageDown" || e.key === "ArrowDown") { e.preventDefault(); goScene(state.scene + 1); }
+        else if (e.key === "PageUp" || e.key === "ArrowUp") { e.preventDefault(); goScene(state.scene - 1); }
         else if (e.key === "v" || e.key === "V") $("btn-voice").click();
       });
 
       document.addEventListener("visibilitychange", () => {
         if (document.hidden && state.playing) pause();
       });
-
-      if (synth) {
-        pickVoice();
-        if (typeof synth.addEventListener === "function") synth.addEventListener("voiceschanged", pickVoice);
-        else synth.onvoiceschanged = pickVoice;
-        setTimeout(pickVoice, 600);
-        setTimeout(pickVoice, 1800);
-      }
-      window.addEventListener("pagehide", stopVoice);
+      window.addEventListener("pagehide", stopAllAudio);
 
       /* =====================================================================
-         9. MISE À L'ÉCHELLE DU CADRE 9:16
+         9. MISE À L'ÉCHELLE RESPONSIVE 9:16
          ===================================================================== */
       function layout() {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        const ctlW = Math.min(vw - 24, 640);
+        const ctlW = Math.min(vw - 20, 680);
         controls.style.width = ctlW + "px";
         const bs = window.getComputedStyle(document.body);
-        const padY = (parseFloat(bs.paddingTop) || 14) + (parseFloat(bs.paddingBottom) || 14);
-        const gap = parseFloat(bs.rowGap || bs.gap) || (vw <= 420 ? 10 : 14);
+        const padY = (parseFloat(bs.paddingTop) || 12) + (parseFloat(bs.paddingBottom) || 12);
+        const gap = parseFloat(bs.rowGap || bs.gap) || 12;
         const ctlH = controls.getBoundingClientRect().height;
         const availH = vh - ctlH - gap - padY - 4;
-        const availW = vw - 24;
+        const availW = vw - 20;
         const s = Math.max(0.12, Math.min(availW / 1080, availH / 1920));
         host.style.width = Math.floor(1080 * s) + "px";
         host.style.height = Math.floor(1920 * s) + "px";
-        host.style.borderRadius = Math.max(10, 48 * s) + "px";
+        host.style.borderRadius = Math.max(10, 46 * s) + "px";
         frame.style.transform = "scale(" + s + ")";
       }
 
@@ -2191,13 +2331,34 @@
       window.addEventListener("orientationchange", () => setTimeout(layout, 200));
 
       updatePlayUI();
-      updateVoiceLabel();
+      updateVoiceUI();
       layout();
       render();
       requestAnimationFrame(loop);
 
-      // Hook de test non intrusif
-      window.__motion = { seek: (t) => { seek(t); render(); }, play, pause, state, TOTAL };
+      // Hook déterministe pour les tests & l'enregistrement MP4 30fps
+      window.__motion = {
+        seek: (t) => { seek(t); render(); },
+        enterRecordMode: (w, h) => {
+          state.recording = true;
+          state.playing = false;
+          stopAllAudio();
+          $("intro").classList.add("hidden");
+          controls.style.display = "none";
+          document.body.style.padding = "0";
+          document.body.style.gap = "0";
+          document.body.style.overflow = "hidden";
+          host.style.width = w + "px";
+          host.style.height = h + "px";
+          host.style.borderRadius = "0";
+          host.style.boxShadow = "none";
+          frame.classList.add("rec-mode");
+          frame.classList.remove("paused");
+          frame.style.transform = `scale(${w / 1080})`;
+        },
+        play, pause, state, SCENES, STARTS,
+        get TOTAL() { return TOTAL; }
+      };
     })();
   </script>
 </body>
