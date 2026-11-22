@@ -2043,6 +2043,7 @@
             <div class="code-libs">
               <strong>Bibliothèques Arduino :</strong>
               <span class="gpio-chip">WiFi.h</span>
+              <span class="gpio-chip">HTTPClient.h</span>
               <span class="gpio-chip">PubSubClient</span>
               <span class="gpio-chip">Wire.h</span>
               <span class="gpio-chip">LiquidCrystal_I2C</span>
@@ -3808,13 +3809,15 @@
  */
 
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
 #include <PubSubClient.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-// -------------------- 1. CONFIGURATION WI-FI & MQTT --------------------
+// -------------------- 1. CONFIGURATION WI-FI, MQTT & ALERTES -----------
 const char* WIFI_SSID     = "VOTRE_WIFI_SSID";
 const char* WIFI_PASS     = "VOTRE_MOT_DE_PASSE";
 
@@ -3822,6 +3825,15 @@ const char* MQTT_BROKER    = "broker.hivemq.com";
 const int   MQTT_PORT      = 1883;
 const char* MQTT_TOPIC     = "cge/uauben/david/smartgrid";
 const char* MQTT_CMD_TOPIC = "cge/uauben/david/smartgrid/cmd";
+
+// Alertes Agent de Maintenance : WhatsApp (TextMeBot) & Telegram (Illimité)
+const bool  ALERT_WHATSAPP_ON  = true;
+const char* WHATSAPP_PHONE     = "+22670000000";
+const char* WHATSAPP_APIKEY    = "VOTRE_CLE_API_TEXTMEBOT";
+
+const bool  ALERT_TELEGRAM_ON  = true;
+const char* TELEGRAM_BOT_TOKEN = "VOTRE_BOT_TOKEN_TELEGRAM";
+const char* TELEGRAM_CHAT_ID   = "VOTRE_CHAT_ID_TELEGRAM";
 
 // -------------------- 2. DÉFINITION DES BROCHES GPIO -------------------
 #define PIN_I2C_SDA       21
@@ -3893,6 +3905,13 @@ String sourceActive  = "COUPURE";
 bool   disjFerme     = true;
 bool   pompeActive   = false;
 bool   modeManuel    = false;
+
+// Verrous anti-spam (1 seul envoi par défaut actif + réarmement au retour nominal)
+bool alerteSonabelActive    = false;
+bool alerteSurchargeActive  = false;
+bool alerteSurchauffeActive = false;
+bool alertePolytankActive   = false;
+bool premiereMesureOk       = false;
 
 unsigned long lastSensorMs    = 0;
 unsigned long lastMqttMs      = 0;
@@ -3993,7 +4012,136 @@ void majEcranLCD() {
   lcd.setCursor(0, 3); lcd.print(l4);
 }
 
-// -------------------- 8. WI-FI, COMMANDE & PUBLICATION MQTT ------------
+// -------------------- 8. ALERTES AGENT (WHATSAPP & TELEGRAM) -----------
+String urlEncode(const String& str) {
+  String encoded = "";
+  const char* hex = "0123456789ABCDEF";
+  for (size_t i = 0; i < str.length(); i++) {
+    uint8_t c = (uint8_t)str[i];
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+        (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.' || c == '~') {
+      encoded += (char)c;
+    } else {
+      encoded += '%';
+      encoded += hex[(c >> 4) & 0x0F];
+      encoded += hex[c & 0x0F];
+    }
+  }
+  return encoded;
+}
+
+bool envoyerAlerteWhatsApp(String msg) {
+  if (!ALERT_WHATSAPP_ON || WiFi.status() != WL_CONNECTED) return false;
+  if (String(WHATSAPP_APIKEY).startsWith("VOTRE_")) return false;
+
+  WiFiClientSecure client;
+  client.setInsecure();
+  HTTPClient http;
+  String url = "https://api.textmebot.com/send.php?recipient=" + urlEncode(String(WHATSAPP_PHONE)) +
+               "&apikey=" + urlEncode(String(WHATSAPP_APIKEY)) +
+               "&text=" + urlEncode(msg);
+
+  http.setTimeout(5000);
+  if (!http.begin(client, url)) return false;
+  int code = http.GET();
+  http.end();
+  Serial.printf("[WHATSAPP] HTTP %d\n", code);
+  return (code > 0 && code < 400);
+}
+
+bool envoyerAlerteTelegram(String msg) {
+  if (!ALERT_TELEGRAM_ON || WiFi.status() != WL_CONNECTED) return false;
+  if (String(TELEGRAM_BOT_TOKEN).startsWith("VOTRE_")) return false;
+
+  WiFiClientSecure client;
+  client.setInsecure();
+  HTTPClient http;
+  String url = "https://api.telegram.org/bot" + String(TELEGRAM_BOT_TOKEN) +
+               "/sendMessage?chat_id=" + urlEncode(String(TELEGRAM_CHAT_ID)) +
+               "&text=" + urlEncode(msg);
+
+  http.setTimeout(5000);
+  if (!http.begin(client, url)) return false;
+  int code = http.GET();
+  http.end();
+  Serial.printf("[TELEGRAM] HTTP %d\n", code);
+  return (code > 0 && code < 400);
+}
+
+void notifierAgentMaintenance(String msg) {
+  if (ALERT_WHATSAPP_ON) envoyerAlerteWhatsApp(msg);
+  if (ALERT_TELEGRAM_ON) envoyerAlerteTelegram(msg);
+}
+
+void verifierAlertesMaintenance() {
+  if (!premiereMesureOk) {
+    premiereMesureOk = true;
+    return;
+  }
+
+  // 1. Défaut Coupure SONABEL
+  bool defSonabel = (vSonabel < V_SONABEL_MIN);
+  if (defSonabel && !alerteSonabelActive) {
+    alerteSonabelActive = true;
+    notifierAgentMaintenance(
+      "ALERTE SMART GRID [COUPURE SONABEL] - Bascule sur " + sourceActive +
+      " (" + String(vActive, 1) + "V, Batt " + String(battPct) + "%)."
+    );
+  } else if (!defSonabel && alerteSonabelActive) {
+    alerteSonabelActive = false;
+    notifierAgentMaintenance(
+      "Retour a la normale [SONABEL] - Secteur retabli (" + String(vSonabel, 1) + "V)."
+    );
+  }
+
+  // 2. Défaut Surcharge Courant ACS712
+  bool defSurcharge = (iCharge > I_MAX_SURCHARGE);
+  if (defSurcharge && !alerteSurchargeActive) {
+    alerteSurchargeActive = true;
+    notifierAgentMaintenance(
+      "ALERTE SMART GRID [SURCHARGE ACS712] - Courant " + String(iCharge, 2) +
+      "A (> 15.0A). Disjoncteur Q1 ouvert."
+    );
+  } else if (!defSurcharge && alerteSurchargeActive) {
+    alerteSurchargeActive = false;
+    notifierAgentMaintenance(
+      "Retour a la normale [ACS712] - Courant charge stabilise a " + String(iCharge, 2) + "A."
+    );
+  }
+
+  // 3. Défaut Surchauffe Transformateur DS18B20 (> 60°C)
+  bool defSurchauffe = (tempTransfo > TEMP_MAX_CRIT);
+  if (defSurchauffe && !alerteSurchauffeActive) {
+    alerteSurchauffeActive = true;
+    notifierAgentMaintenance(
+      "ALERTE SMART GRID [SURCHAUFFE DS18B20] - Transformateur a " + String(tempTransfo, 1) +
+      "C (> 60.0C). Protection Q1 activee."
+    );
+  } else if (!defSurchauffe && alerteSurchauffeActive) {
+    alerteSurchauffeActive = false;
+    notifierAgentMaintenance(
+      "Retour a la normale [DS18B20] - Temperature transformateur redescendue a " +
+      String(tempTransfo, 1) + "C."
+    );
+  }
+
+  // 4. Défaut Polytank Niveau Bas (< 30%) -> Réarmement au remplissage (>= 85%)
+  if (eauPct < EAU_SEUIL_BAS && !alertePolytankActive) {
+    alertePolytankActive = true;
+    notifierAgentMaintenance(
+      "ALERTE POLYTANK [NIVEAU BAS] - Reservoir a " + String(eauPct) +
+      "% (< 30%). Demarrage automatique mini-pompe 12V."
+    );
+  } else if (eauPct >= EAU_SEUIL_HAUT && alertePolytankActive) {
+    alertePolytankActive = false;
+    notifierAgentMaintenance(
+      "Retour a la normale [POLYTANK] - Reservoir rempli a " + String(eauPct) +
+      "%. Arret automatique pompe 12V."
+    );
+  }
+}
+
+// -------------------- 9. WI-FI, COMMANDE & PUBLICATION MQTT ------------
 void mqttCallback(char* topic, byte* payload, unsigned int len) {
   String msg = "";
   for (unsigned int i = 0; i < len; i++) msg += (char)payload[i];
@@ -4059,7 +4207,7 @@ void publierTelemetrieMQTT() {
   Serial.println(payload);
 }
 
-// -------------------- 9. SETUP & BOUCLE PRINCIPALE ---------------------
+// -------------------- 10. SETUP & BOUCLE PRINCIPALE --------------------
 void setup() {
   Serial.begin(115200);
   analogReadResolution(12);
@@ -4118,6 +4266,7 @@ void loop() {
     eauPct = lireNiveauPolytankPct();
     appliquerSorties();
     majEcranLCD();
+    verifierAlertesMaintenance();
   }
 
   verifierMQTT();

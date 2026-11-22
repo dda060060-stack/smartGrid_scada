@@ -635,14 +635,301 @@
     }
     .footer-link:hover { color: var(--el-yellow); }
 
+    /* =========================================================
+       8. PANNEAU ALERTES AGENT (WHATSAPP TEXTMEBOT + TELEGRAM)
+       ========================================================= */
+    #agent-alerts-panel { scroll-margin-top: 96px; }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      padding: 16px 18px;
+    }
+
+    .channel-panel {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease);
+    }
+
+    .channel-panel.enabled {
+      background: var(--surface);
+      border-color: var(--border-strong);
+      box-shadow: var(--shadow-xs);
+    }
+
+    .channel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .channel-id {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .channel-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    .channel-ico.wa { background: #ECFDF5; border-color: #BBF7D0; color: #15803D; }
+    .channel-ico.tg { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; }
+    .channel-ico svg { width: 18px; height: 18px; }
+
+    .channel-title-wrap { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .channel-title {
+      font-family: var(--font-display);
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+    .channel-sub { font-size: 11px; color: var(--muted); }
+
+    /* Interrupteur ON/OFF tactile */
+    .toggle-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .toggle-lbl {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--muted);
+      min-width: 24px;
+      text-align: right;
+    }
+
+    .toggle-wrap.on .toggle-lbl { color: var(--green); }
+
+    .toggle-input {
+      position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      pointer-events: none;
+    }
+
+    .toggle-track {
+      width: 40px;
+      height: 22px;
+      border-radius: 999px;
+      background: #D4D4D8;
+      position: relative;
+      transition: background-color 0.2s var(--ease);
+    }
+
+    .toggle-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 1px 3px rgba(9, 9, 11, 0.24);
+      transition: transform 0.2s var(--ease);
+    }
+
+    .toggle-input:checked + .toggle-track { background: var(--green); }
+    .toggle-input:checked + .toggle-track::after { transform: translateX(18px); }
+    .toggle-input:focus-visible + .toggle-track { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+    .field-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .secret-wrap { position: relative; display: flex; align-items: center; }
+
+    .field-input {
+      width: 100%;
+      height: 36px;
+      padding: 0 11px;
+      border-radius: 8px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .secret-wrap .field-input { padding-right: 54px; }
+
+    .field-input:focus {
+      outline: none;
+      border-color: var(--ink);
+      box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.08);
+    }
+
+    .secret-btn {
+      position: absolute;
+      right: 5px;
+      padding: 3px 7px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--ink-secondary);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .secret-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+    .channel-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    .channel-status {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .channel-status.ok { color: var(--green); font-weight: 600; }
+    .channel-status.err { color: var(--red); font-weight: 600; }
+    .channel-status.warn { color: #B45309; font-weight: 600; }
+
+    .btn-test-alert {
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: #FFFFFF;
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-family: var(--font-ui);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: background-color 0.16s ease, color 0.16s ease, transform 0.16s ease;
+    }
+
+    .btn-test-alert:hover:not(:disabled) {
+      background: var(--el-yellow);
+      color: var(--ink);
+      transform: translateY(-1px);
+    }
+
+    .btn-test-alert:disabled { opacity: 0.5; cursor: wait; }
+
+    .latch-bar {
+      padding: 11px 18px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-alt);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 14px;
+      flex-wrap: wrap;
+      font-size: 11.5px;
+      color: var(--ink-secondary);
+    }
+
+    .latch-list { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+
+    .latch-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+    }
+
+    .latch-pill.locked {
+      border-color: #FCA5A5;
+      background: var(--red-bg);
+      color: #991B1B;
+    }
+
+    .latch-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    .latch-pill.locked .latch-dot { background: var(--red); }
+
+    .btn-reset-latch {
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: 7px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-reset-latch:hover { border-color: var(--ink); background: var(--el-yellow); }
+
     @media (max-width: 1240px) {
       .kpi-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .ops-grid, .charts-grid { grid-template-columns: 1fr; }
+      .ops-grid, .charts-grid, .agent-grid { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 720px) {
       .el-header, .telemetry-bar, .main-shell { padding-left: 14px; padding-right: 14px; }
       .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .field-grid { grid-template-columns: 1fr; }
       .chart-box { height: 260px; }
     }
   </style>
@@ -1101,6 +1388,114 @@
           </div>
         </section>
       </div>
+
+      <!-- PANNEAU ALERTES AGENT DE MAINTENANCE (WHATSAPP TEXTMEBOT + TELEGRAM) -->
+      <section id="agent-alerts-panel" class="card" aria-label="Configuration des alertes agent de maintenance">
+        <div class="card-header">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span class="card-title">Alertes Agent (WhatsApp &amp; Telegram)</span>
+            <span id="agent-channels-badge" class="badge bg-gray">CANAUX INACTIFS</span>
+          </div>
+          <span class="mono" style="font-size:11px; color:var(--muted);">Sauvegarde auto • localStorage • Anti-spam actif</span>
+        </div>
+
+        <div class="agent-grid">
+          <!-- BLOC 1 : WHATSAPP (TEXTMEBOT) -->
+          <div id="panel-wa" class="channel-panel">
+            <div class="channel-head">
+              <div class="channel-id">
+                <div class="channel-ico wa" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </div>
+                <div class="channel-title-wrap">
+                  <div class="channel-title">
+                    <span>WhatsApp (TextMeBot)</span>
+                    <span class="badge bg-gray">API HTTP</span>
+                  </div>
+                  <span class="channel-sub">Envoi direct sur numéro mobile (+226…)</span>
+                </div>
+              </div>
+              <label id="wa-toggle-wrap" class="toggle-wrap" title="Activer ou désactiver les alertes WhatsApp">
+                <span id="wa-toggle-lbl" class="toggle-lbl">OFF</span>
+                <input id="alert-wa-enabled" class="toggle-input" type="checkbox" onchange="saveAlertConfig()" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <div class="field-group">
+                <label class="field-label" for="alert-wa-phone">Numéro WhatsApp</label>
+                <input id="alert-wa-phone" class="field-input" type="tel" inputmode="tel" placeholder="+22670000000" autocomplete="off" oninput="saveAlertConfig()" />
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="alert-wa-apikey">Clé API TextMeBot</label>
+                <div class="secret-wrap">
+                  <input id="alert-wa-apikey" class="field-input" type="password" placeholder="Votre clé API" autocomplete="off" oninput="saveAlertConfig()" />
+                  <button class="secret-btn" type="button" onclick="toggleSecretField('alert-wa-apikey', this)">Voir</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="channel-foot">
+              <span id="alert-wa-status" class="channel-status">Canal désactivé</span>
+              <button id="btn-test-wa" class="btn-test-alert" type="button" onclick="testWhatsAppAlert()">Tester WhatsApp</button>
+            </div>
+          </div>
+
+          <!-- BLOC 2 : TELEGRAM (ILLIMITÉ) -->
+          <div id="panel-tg" class="channel-panel">
+            <div class="channel-head">
+              <div class="channel-id">
+                <div class="channel-ico tg" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                </div>
+                <div class="channel-title-wrap">
+                  <div class="channel-title">
+                    <span>Telegram</span>
+                    <span class="badge bg-blue">Illimité</span>
+                  </div>
+                  <span class="channel-sub">Bot API officielle • Notifications instantanées</span>
+                </div>
+              </div>
+              <label id="tg-toggle-wrap" class="toggle-wrap" title="Activer ou désactiver les alertes Telegram">
+                <span id="tg-toggle-lbl" class="toggle-lbl">OFF</span>
+                <input id="alert-tg-enabled" class="toggle-input" type="checkbox" onchange="saveAlertConfig()" />
+                <span class="toggle-track"></span>
+              </label>
+            </div>
+
+            <div class="field-grid">
+              <div class="field-group">
+                <label class="field-label" for="alert-tg-token">Bot Token</label>
+                <div class="secret-wrap">
+                  <input id="alert-tg-token" class="field-input" type="password" placeholder="123456:AAH..." autocomplete="off" oninput="saveAlertConfig()" />
+                  <button class="secret-btn" type="button" onclick="toggleSecretField('alert-tg-token', this)">Voir</button>
+                </div>
+              </div>
+              <div class="field-group">
+                <label class="field-label" for="alert-tg-chatid">Chat ID</label>
+                <input id="alert-tg-chatid" class="field-input" type="text" placeholder="Ex. 987654321 ou -100..." autocomplete="off" oninput="saveAlertConfig()" />
+              </div>
+            </div>
+
+            <div class="channel-foot">
+              <span id="alert-tg-status" class="channel-status">Canal désactivé</span>
+              <button id="btn-test-tg" class="btn-test-alert" type="button" onclick="testTelegramAlert()">Tester Telegram</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="latch-bar">
+          <div class="latch-list">
+            <strong style="color:var(--ink);">Verrous anti-spam :</strong>
+            <span id="latch-sonabel" class="latch-pill"><span class="latch-dot"></span>SONABEL : PRÊT</span>
+            <span id="latch-acs" class="latch-pill"><span class="latch-dot"></span>ACS712 : PRÊT</span>
+            <span id="latch-temp" class="latch-pill"><span class="latch-dot"></span>DS18B20 : PRÊT</span>
+            <span id="latch-eau" class="latch-pill"><span class="latch-dot"></span>POLYTANK : PRÊT</span>
+          </div>
+          <button class="btn-reset-latch" type="button" onclick="resetAlertLatches()">Réarmer verrous</button>
+        </div>
+      </section>
     </section>
 
     <!-- =======================================================
@@ -1137,7 +1532,10 @@
       <section class="card">
         <div class="card-header">
           <span class="card-title">Surveillance des alarmes &amp; seuils de protection</span>
-          <span id="alarm-view-badge" class="badge bg-green">0 ALARME ACTIVE</span>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span id="alarm-view-badge" class="badge bg-green">0 ALARME ACTIVE</span>
+            <button class="el-btn-outline" style="padding:5px 11px; font-size:11.5px;" type="button" onclick="openAgentAlertsPanel()">Alertes Agent (WA / TG) →</button>
+          </div>
         </div>
         <div class="table-wrap">
           <table class="scada-table">
@@ -1798,6 +2196,13 @@
       }
       prevSrc = src; prevDisj = disj; prevPompe = pompe;
 
+      // 5b. Évaluation et envoi multi-canal Alertes Agent (WhatsApp + Telegram)
+      evaluateAgentAlerts({
+        src, v, i, t, batt, eau, disj, pompe,
+        vSonabel: d.v_sonabel !== undefined ? Number(d.v_sonabel) : undefined,
+        nowStr
+      });
+
       // 6. Mise à jour des 2 graphiques Chart.js
       scadaChart.data.labels.push(nowStr);
       scadaChart.data.datasets[0].data.push(v);
@@ -1818,6 +2223,373 @@
       }
       powerWaterChart.update();
     }
+
+    // =========================================================================
+    // 6. ALERTES AGENT DE MAINTENANCE (WHATSAPP TEXTMEBOT + TELEGRAM)
+    // =========================================================================
+    const ALERT_CFG_KEY = "uauben_scada_agent_alerts_v1";
+
+    const alertConfig = {
+      waEnabled: false,
+      waPhone: "",
+      waApiKey: "",
+      tgEnabled: false,
+      tgToken: "",
+      tgChatId: ""
+    };
+
+    const alertLatch = {
+      sonabel: false,
+      acs: false,
+      temp: false,
+      eau: false
+    };
+
+    function setChannelStatus(channel, text, level = "") {
+      const el = document.getElementById(channel === "wa" ? "alert-wa-status" : "alert-tg-status");
+      if (!el) return;
+      el.textContent = text;
+      el.className = "channel-status" + (level ? " " + level : "");
+    }
+
+    function updateAlertUI() {
+      const waOn = Boolean(alertConfig.waEnabled);
+      const tgOn = Boolean(alertConfig.tgEnabled);
+
+      const panelWa = document.getElementById("panel-wa");
+      const panelTg = document.getElementById("panel-tg");
+      const waWrap = document.getElementById("wa-toggle-wrap");
+      const tgWrap = document.getElementById("tg-toggle-wrap");
+      const waLbl = document.getElementById("wa-toggle-lbl");
+      const tgLbl = document.getElementById("tg-toggle-lbl");
+      const badge = document.getElementById("agent-channels-badge");
+
+      if (panelWa) panelWa.classList.toggle("enabled", waOn);
+      if (panelTg) panelTg.classList.toggle("enabled", tgOn);
+      if (waWrap) waWrap.classList.toggle("on", waOn);
+      if (tgWrap) tgWrap.classList.toggle("on", tgOn);
+      if (waLbl) waLbl.textContent = waOn ? "ON" : "OFF";
+      if (tgLbl) tgLbl.textContent = tgOn ? "ON" : "OFF";
+
+      const activeCount = (waOn ? 1 : 0) + (tgOn ? 1 : 0);
+      if (badge) {
+        if (activeCount === 2) {
+          badge.textContent = "2 CANAUX ACTIFS (WA + TG)";
+          badge.className = "badge bg-green";
+        } else if (activeCount === 1) {
+          badge.textContent = waOn ? "1 CANAL ACTIF (WHATSAPP)" : "1 CANAL ACTIF (TELEGRAM)";
+          badge.className = "badge bg-blue";
+        } else {
+          badge.textContent = "CANAUX INACTIFS";
+          badge.className = "badge bg-gray";
+        }
+      }
+
+      if (!waOn) {
+        setChannelStatus("wa", "Canal désactivé");
+      } else if (!alertConfig.waPhone.trim() || !alertConfig.waApiKey.trim()) {
+        setChannelStatus("wa", "Renseignez numéro (+226…) et clé API", "warn");
+      } else {
+        setChannelStatus("wa", "Prêt — " + alertConfig.waPhone.trim(), "ok");
+      }
+
+      if (!tgOn) {
+        setChannelStatus("tg", "Canal désactivé");
+      } else if (!alertConfig.tgToken.trim() || !alertConfig.tgChatId.trim()) {
+        setChannelStatus("tg", "Renseignez Bot Token et Chat ID", "warn");
+      } else {
+        setChannelStatus("tg", "Prêt — Chat " + alertConfig.tgChatId.trim(), "ok");
+      }
+    }
+
+    function updateLatchUI() {
+      const map = [
+        { key: "sonabel", id: "latch-sonabel", label: "SONABEL" },
+        { key: "acs",     id: "latch-acs",     label: "ACS712" },
+        { key: "temp",    id: "latch-temp",    label: "DS18B20" },
+        { key: "eau",     id: "latch-eau",     label: "POLYTANK" }
+      ];
+      map.forEach(item => {
+        const el = document.getElementById(item.id);
+        if (!el) return;
+        const locked = Boolean(alertLatch[item.key]);
+        el.classList.toggle("locked", locked);
+        el.innerHTML = `<span class="latch-dot"></span>${item.label} : ${locked ? "ENVOYÉE" : "PRÊT"}`;
+      });
+    }
+
+    function loadAlertConfig() {
+      try {
+        const raw = localStorage.getItem(ALERT_CFG_KEY);
+        if (raw) {
+          const saved = JSON.parse(raw);
+          if (saved && typeof saved === "object") {
+            alertConfig.waEnabled = Boolean(saved.waEnabled);
+            alertConfig.waPhone   = typeof saved.waPhone === "string" ? saved.waPhone : "";
+            alertConfig.waApiKey  = typeof saved.waApiKey === "string" ? saved.waApiKey : "";
+            alertConfig.tgEnabled = Boolean(saved.tgEnabled);
+            alertConfig.tgToken   = typeof saved.tgToken === "string" ? saved.tgToken : "";
+            alertConfig.tgChatId  = typeof saved.tgChatId === "string" ? saved.tgChatId : "";
+          }
+        }
+      } catch (e) {}
+
+      const waEn = document.getElementById("alert-wa-enabled");
+      const waPh = document.getElementById("alert-wa-phone");
+      const waAk = document.getElementById("alert-wa-apikey");
+      const tgEn = document.getElementById("alert-tg-enabled");
+      const tgTk = document.getElementById("alert-tg-token");
+      const tgId = document.getElementById("alert-tg-chatid");
+
+      if (waEn) waEn.checked = alertConfig.waEnabled;
+      if (waPh) waPh.value   = alertConfig.waPhone;
+      if (waAk) waAk.value   = alertConfig.waApiKey;
+      if (tgEn) tgEn.checked = alertConfig.tgEnabled;
+      if (tgTk) tgTk.value   = alertConfig.tgToken;
+      if (tgId) tgId.value   = alertConfig.tgChatId;
+
+      updateAlertUI();
+      updateLatchUI();
+    }
+
+    function saveAlertConfig() {
+      const waEn = document.getElementById("alert-wa-enabled");
+      const waPh = document.getElementById("alert-wa-phone");
+      const waAk = document.getElementById("alert-wa-apikey");
+      const tgEn = document.getElementById("alert-tg-enabled");
+      const tgTk = document.getElementById("alert-tg-token");
+      const tgId = document.getElementById("alert-tg-chatid");
+
+      alertConfig.waEnabled = waEn ? waEn.checked : false;
+      alertConfig.waPhone   = waPh ? waPh.value.trim() : "";
+      alertConfig.waApiKey  = waAk ? waAk.value.trim() : "";
+      alertConfig.tgEnabled = tgEn ? tgEn.checked : false;
+      alertConfig.tgToken   = tgTk ? tgTk.value.trim() : "";
+      alertConfig.tgChatId  = tgId ? tgId.value.trim() : "";
+
+      try {
+        localStorage.setItem(ALERT_CFG_KEY, JSON.stringify(alertConfig));
+      } catch (e) {}
+
+      updateAlertUI();
+    }
+
+    function toggleSecretField(inputId, btn) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      if (btn) btn.textContent = isHidden ? "Cacher" : "Voir";
+    }
+
+    function openAgentAlertsPanel() {
+      switchView("supervision");
+      const panel = document.getElementById("agent-alerts-panel");
+      if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function resetAlertLatches() {
+      alertLatch.sonabel = false;
+      alertLatch.acs = false;
+      alertLatch.temp = false;
+      alertLatch.eau = false;
+      updateLatchUI();
+      ajouterLog("Verrous anti-spam Alertes Agent réarmés manuellement.", "ok");
+    }
+
+    async function sendWhatsAppMessage(msg, isTest = false) {
+      const phone = alertConfig.waPhone.trim();
+      const apikey = alertConfig.waApiKey.trim();
+      if (!phone || !apikey) {
+        setChannelStatus("wa", "Numéro WhatsApp ou clé API manquant", "err");
+        ajouterLog("Échec alerte WhatsApp : renseignez le numéro (+226…) et la clé API TextMeBot.", "warn");
+        return false;
+      }
+
+      const url = `https://api.textmebot.com/send.php?recipient=${encodeURIComponent(phone)}&apikey=${encodeURIComponent(apikey)}&text=${encodeURIComponent(msg)}`;
+      setChannelStatus("wa", "Envoi vers TextMeBot…", "warn");
+
+      try {
+        const resp = await fetch(url, { method: "GET" });
+        if (resp.ok) {
+          setChannelStatus("wa", `${isTest ? "Test envoyé" : "Alerte envoyée"} (${new Date().toLocaleTimeString()})`, "ok");
+          ajouterLog(`WhatsApp (TextMeBot) envoyé vers ${phone}${isTest ? " [TEST]" : ""}.`, "ok");
+          return true;
+        }
+        setChannelStatus("wa", `Erreur HTTP ${resp.status}`, "err");
+        ajouterLog(`Erreur WhatsApp TextMeBot (HTTP ${resp.status}).`, "err");
+        return false;
+      } catch (err) {
+        // Repli no-cors si TextMeBot n'expose pas d'en-tête CORS au navigateur
+        try {
+          await fetch(url, { method: "GET", mode: "no-cors" });
+          setChannelStatus("wa", `${isTest ? "Test transmis" : "Alerte transmise"} (${new Date().toLocaleTimeString()})`, "ok");
+          ajouterLog(`WhatsApp (TextMeBot) transmis vers ${phone}${isTest ? " [TEST]" : ""}.`, "ok");
+          return true;
+        } catch (err2) {
+          setChannelStatus("wa", "Échec réseau TextMeBot", "err");
+          ajouterLog("Échec réseau lors de l'envoi WhatsApp TextMeBot.", "err");
+          return false;
+        }
+      }
+    }
+
+    async function sendTelegramMessage(msg, isTest = false) {
+      const token = alertConfig.tgToken.trim();
+      const chatId = alertConfig.tgChatId.trim();
+      if (!token || !chatId) {
+        setChannelStatus("tg", "Bot Token ou Chat ID manquant", "err");
+        ajouterLog("Échec alerte Telegram : renseignez le Bot Token et le Chat ID.", "warn");
+        return false;
+      }
+
+      const url = `https://api.telegram.org/bot${encodeURIComponent(token)}/sendMessage?chat_id=${encodeURIComponent(chatId)}&text=${encodeURIComponent(msg)}`;
+      setChannelStatus("tg", "Envoi vers Telegram…", "warn");
+
+      try {
+        const resp = await fetch(url, { method: "GET" });
+        let data = null;
+        try { data = await resp.json(); } catch (e) {}
+        if (resp.ok && (!data || data.ok !== false)) {
+          setChannelStatus("tg", `${isTest ? "Test envoyé" : "Alerte envoyée"} (${new Date().toLocaleTimeString()})`, "ok");
+          ajouterLog(`Telegram envoyé vers Chat ${chatId}${isTest ? " [TEST]" : ""}.`, "ok");
+          return true;
+        }
+        const desc = (data && data.description) ? data.description : `HTTP ${resp.status}`;
+        setChannelStatus("tg", `Erreur : ${desc}`, "err");
+        ajouterLog(`Erreur Telegram Bot API : ${desc}.`, "err");
+        return false;
+      } catch (err) {
+        try {
+          await fetch(url, { method: "GET", mode: "no-cors" });
+          setChannelStatus("tg", `${isTest ? "Test transmis" : "Alerte transmise"} (${new Date().toLocaleTimeString()})`, "ok");
+          ajouterLog(`Telegram transmis vers Chat ${chatId}${isTest ? " [TEST]" : ""}.`, "ok");
+          return true;
+        } catch (err2) {
+          setChannelStatus("tg", "Échec réseau Telegram", "err");
+          ajouterLog("Échec réseau lors de l'envoi Telegram.", "err");
+          return false;
+        }
+      }
+    }
+
+    async function testWhatsAppAlert() {
+      saveAlertConfig();
+      const btn = document.getElementById("btn-test-wa");
+      if (btn) btn.disabled = true;
+      const msg = `[TEST SCADA] Club du Génie Électrique Aube Nouvelle Ouaga — Canal WhatsApp opérationnel (${new Date().toLocaleTimeString()}).`;
+      try { await sendWhatsAppMessage(msg, true); } finally { if (btn) btn.disabled = false; }
+    }
+
+    async function testTelegramAlert() {
+      saveAlertConfig();
+      const btn = document.getElementById("btn-test-tg");
+      if (btn) btn.disabled = true;
+      const msg = `[TEST SCADA] Club du Génie Électrique Aube Nouvelle Ouaga — Canal Telegram opérationnel (${new Date().toLocaleTimeString()}).`;
+      try { await sendTelegramMessage(msg, true); } finally { if (btn) btn.disabled = false; }
+    }
+
+    function dispatchAgentAlert(faultTitle, msg, isRecovery = false) {
+      const channels = [];
+      if (alertConfig.waEnabled) channels.push("WhatsApp");
+      if (alertConfig.tgEnabled) channels.push("Telegram");
+
+      if (channels.length === 0) {
+        ajouterLog(
+          `${isRecovery ? "Retour nominal" : "Défaut détecté"} [${faultTitle}] — aucun canal WhatsApp/Telegram activé.`,
+          isRecovery ? "ok" : "warn"
+        );
+        return;
+      }
+
+      ajouterLog(
+        `Envoi ${isRecovery ? "retour nominal" : "alerte critique"} [${faultTitle}] sur ${channels.join(" + ")}…`,
+        isRecovery ? "ok" : "err"
+      );
+
+      if (alertConfig.waEnabled) sendWhatsAppMessage(msg, false);
+      if (alertConfig.tgEnabled) sendTelegramMessage(msg, false);
+    }
+
+    function evaluateAgentAlerts(m) {
+      const isSonabelDown = (m.src !== "SONABEL") || (m.vSonabel !== undefined && m.vSonabel < 9.5);
+      const isOverload    = m.i > 15.0;
+      const isOverheat    = m.t > 60.0;
+      const isTankLow     = m.eau < 30;
+
+      // 1. Coupure SONABEL
+      if (isSonabelDown && !alertLatch.sonabel) {
+        alertLatch.sonabel = true;
+        dispatchAgentAlert(
+          "Coupure SONABEL",
+          `🚨 ALERTE SMART GRID — COUPURE SONABEL\nSource active : ${m.src}\nBus DC : ${m.v.toFixed(1)} V | Batterie 3S : ${m.batt}%\nHeure : ${m.nowStr}`,
+          false
+        );
+      } else if (!isSonabelDown && alertLatch.sonabel) {
+        alertLatch.sonabel = false;
+        dispatchAgentAlert(
+          "SONABEL rétabli",
+          `✅ RETOUR À LA NORMALE — SONABEL\nAlimentation principale rétablie (${m.v.toFixed(1)} V).\nHeure : ${m.nowStr}`,
+          true
+        );
+      }
+
+      // 2. Surcharge courant ACS712 (> 15.0 A)
+      if (isOverload && !alertLatch.acs) {
+        alertLatch.acs = true;
+        dispatchAgentAlert(
+          "Surcharge ACS712",
+          `🚨 ALERTE SMART GRID — SURCHARGE COURANT (ACS712)\nCourant mesuré : ${m.i.toFixed(2)} A (> 15.0 A)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
+          false
+        );
+      } else if (!isOverload && alertLatch.acs) {
+        alertLatch.acs = false;
+        dispatchAgentAlert(
+          "Courant nominal",
+          `✅ RETOUR À LA NORMALE — COURANT ACS712\nCourant charge stabilisé à ${m.i.toFixed(2)} A | Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}.\nHeure : ${m.nowStr}`,
+          true
+        );
+      }
+
+      // 3. Surchauffe transformateur DS18B20 (> 60.0 °C)
+      if (isOverheat && !alertLatch.temp) {
+        alertLatch.temp = true;
+        dispatchAgentAlert(
+          "Surchauffe DS18B20",
+          `🚨 ALERTE SMART GRID — SURCHAUFFE TRANSFORMATEUR\nSonde DS18B20 : ${m.t.toFixed(1)} °C (> 60.0 °C)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
+          false
+        );
+      } else if (!isOverheat && alertLatch.temp) {
+        alertLatch.temp = false;
+        dispatchAgentAlert(
+          "Température nominale",
+          `✅ RETOUR À LA NORMALE — TEMPÉRATURE DS18B20\nTempérature transformateur redescendue à ${m.t.toFixed(1)} °C.\nHeure : ${m.nowStr}`,
+          true
+        );
+      }
+
+      // 4. Polytank niveau bas (< 30 %)
+      if (isTankLow && !alertLatch.eau) {
+        alertLatch.eau = true;
+        dispatchAgentAlert(
+          "Polytank niveau bas",
+          `🚨 ALERTE POLYTANK — NIVEAU CRITIQUE BAS\nNiveau mesuré (HC-SR04) : ${m.eau}% (< 30%)\nPompe 12V : ${m.pompe ? "EN MARCHE" : "ARRÊTÉE"}\nHeure : ${m.nowStr}`,
+          false
+        );
+      } else if (!isTankLow && alertLatch.eau) {
+        alertLatch.eau = false;
+        dispatchAgentAlert(
+          "Polytank rétabli",
+          `✅ RETOUR À LA NORMALE — POLYTANK\nNiveau d'eau rétabli à ${m.eau}% | Pompe 12V : ${m.pompe ? "EN MARCHE" : "ARRÊTÉE"}.\nHeure : ${m.nowStr}`,
+          true
+        );
+      }
+
+      updateLatchUI();
+    }
+
+    // Chargement automatique des paramètres sauvegardés au démarrage
+    loadAlertConfig();
   </script>
 </body>
 </html>
