@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     :root {
       --el-yellow: #F0CE5B;
@@ -54,12 +56,13 @@
     .el-header {
       background: var(--el-yellow);
       border-bottom: 1px solid rgba(10, 10, 10, 0.12);
-      padding: 0 22px;
-      height: 60px;
+      padding: 8px 22px;
+      min-height: 60px;
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 10px 14px;
       position: sticky;
       top: 0;
       z-index: 40;
@@ -85,7 +88,7 @@
     }
 
     .el-brand-name {
-      font-size: 16px;
+      font-size: 15.5px;
       font-weight: 800;
       letter-spacing: -0.3px;
       color: var(--el-black);
@@ -104,11 +107,14 @@
 
     .el-nav-tabs {
       display: inline-flex;
-      background: rgba(255, 255, 255, 0.72);
+      flex-wrap: wrap;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.78);
       border: 1px solid rgba(10, 10, 10, 0.14);
-      border-radius: 999px;
+      border-radius: 12px;
       padding: 3px;
-      gap: 4px;
+      gap: 3px;
+      max-width: 100%;
     }
 
     .el-tab {
@@ -116,15 +122,20 @@
       background: transparent;
       color: var(--el-black);
       font-family: var(--font-ui);
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 600;
-      padding: 6px 15px;
-      border-radius: 999px;
+      padding: 6px 11px;
+      border-radius: 9px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
+      white-space: nowrap;
       transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .el-tab:hover:not(.active) {
+      background: rgba(17, 24, 39, 0.07);
     }
 
     .el-tab.active {
@@ -774,15 +785,507 @@
       border-bottom-color: #F0CE5B;
     }
 
+    /* =========================================================
+       NOUVELLES SECTIONS : MAQUETTE 3D, CONNEXIONS, CODE, SCADA
+       ========================================================= */
+    .section-wrap {
+      padding: 16px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-banner {
+      background: var(--el-yellow);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid rgba(10, 10, 10, 0.1);
+    }
+
+    .section-banner h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--el-black);
+      letter-spacing: -0.2px;
+    }
+
+    .section-banner p {
+      font-size: 12.5px;
+      color: rgba(17, 24, 39, 0.8);
+      margin-top: 2px;
+      max-width: 760px;
+    }
+
+    /* --- 1. MAQUETTE 3D --- */
+    .viewport-3d-wrap {
+      position: relative;
+      width: 100%;
+      height: 540px;
+      background: #EEF2F6;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .viewport-3d-wrap canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .viewport-3d-wrap canvas:active { cursor: grabbing; }
+
+    .viewport-3d-hint {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--el-border-strong);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #374151;
+      pointer-events: none;
+    }
+
+    .viewport-3d-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(17, 24, 39, 0.88);
+      color: var(--el-white);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      pointer-events: none;
+    }
+
+    .controls-3d-bar {
+      padding: 12px 14px;
+      background: var(--el-gray-50);
+      border-top: 1px solid var(--el-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .controls-3d-btns {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-3d {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1.5px solid var(--el-border-strong);
+      background: var(--el-white);
+      color: var(--el-black);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-3d:hover {
+      border-color: var(--el-black);
+      background: var(--el-gray-100);
+    }
+
+    .btn-3d.active {
+      background: var(--el-black);
+      border-color: var(--el-black);
+      color: var(--el-white);
+    }
+
+    .btn-3d.accent.active {
+      background: var(--el-yellow);
+      border-color: var(--el-black);
+      color: var(--el-black);
+    }
+
+    .maquette-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .meta-mini-card {
+      background: var(--el-white);
+      border: 1px solid var(--el-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .meta-mini-card h4 {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--el-black);
+      margin-bottom: 4px;
+    }
+
+    .meta-mini-card p {
+      font-size: 11.5px;
+      color: var(--el-muted);
+      line-height: 1.45;
+    }
+
+    /* --- 2. TABLEAU DE CONNEXIONS COMPLET --- */
+    .conn-toolbar {
+      padding: 12px 14px;
+      background: var(--el-gray-50);
+      border-bottom: 1px solid var(--el-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .conn-search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 240px;
+      max-width: 520px;
+    }
+
+    .conn-search-input {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--el-border-strong);
+      background: var(--el-white);
+      color: var(--el-black);
+      font-family: var(--font-ui);
+      font-size: 12.5px;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .conn-search-input:focus {
+      border-color: var(--el-black);
+    }
+
+    .conn-count {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #374151;
+      background: var(--el-white);
+      border: 1px solid var(--el-border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      white-space: nowrap;
+    }
+
+    .conn-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table.conn-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 880px;
+    }
+
+    table.conn-table thead th {
+      background: var(--el-gray-50);
+      color: #374151;
+      font-size: 10.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--el-black);
+      white-space: nowrap;
+    }
+
+    table.conn-table tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--el-border);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+
+    table.conn-table tbody tr:hover {
+      background: #FFFDF2;
+    }
+
+    .conn-comp-name {
+      font-weight: 700;
+      color: var(--el-black);
+      display: block;
+    }
+
+    .conn-comp-cat {
+      display: inline-block;
+      margin-top: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--el-muted);
+      background: var(--el-gray-100);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    .rail-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin: 1px 3px 2px 0;
+      border: 1px solid transparent;
+    }
+
+    .rail-12v { background: #FEE2E2; color: #991B1B; border-color: #FCA5A5; }
+    .rail-5v  { background: #FFEDD5; color: #9A3412; border-color: #FDBA74; }
+    .rail-3v3 { background: #FEF9C3; color: #854D0E; border-color: #FDE047; }
+    .rail-gnd { background: #F3F4F6; color: #111827; border-color: #D1D5DB; }
+
+    .conn-note-warn {
+      color: #991B1B;
+      font-weight: 600;
+    }
+
+    /* --- 3. CODE ESP32 --- */
+    .code-meta-strip {
+      padding: 10px 14px;
+      background: var(--el-gray-50);
+      border-bottom: 1px solid var(--el-border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .code-libs {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      font-size: 11.5px;
+      color: #374151;
+    }
+
+    .btn-copy-code {
+      background: var(--el-black);
+      color: var(--el-white);
+      border: 1.5px solid var(--el-black);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-copy-code:hover {
+      background: #1F2937;
+    }
+
+    .btn-copy-code.copied {
+      background: #166534;
+      border-color: #166534;
+      color: #FFFFFF;
+    }
+
+    .code-pre-wrap {
+      background: #0F172A;
+      color: #E2E8F0;
+      padding: 16px 18px;
+      overflow-x: auto;
+      max-height: 640px;
+      overflow-y: auto;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.58;
+      tab-size: 2;
+    }
+
+    .code-pre-wrap code {
+      font-family: var(--font-mono);
+      white-space: pre;
+    }
+
+    /* --- 4. SUPERVISION SCADA --- */
+    .scada-hero {
+      background: var(--el-white);
+      border: 1px solid var(--el-border);
+      border-radius: 14px;
+      padding: 22px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .scada-hero-copy {
+      max-width: 680px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .scada-hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      align-self: flex-start;
+      background: var(--el-gray-100);
+      border: 1px solid var(--el-border-strong);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--el-black);
+    }
+
+    .scada-hero-copy h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--el-black);
+      letter-spacing: -0.3px;
+    }
+
+    .scada-hero-copy p {
+      font-size: 13px;
+      color: #4B5563;
+      line-height: 1.55;
+    }
+
+    .scada-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--el-black);
+      color: var(--el-white);
+      text-decoration: none;
+      border: 2px solid var(--el-black);
+      border-radius: 10px;
+      padding: 13px 22px;
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      transition: background-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
+    }
+
+    .scada-cta-btn:hover {
+      background: var(--el-yellow);
+      color: var(--el-black);
+    }
+
+    .scada-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
+      gap: 14px;
+    }
+
+    .scada-metric-card {
+      background: var(--el-white);
+      border: 1px solid var(--el-border);
+      border-radius: 12px;
+      padding: 15px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .scada-metric-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .scada-metric-head h4 {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--el-black);
+    }
+
+    .scada-metric-card p {
+      font-size: 12px;
+      color: var(--el-muted);
+      line-height: 1.5;
+    }
+
+    .scada-arch-bar {
+      background: var(--el-gray-50);
+      border: 1px solid var(--el-border);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 12px;
+      color: #374151;
+    }
+
+    .scada-arch-flow {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .scada-node {
+      background: var(--el-white);
+      border: 1px solid var(--el-border-strong);
+      border-radius: 6px;
+      padding: 4px 9px;
+      color: var(--el-black);
+    }
+
     @media (max-width: 1180px) {
       .workbench-grid { grid-template-columns: 1fr; }
       .cirkit-viewport { height: 580px; }
     }
 
+    @media (max-width: 720px) {
+      .el-header { padding: 8px 14px; }
+      .section-wrap, .gallery-wrap { padding: 12px 14px 18px; }
+      .viewport-3d-wrap { height: 400px; }
+      .scada-hero { padding: 16px; }
+    }
+
     @media print {
       @page { size: A4 landscape; margin: 8mm; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      .el-nav-tabs, .el-btn-outline, .filter-strip, .wizard-bar, .zoom-controls, .prod-go-btn, .site-footer { display: none !important; }
+      .el-nav-tabs, .el-btn-outline, .filter-strip, .wizard-bar, .zoom-controls, .prod-go-btn, .site-footer, .controls-3d-bar, .conn-toolbar, .btn-copy-code { display: none !important; }
       .workbench-grid { grid-template-columns: 1.75fr 1fr; padding: 8px 0; }
       .cirkit-viewport { height: 560px; }
       .has-focus .comp-node, .has-focus .wire-group .wire-path, .has-focus .esp-pin { opacity: 1 !important; }
@@ -809,6 +1312,10 @@
           <span>Nomenclature &amp; Budget</span>
           <span id="tab-check-count" class="el-tab-badge">0/17</span>
         </button>
+        <button class="el-tab" data-tab="maquette" onclick="switchTab('maquette')">Maquette 3D</button>
+        <button class="el-tab" data-tab="connexions" onclick="switchTab('connexions')">Tableau de Connexions Complet</button>
+        <button class="el-tab" data-tab="code" onclick="switchTab('code')">Code ESP32</button>
+        <button class="el-tab" data-tab="scada" onclick="switchTab('scada')">Supervision SCADA</button>
       </div>
 
       <button class="el-btn-outline" type="button" onclick="window.print()">Exporter PDF</button>
@@ -924,6 +1431,231 @@
       </div>
     </section>
 
+    <!-- =========================================================
+         ONGLET 3 : MAQUETTE 3D INTERACTIVE (THREE.JS)
+         ========================================================= -->
+    <section id="view-maquette" class="view-panel" aria-label="Maquette 3D interactive du prototype Smart Grid">
+      <div class="section-wrap">
+        <div class="section-banner">
+          <div>
+            <h2>Maquette 3D Interactive — Prototype Physique Final</h2>
+            <p>Visualisation 3D à l'échelle pour les partenaires et financeurs : socle contreplaqué, coffret imprimé 3D à façade inclinée, panneaux solaires, charges 12V et ensemble hydraulique Polytank.</p>
+          </div>
+          <span class="sku-pill">Three.js WebGL • Souris &amp; Tactile</span>
+        </div>
+
+        <section class="el-card">
+          <div class="el-card-head">
+            <h2>Vue 3D du banc Smart Grid &amp; Polytank (52 × 34 cm)</h2>
+            <div class="wire-legend">
+              <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-12v);"></span>12V</span>
+              <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-5v);"></span>5V</span>
+              <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-gnd);"></span>GND</span>
+              <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-i2c);"></span>Signaux Bleu</span>
+              <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-relay);"></span>Signaux Vert</span>
+            </div>
+          </div>
+
+          <div id="maquette-3d-container" class="viewport-3d-wrap">
+            <div id="maquette-3d-mode-badge" class="viewport-3d-badge">MODE : COFFRET OPAQUE</div>
+            <div class="viewport-3d-hint">Glisser : rotation • Molette / Pincer : zoom • Clic droit / 2 doigts : déplacer</div>
+          </div>
+
+          <div class="controls-3d-bar">
+            <div class="controls-3d-btns">
+              <button id="btn-3d-normal" class="btn-3d active" type="button" onclick="setMaquetteTransparency(false)">Vue normale</button>
+              <button id="btn-3d-transparent" class="btn-3d accent" type="button" onclick="setMaquetteTransparency(true)">Mode Transparence (voir le câblage interne)</button>
+              <button id="btn-3d-reset" class="btn-3d" type="button" onclick="resetMaquetteCamera()">Réinitialiser la caméra</button>
+            </div>
+            <span style="font-size:11.5px; color:var(--el-muted); font-weight:600;">Ventilateur 12V et niveau d'eau animés en continu</span>
+          </div>
+        </section>
+
+        <div class="maquette-meta-grid">
+          <div class="meta-mini-card">
+            <h4>1. Coffret technique imprimé en 3D</h4>
+            <p>Façade inclinée intégrant l'écran LCD 2004 I2C rétroéclairé, le feu tricolore LED et le buzzer. Contient l'ESP32 sur bornier, les 4 relais 5V, le LM2596 et le pack 3S 18650 + BMS 40A.</p>
+          </div>
+          <div class="meta-mini-card">
+            <h4>2. Solaire PV &amp; Charges de test 12V</h4>
+            <p>2 panneaux solaires 5.5V en série montés sur support incliné imprimé en 3D, associés au bloc de démonstration comprenant 2 lampes LED 12V et 1 mini-ventilateur 12V.</p>
+          </div>
+          <div class="meta-mini-card">
+            <h4>3. Ensemble hydraulique Polytank</h4>
+            <p>Cuve Polytank transparente avec niveau d'eau bleu, capteur ultrason HC-SR04 fixé au sommet, bac bas de puisage, mini-pompe submersible 12V AD20P-1230C et tuyau souple.</p>
+          </div>
+          <div class="meta-mini-card">
+            <h4>4. Socle contreplaqué découpé</h4>
+            <p>Plateau rigide en contreplaqué de présentation (52 × 34 cm) avec passe-câbles ordonnés, code couleur 12V / 5V / GND / signaux et pieds isolants.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ONGLET 4 : TABLEAU DE CONNEXIONS COMPLET
+         ========================================================= -->
+    <section id="view-connexions" class="view-panel" aria-label="Tableau de connexions complet du projet Smart Grid">
+      <div class="section-wrap">
+        <div class="section-banner">
+          <div>
+            <h2>Tableau de Connexions Complet — Référence Atelier</h2>
+            <p>Recensement exhaustif de tous les composants du prototype Smart Grid &amp; Polytank 12V DC, de leur brochage GPIO exact sur l'ESP32 30 broches et des consignes d'alimentation.</p>
+          </div>
+          <span class="sku-pill">17 composants • 100% vérifié</span>
+        </div>
+
+        <section class="el-card">
+          <div class="conn-toolbar">
+            <div class="conn-search-box">
+              <input id="conn-search-input" class="conn-search-input" type="search" placeholder="Rechercher un composant, un GPIO (ex. 18, 21, 34), 12V, relais, HC-SR04..." oninput="filterConnectionsTable()" aria-label="Filtrer le tableau de connexions" />
+              <button class="step-btn" type="button" onclick="clearConnectionsFilter()">Effacer</button>
+            </div>
+            <span id="conn-row-count" class="conn-count">17 / 17 composants</span>
+          </div>
+
+          <div class="conn-table-wrap">
+            <table class="conn-table">
+              <thead>
+                <tr>
+                  <th style="width:19%;">Composant</th>
+                  <th style="width:20%;">Fonction</th>
+                  <th style="width:24%;">Broches / Connexions exactes (GPIO)</th>
+                  <th style="width:15%;">Alimentation (12V / 5V / 3.3V / GND)</th>
+                  <th style="width:22%;">Note technique</th>
+                </tr>
+              </thead>
+              <tbody id="conn-table-body"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ONGLET 5 : CODE ESP32 (sketch_smartgrid.ino)
+         ========================================================= -->
+    <section id="view-code" class="view-panel" aria-label="Code source Arduino C++ ESP32">
+      <div class="section-wrap">
+        <div class="section-banner">
+          <div>
+            <h2>Code Source ESP32 — <span class="mono">sketch_smartgrid.ino</span></h2>
+            <p>Firmware Arduino/C++ complet correspondant exactement au câblage de cette documentation : acquisition capteurs, basculement ATS SONABEL/Solaire, protection disjoncteur, gestion pompe Polytank, LCD 2004 et télémétrie MQTT HiveMQ.</p>
+          </div>
+          <button id="btn-copy-sketch-top" class="btn-copy-code" type="button" onclick="copyEsp32Code()">Copier le code</button>
+        </div>
+
+        <section class="el-card">
+          <div class="el-card-head">
+            <h2>sketch_smartgrid.ino — ESP32 DevKit V1 (30 broches)</h2>
+            <button id="btn-copy-sketch" class="btn-copy-code" type="button" onclick="copyEsp32Code()">Copier le code</button>
+          </div>
+          <div class="code-meta-strip">
+            <div class="code-libs">
+              <strong>Bibliothèques Arduino requises :</strong>
+              <span class="gpio-chip">WiFi.h</span>
+              <span class="gpio-chip">PubSubClient</span>
+              <span class="gpio-chip">Wire.h</span>
+              <span class="gpio-chip">LiquidCrystal_I2C</span>
+              <span class="gpio-chip">OneWire</span>
+              <span class="gpio-chip">DallasTemperature</span>
+            </div>
+            <span class="sku-pill">MQTT : broker.hivemq.com • cge/uauben/david/smartgrid</span>
+          </div>
+          <pre class="code-pre-wrap"><code id="esp32-code-block"></code></pre>
+        </section>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ONGLET 6 : SUPERVISION SCADA TEMPS RÉEL
+         ========================================================= -->
+    <section id="view-scada" class="view-panel" aria-label="Présentation de la supervision SCADA temps réel">
+      <div class="section-wrap">
+        <div class="section-banner">
+          <div>
+            <h2>Supervision SCADA Temps Réel — Interface Opérateur</h2>
+            <p>Tableau de bord web connecté en direct à l'ESP32 via MQTT (HiveMQ) pour le suivi énergétique hybride SONABEL / Solaire et la régulation hydraulique du Polytank.</p>
+          </div>
+          <span class="sku-pill">MQTT WebSocket (WSS) • Temps réel</span>
+        </div>
+
+        <div class="scada-hero">
+          <div class="scada-hero-copy">
+            <span class="scada-hero-tag">Topic MQTT : cge/uauben/david/smartgrid • broker.hivemq.com</span>
+            <h3>Tableau de bord SCADA Smart Grid &amp; Polytank</h3>
+            <p>L'interface SCADA reçoit en continu les trames JSON publiées par l'ESP32, anime le synoptique électrique P&amp;ID (commutateur ATS, disjoncteur Q1, flux énergétique), trace l'historique de puissance et journalise automatiquement les alarmes critiques (surcharge, surchauffe, coupure, niveau bas).</p>
+          </div>
+          <a class="scada-cta-btn" href="./scada_smartgrid.html">Ouvrir le tableau de bord SCADA →</a>
+        </div>
+
+        <div class="scada-grid">
+          <article class="scada-metric-card">
+            <div class="scada-metric-head">
+              <h4>Tensions SONABEL / Batterie</h4>
+              <span class="gpio-chip">GPIO 34 • 32</span>
+            </div>
+            <p>Mesure simultanée de la ligne SONABEL 12V et du pack batterie Li-Ion 3S (10.5V–12.6V) via les 2 capteurs DC 0–25V. Affichage de la tension active, de la source engagée (SONABEL / SOLAIRE) et de la jauge de charge batterie (%).</p>
+          </article>
+
+          <article class="scada-metric-card">
+            <div class="scada-metric-head">
+              <h4>Courants &amp; Puissance</h4>
+              <span class="gpio-chip">GPIO 35 • 33</span>
+            </div>
+            <p>Acquisition par les 2 capteurs à effet Hall ACS712 (courant de charge et branche solaire), calcul temps réel de la puissance instantanée (W), courbe de tendance et détection automatique de surcharge.</p>
+          </article>
+
+          <article class="scada-metric-card">
+            <div class="scada-metric-head">
+              <h4>Température Transformateur</h4>
+              <span class="gpio-chip">GPIO 4 (OneWire)</span>
+            </div>
+            <p>Suivi thermique précis par sonde étanche DS18B20 alimentée en 3.3V. Déclenchement d'une alarme visuelle, sonore et SCADA au-delà du seuil critique de 60°C avec mise en sécurité.</p>
+          </article>
+
+          <article class="scada-metric-card">
+            <div class="scada-metric-head">
+              <h4>Niveau Polytank</h4>
+              <span class="gpio-chip">GPIO 5 • 18</span>
+            </div>
+            <p>Mesure ultrasonore HC-SR04 (ECHO protégé par pont diviseur 10kΩ/10kΩ) convertie en pourcentage de remplissage (0–100%) sur cuve P&amp;ID animée avec seuils critique (&lt; 30%) et plein (≥ 85%).</p>
+          </article>
+
+          <article class="scada-metric-card">
+            <div class="scada-metric-head">
+              <h4>Pilotage des Charges &amp; ATS</h4>
+              <span class="gpio-chip">GPIO 26 • 27 • 14</span>
+            </div>
+            <p>Supervision de l'inverseur de sources automatique (Relais IN1 SONABEL / IN2 Solaire) et du disjoncteur principal Q1 (Relais IN3) protégeant les charges de test 12V (2× LED + ventilateur).</p>
+          </article>
+
+          <article class="scada-metric-card">
+            <div class="scada-metric-head">
+              <h4>Pilotage de la Pompe Eau</h4>
+              <span class="gpio-chip">GPIO 12 (IN4)</span>
+            </div>
+            <p>Régulation automatique par hystérésis de la mini-pompe 12V AD20P-1230C : démarrage automatique sous 30% et arrêt à 85%, avec suivi d'état ON/OFF et animation hydraulique dans le SCADA.</p>
+          </article>
+        </div>
+
+        <div class="scada-arch-bar">
+          <div>
+            <strong>Chaîne de télémétrie :</strong> l'ESP32 publie en TCP (port 1883) vers HiveMQ et le tableau de bord web s'abonne en WebSocket sécurisé (WSS port 8884).
+          </div>
+          <div class="scada-arch-flow">
+            <span class="scada-node">ESP32 + Capteurs</span>
+            <span>→</span>
+            <span class="scada-node">Wi-Fi / MQTT 1883</span>
+            <span>→</span>
+            <span class="scada-node">broker.hivemq.com</span>
+            <span>→</span>
+            <span class="scada-node">./scada_smartgrid.html</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ENCADRÉ DE SÉCURITÉ ATELIER -->
     <footer class="safety-box" role="note">
       <div class="safety-title">⚠ SÉCURITÉ ATELIER AVANT MISE SOUS TENSION</div>
@@ -944,6 +1676,10 @@
         <nav class="footer-links" aria-label="Liens rapides">
           <button class="footer-link" type="button" onclick="switchTab('schema'); window.scrollTo({top:0, behavior:'smooth'});">Planche de câblage</button>
           <button class="footer-link" type="button" onclick="switchTab('galerie'); window.scrollTo({top:0, behavior:'smooth'});">Nomenclature</button>
+          <button class="footer-link" type="button" onclick="switchTab('maquette'); window.scrollTo({top:0, behavior:'smooth'});">Maquette 3D</button>
+          <button class="footer-link" type="button" onclick="switchTab('connexions'); window.scrollTo({top:0, behavior:'smooth'});">Tableau de Connexions</button>
+          <button class="footer-link" type="button" onclick="switchTab('code'); window.scrollTo({top:0, behavior:'smooth'});">Code ESP32</button>
+          <button class="footer-link" type="button" onclick="switchTab('scada'); window.scrollTo({top:0, behavior:'smooth'});">Supervision SCADA</button>
           <button class="footer-link" type="button" onclick="window.print()">Imprimer le dossier</button>
         </nav>
       </div>
@@ -1776,7 +2512,20 @@
     function switchTab(tabName) {
       document.querySelectorAll(".el-tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tabName));
       document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
-      document.getElementById("view-" + tabName).classList.add("active");
+      const target = document.getElementById("view-" + tabName);
+      if (target) target.classList.add("active");
+      if (tabName === "maquette") {
+        requestAnimationFrame(() => {
+          if (!maquette3D.initialized) {
+            initMaquette3D();
+          } else {
+            resizeMaquette3D();
+          }
+          maquette3D.active = true;
+        });
+      } else {
+        maquette3D.active = false;
+      }
     }
 
     function renderInspector(compId) {
@@ -2021,11 +2770,1541 @@
         </tr>`).join("");
     }
 
+    // =========================================================
+    // ONGLET 4 : TABLEAU DE CONNEXIONS COMPLET (17 COMPOSANTS)
+    // =========================================================
+    const FULL_CONNECTIONS = [
+      {
+        comp: "ESP32 30 broches + Carte Bornier à vis",
+        cat: "MCU / Cerveau",
+        func: "Unité centrale : acquisition des capteurs (ADC1, I2C, OneWire), logique ATS/protection, affichage LCD et publication MQTT Wi-Fi.",
+        pins: "GPIO 4 (DS18B20) • GPIO 5/18 (HC-SR04) • GPIO 12/14/26/27 (4 Relais) • GPIO 13/19/25 (Feu LED) • GPIO 15 (Buzzer) • GPIO 21/22 (I2C LCD) • GPIO 32/34 (Tension) • GPIO 33/35 (ACS712)",
+        rails: [
+          { lbl: "5V → VIN", cls: "rail-5v" },
+          { lbl: "3.3V (sortie 3V3)", cls: "rail-3v3" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Entrées/sorties strictement 3.3V. Utiliser uniquement ADC1 (GPIO 32–35) car ADC2 est désactivé lorsque le Wi-Fi est actif.",
+        warn: false
+      },
+      {
+        comp: "Module 4 Relais 5V (Opto-isolé)",
+        cat: "Commutation 12V",
+        func: "Commutation puissance 12V : inverseur de sources ATS (SONABEL / Solaire), disjoncteur charges et pilotage pompe.",
+        pins: "IN1 → GPIO 26 (SONABEL) • IN2 → GPIO 27 (Solaire) • IN3 → GPIO 14 (Disjoncteur) • IN4 → GPIO 12 (Pompe) • Contacts COM/NO sur rail +12V",
+        rails: [
+          { lbl: "5V (VCC)", cls: "rail-5v" },
+          { lbl: "12V (COM/NO)", cls: "rail-12v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Logique active à l'état BAS (LOW = relais collé) sur la plupart des cartes opto-isolées. Ne jamais fermer IN1 et IN2 simultanément (temps mort ATS).",
+        warn: false
+      },
+      {
+        comp: "Capteur de courant ACS712 #1 (Charge)",
+        cat: "Capteur Énergie",
+        func: "Mesure par effet Hall du courant consommé par les charges de test 12V (calcul puissance W et protection surcharge).",
+        pins: "OUT → GPIO 35 (ADC1_CH7) • Bornier puissance IP+/IP- câblé en série sur le circuit des charges 12V",
+        rails: [
+          { lbl: "5V (VCC)", cls: "rail-5v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Point zéro ≈ 2.50V à 0A (sensibilité 100 mV/A pour version 20A ou 185 mV/A pour 5A). Calibrer l'offset à vide au démarrage.",
+        warn: false
+      },
+      {
+        comp: "Capteur de courant ACS712 #2 (Solaire)",
+        cat: "Capteur Énergie",
+        func: "Mesure du courant de la branche solaire / batterie 3S pour le bilan énergétique hybride.",
+        pins: "OUT → GPIO 33 (ADC1_CH5) • Bornier puissance IP+/IP- câblé en série sur la ligne solaire / batterie 12V",
+        rails: [
+          { lbl: "5V (VCC)", cls: "rail-5v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Respecter le sens du courant (IP+ → IP-) pour une lecture positive ; moyennage sur plusieurs échantillons ADC recommandé.",
+        warn: false
+      },
+      {
+        comp: "Capteur de tension DC 0–25V #1 (SONABEL)",
+        cat: "Capteur Énergie",
+        func: "Mesure de la tension simulée SONABEL (12V) afin de détecter instantanément une coupure ou baisse secteur.",
+        pins: "S (Signal) → GPIO 34 (ADC1_CH6) • Bornier entrée VCC/GND sur +12V SONABEL et GND commun",
+        rails: [
+          { lbl: "12V (mesuré)", cls: "rail-12v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Pont diviseur passif 5:1 (30kΩ / 7.5kΩ) : 12.0V en entrée produit 2.40V sur GPIO 34 (sécuritaire pour l'ESP32 3.3V).",
+        warn: false
+      },
+      {
+        comp: "Capteur de tension DC 0–25V #2 (Batterie 3S)",
+        cat: "Capteur Énergie",
+        func: "Mesure de la tension du pack Li-Ion 3S (10.5V–12.6V) pour estimer le taux de charge batterie (% SoC).",
+        pins: "S (Signal) → GPIO 32 (ADC1_CH4) • Bornier entrée VCC/GND sur BMS P+ (+12.6V) et GND commun",
+        rails: [
+          { lbl: "12V (mesuré)", cls: "rail-12v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "12.6V batterie donne 2.52V sur GPIO 32. Mapper 10.5V = 0% et 12.6V = 100% dans le code ESP32.",
+        warn: false
+      },
+      {
+        comp: "Sonde de température DS18B20 + Adaptateur",
+        cat: "Capteur Thermique",
+        func: "Surveillance thermique numérique étanche du transformateur / coffret technique (seuil défaut > 60°C).",
+        pins: "DAT → GPIO 4 (bus OneWire) • Module adaptateur avec résistance pull-up 4.7kΩ intégrée",
+        rails: [
+          { lbl: "3.3V (ESP32 3V3)", cls: "rail-3v3" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Alimenter impérativement en 3.3V (broche 3V3 ESP32) afin que le bus OneWire reste compatible 3.3V sur GPIO 4.",
+        warn: false
+      },
+      {
+        comp: "Capteur ultrason HC-SR04 (+ Pont 10kΩ / 10kΩ)",
+        cat: "Gestion Eau",
+        func: "Mesure sans contact de la hauteur d'eau dans le réservoir Polytank (conversion 0–100%).",
+        pins: "TRIG → GPIO 5 • ECHO → Résistance 10kΩ → GPIO 18 (avec 2e résistance 10kΩ entre GPIO 18 et GND)",
+        rails: [
+          { lbl: "5V (VCC)", cls: "rail-5v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "CRITIQUE : ECHO sort en 5V ! Le pont diviseur 10kΩ / 10kΩ est obligatoire pour abaisser le signal à 2.5V max et protéger GPIO 18.",
+        warn: true
+      },
+      {
+        comp: "Mini-pompe submersible 12V AD20P-1230C",
+        cat: "Gestion Eau",
+        func: "Transfert automatique de l'eau du bac bas vers la cuve haute Polytank (240 L/h) entre 30% et 85%.",
+        pins: "Fil Rouge (+12V) → Sortie NO4 du Relais IN4 (GPIO 12) • Fil Noir (-) → Rail GND commun",
+        rails: [
+          { lbl: "12V (commuté)", cls: "rail-12v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Pompe brushless submersible : ne jamais faire tourner à sec. Vérifier l'étanchéité du tuyau souple au refoulement.",
+        warn: false
+      },
+      {
+        comp: "Adaptateur secteur 12V 5A (60W)",
+        cat: "Source SONABEL",
+        func: "Alimentation AC/DC principale simulant le réseau SONABEL pour les charges, la pompe et le convertisseur 5V.",
+        pins: "Sortie +12V → Rail +12V SONABEL, COM1 Relais IN1, Capteur Tension #1 et IN+ LM2596 • Sortie - → Rail GND commun",
+        rails: [
+          { lbl: "12V (5A / 60W)", cls: "rail-12v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Relier impérativement la borne négative (-) au rail GND commun partagé avec la batterie 3S, le LM2596 et l'ESP32.",
+        warn: false
+      },
+      {
+        comp: "Convertisseur abaisseur DC-DC LM2596 (5.0V)",
+        cat: "Régulation 5V",
+        func: "Abaisse le rail 12V DC vers une tension régulée exacte de 5.00V (3A max) pour l'ESP32 et les modules 5V.",
+        pins: "IN+ → Rail +12V • OUT+ → Rail +5.0V (ESP32 VIN, 4 Relais, LCD 2004, HC-SR04, 2× ACS712) • IN-/OUT- → GND",
+        rails: [
+          { lbl: "12V (IN+)", cls: "rail-12v" },
+          { lbl: "5.00V (OUT+)", cls: "rail-5v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "OBLIGATOIRE : Régler le potentiomètre à 5.00V exacts au multimètre À VIDE avant de connecter l'ESP32 (VIN) et les capteurs.",
+        warn: true
+      },
+      {
+        comp: "3× Piles 18650 + Support 3S + BMS 3S 40A",
+        cat: "Stockage Solaire",
+        func: "Batterie de secours 11.1V nominal (12.6V pleine charge) assurant la continuité lors d'une coupure SONABEL.",
+        pins: "Cellules en série sur B- (0V), B1 (4.2V), B2 (8.4V), B+ (12.6V) du BMS • Sortie P+ → COM2 Relais IN2 & Tension #2 • P- → GND",
+        rails: [
+          { lbl: "12.6V (P+)", cls: "rail-12v" },
+          { lbl: "GND (P-)", cls: "rail-gnd" }
+        ],
+        note: "Respecter strictement la polarité des 3 accus 18650 et les prises d'équilibrage B1/B2. Le BMS coupe en surdécharge et court-circuit.",
+        warn: true
+      },
+      {
+        comp: "2× Mini panneaux solaires 5.5V en série",
+        cat: "Production PV",
+        func: "Générateur photovoltaïque de démonstration (~11V à 12V à vide) monté sur support incliné 3D.",
+        pins: "+ PV1 relié à - PV2 (montage série) • Sortie globale (+) → diode anti-retour → branche solaire/BMS • (-) → Rail GND",
+        rails: [
+          { lbl: "~11–12V DC", cls: "rail-12v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Prévoir une diode anti-retour (Schottky 1N5819 ou 1N4007) en série pour empêcher la décharge de la batterie dans les panneaux à l'ombre.",
+        warn: false
+      },
+      {
+        comp: "Écran LCD 2004 I2C (20×4 caractères)",
+        cat: "Affichage Local",
+        func: "Affichage temps réel en façade du coffret : source active, tension, courant, température, batterie et niveau d'eau.",
+        pins: "SDA → GPIO 21 • SCL → GPIO 22 (bus I2C matériel ESP32)",
+        rails: [
+          { lbl: "5V (VCC)", cls: "rail-5v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Adresse I2C standard 0x27 (ou 0x3F selon le module). Ajuster la vis de contraste bleue au dos si les caractères n'apparaissent pas.",
+        warn: false
+      },
+      {
+        comp: "Module Feu Tricolore LED (Vert / Jaune / Rouge)",
+        cat: "Signalisation",
+        func: "Voyants visuels d'état en façade : Vert = SONABEL, Jaune = Solaire, Rouge = Défaut protection/surchauffe.",
+        pins: "G (Vert) → GPIO 25 • Y (Jaune) → GPIO 19 • R (Rouge) → GPIO 13 • GND → Rail GND commun",
+        rails: [
+          { lbl: "3.3V (GPIO)", cls: "rail-3v3" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Résistances de limitation déjà intégrées sur le PCB du feu tricolore. Pilotage direct par les broches ESP32 (HIGH = allumé).",
+        warn: false
+      },
+      {
+        comp: "Buzzer Actif 5V (+ Boutons poussoirs de test)",
+        cat: "Alarme Sonore",
+        func: "Avertisseur sonore continu en cas de défaut critique (disjoncteur ouvert, surcharge, surchauffe > 60°C, eau < 30%).",
+        pins: "Buzzer (+) → GPIO 15 • Buzzer (-) → Rail GND commun",
+        rails: [
+          { lbl: "3.3V / 5V", cls: "rail-5v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Buzzer actif pilotable par simple niveau HIGH. GPIO 15 étant une broche de boot (strapping), ne pas la forcer à HIGH au démarrage.",
+        warn: false
+      },
+      {
+        comp: "Charges de test (2× LED 12V + Ventilateur 12V)",
+        cat: "Charges Démo",
+        func: "Charges visuelles et mécaniques permettant de démontrer la continuité ATS et la coupure instantanée du disjoncteur.",
+        pins: "+12V commun → Sortie NO3 du Relais IN3 Disjoncteur (GPIO 14) • Retour (-) → ACS712 #1 → Rail GND commun",
+        rails: [
+          { lbl: "12V (commuté)", cls: "rail-12v" },
+          { lbl: "GND", cls: "rail-gnd" }
+        ],
+        note: "Câbler les 2 lampes LED 12V et le ventilateur 12V en parallèle en aval du relais Disjoncteur IN3 et de l'ACS712 #1.",
+        warn: false
+      }
+    ];
+
+    function renderConnectionsTable(query = "") {
+      const q = query.trim().toLowerCase();
+      const filtered = FULL_CONNECTIONS.filter(row => {
+        if (!q) return true;
+        const haystack = [
+          row.comp, row.cat, row.func, row.pins,
+          row.rails.map(r => r.lbl).join(" "),
+          row.note
+        ].join(" ").toLowerCase();
+        return haystack.includes(q);
+      });
+
+      const tbody = document.getElementById("conn-table-body");
+      const countEl = document.getElementById("conn-row-count");
+      if (countEl) countEl.textContent = `${filtered.length} / ${FULL_CONNECTIONS.length} composants`;
+
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:24px; color:var(--el-muted);">Aucun composant ne correspond à « ${query.replace(/</g, "&lt;")} ».</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(row => `
+        <tr>
+          <td>
+            <span class="conn-comp-name">${row.comp}</span>
+            <span class="conn-comp-cat">${row.cat}</span>
+          </td>
+          <td>${row.func}</td>
+          <td class="mono" style="font-size:11px;">${row.pins}</td>
+          <td>${row.rails.map(r => `<span class="rail-badge ${r.cls}">${r.lbl}</span>`).join("")}</td>
+          <td class="${row.warn ? "conn-note-warn" : ""}">${row.note}</td>
+        </tr>`).join("");
+    }
+
+    function filterConnectionsTable() {
+      const val = document.getElementById("conn-search-input").value || "";
+      renderConnectionsTable(val);
+    }
+
+    function clearConnectionsFilter() {
+      const inp = document.getElementById("conn-search-input");
+      inp.value = "";
+      renderConnectionsTable("");
+      inp.focus();
+    }
+
+    // =========================================================
+    // ONGLET 5 : CODE ESP32 COMPLET (sketch_smartgrid.ino)
+    // =========================================================
+    const ESP32_SKETCH = String.raw`/*
+ * ============================================================================
+ *  Club U-AUBEN — Projet Smart Grid & Polytank 12V DC
+ *  Fichier  : sketch_smartgrid.ino
+ *  Cible    : ESP32 DevKit V1 (30 broches) + Carte Bornier à vis
+ *  Broker   : HiveMQ Public (broker.hivemq.com:1883)
+ *  Topic    : cge/uauben/david/smartgrid (compatible ./scada_smartgrid.html)
+ * ============================================================================
+ *  BROCHAGE EXACT :
+ *   - LCD 2004 I2C       : SDA = GPIO 21, SCL = GPIO 22 (addr 0x27)
+ *   - Sonde DS18B20      : DAT = GPIO 4  (alimentée en 3.3V)
+ *   - Ultrason HC-SR04   : TRIG = GPIO 5, ECHO = GPIO 18 (pont 10kΩ/10kΩ !)
+ *   - Tension 0-25V      : SONABEL = GPIO 34, BATTERIE 3S = GPIO 32
+ *   - Courant ACS712     : CHARGE = GPIO 35, SOLAIRE = GPIO 33
+ *   - Module 4 Relais 5V : IN1 SONABEL = 26, IN2 SOLAIRE = 27,
+ *                          IN3 DISJONCTEUR = 14, IN4 POMPE = 12
+ *   - Feu Tricolore LED  : VERT = 25, JAUNE = 19, ROUGE = 13
+ *   - Buzzer Actif 5V    : GPIO 15
+ * ============================================================================
+ */
+
+#include <WiFi.h>
+#include <PubSubClient.h>
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+// -------------------- 1. CONFIGURATION WI-FI & MQTT --------------------
+const char* WIFI_SSID     = "VOTRE_WIFI_SSID";
+const char* WIFI_PASS     = "VOTRE_MOT_DE_PASSE";
+
+const char* MQTT_BROKER   = "broker.hivemq.com";
+const int   MQTT_PORT     = 1883;
+const char* MQTT_TOPIC    = "cge/uauben/david/smartgrid";
+
+// -------------------- 2. DÉFINITION DES BROCHES GPIO -------------------
+// Bus I2C (LCD 2004)
+#define PIN_I2C_SDA       21
+#define PIN_I2C_SCL       22
+
+// Capteurs numériques
+#define PIN_DS18B20       4
+#define PIN_TRIG          5
+#define PIN_ECHO          18   // Protégé par pont diviseur 10kΩ / 10kΩ -> 2.5V max
+
+// Capteurs analogiques (ADC1 uniquement — compatible Wi-Fi)
+#define PIN_V_SONABEL     34   // Capteur tension 0-25V #1 (SONABEL)
+#define PIN_V_BATTERIE    32   // Capteur tension 0-25V #2 (Batterie 3S)
+#define PIN_I_CHARGE      35   // Capteur courant ACS712 #1 (Charge)
+#define PIN_I_SOLAIRE     33   // Capteur courant ACS712 #2 (Solaire)
+
+// Module 4 Relais 5V (Actif à l'état BAS sur carte opto-isolée standard)
+#define PIN_REL_SONABEL   26   // IN1 : Source SONABEL 12V
+#define PIN_REL_SOLAIRE   27   // IN2 : Source Solaire / Batterie 12.6V
+#define PIN_REL_DISJ      14   // IN3 : Disjoncteur Q1 (Charges 12V)
+#define PIN_REL_POMPE     12   // IN4 : Mini-pompe eau 12V AD20P-1230C
+
+#define RELAY_ON          LOW
+#define RELAY_OFF         HIGH
+
+// Signalisation & Alarme
+#define PIN_LED_VERT      25   // Feu tricolore : Vert  (SONABEL OK)
+#define PIN_LED_JAUNE     19   // Feu tricolore : Jaune (SOLAIRE)
+#define PIN_LED_ROUGE     13   // Feu tricolore : Rouge (DÉFAUT)
+#define PIN_BUZZER        15   // Buzzer actif 5V
+
+// -------------------- 3. PARAMÈTRES DE CALIBRATION ---------------------
+const float ADC_VREF          = 3.30;   // Tension référence ADC ESP32
+const float V_DIVIDER_RATIO   = 5.00;   // Module tension DC 0-25V (30kΩ / 7.5kΩ)
+const float ACS_SENSITIVITY   = 0.100;  // 0.100 V/A pour ACS712-20A (0.185 pour 5A)
+
+// Seuils métier Smart Grid & Polytank
+const float V_SONABEL_MIN     = 9.5;    // Seuil détection présence SONABEL (V)
+const float V_BATT_MIN        = 10.5;   // Batterie 3S vide (0%)
+const float V_BATT_MAX        = 12.6;   // Batterie 3S pleine (100%)
+const float I_MAX_SURCHARGE   = 15.0;   // Seuil disjonction surcharge (A)
+const float TEMP_MAX_CRIT     = 60.0;   // Seuil alarme surchauffe (°C)
+
+// Dimensions cuve Polytank (à ajuster selon votre récipient de maquette)
+const float TANK_DIST_EMPTY   = 28.0;   // Distance HC-SR04 cuve vide (cm)
+const float TANK_DIST_FULL    = 4.0;    // Distance HC-SR04 cuve pleine (cm)
+const int   EAU_SEUIL_BAS     = 30;     // Démarrage pompe (%)
+const int   EAU_SEUIL_HAUT    = 85;     // Arrêt pompe (%)
+
+// -------------------- 4. OBJETS & VARIABLES D'ÉTAT ---------------------
+WiFiClient espClient;
+PubSubClient mqtt(espClient);
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+OneWire oneWire(PIN_DS18B20);
+DallasTemperature ds18b20(&oneWire);
+
+float acsLoadZeroV   = 2.50;
+float acsSolarZeroV  = 2.50;
+
+float vSonabel       = 0.0;
+float vBatterie      = 0.0;
+float vActive        = 0.0;
+float iCharge        = 0.0;
+float iSolaire       = 0.0;
+float tempTransfo    = 25.0;
+int   battPct        = 0;
+int   eauPct         = 50;
+
+String sourceActive  = "COUPURE";
+bool   disjFerme     = true;
+bool   pompeActive   = false;
+
+unsigned long lastSensorMs = 0;
+unsigned long lastMqttMs   = 0;
+unsigned long lastReconnectMs = 0;
+
+// -------------------- 5. FONCTIONS DE MESURE ---------------------------
+float lireTensionADC(int pin, int samples = 16) {
+  long somme = 0;
+  for (int i = 0; i < samples; i++) {
+    somme += analogRead(pin);
+    delayMicroseconds(250);
+  }
+  return ((float)somme / samples) * (ADC_VREF / 4095.0);
+}
+
+float lireTensionDC(int pin) {
+  return lireTensionADC(pin) * V_DIVIDER_RATIO;
+}
+
+float lireCourantACS(int pin, float zeroV) {
+  float v = lireTensionADC(pin, 24);
+  float courant = fabs((v - zeroV) / ACS_SENSITIVITY);
+  return (courant < 0.08) ? 0.0 : courant; // Filtre bruit de fond
+}
+
+int lireNiveauPolytankPct() {
+  digitalWrite(PIN_TRIG, LOW);
+  delayMicroseconds(2);
+  digitalWrite(PIN_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG, LOW);
+
+  long duree = pulseIn(PIN_ECHO, HIGH, 25000); // Timeout 25 ms (~4 m)
+  if (duree == 0) return eauPct;               // Conserve la dernière mesure valide
+
+  float distCm = (duree * 0.0343) / 2.0;
+  float pct = ((TANK_DIST_EMPTY - distCm) / (TANK_DIST_EMPTY - TANK_DIST_FULL)) * 100.0;
+  return constrain((int)round(pct), 0, 100);
+}
+
+// -------------------- 6. LOGIQUE ATS, PROTECTION & POMPE ---------------
+void appliquerSorties() {
+  // 1) Inverseur de sources ATS (temps mort de sécurité 150 ms)
+  String nouvelleSrc = "COUPURE";
+  if (vSonabel >= V_SONABEL_MIN) {
+    nouvelleSrc = "SONABEL";
+    vActive = vSonabel;
+  } else if (vBatterie >= V_BATT_MIN) {
+    nouvelleSrc = "SOLAIRE";
+    vActive = vBatterie;
+  } else {
+    nouvelleSrc = "COUPURE";
+    vActive = 0.0;
+  }
+
+  if (nouvelleSrc != sourceActive) {
+    // Ouverture préalable des deux sources (Break-Before-Make)
+    digitalWrite(PIN_REL_SONABEL, RELAY_OFF);
+    digitalWrite(PIN_REL_SOLAIRE, RELAY_OFF);
+    delay(150);
+    sourceActive = nouvelleSrc;
+  }
+
+  digitalWrite(PIN_REL_SONABEL, (sourceActive == "SONABEL") ? RELAY_ON : RELAY_OFF);
+  digitalWrite(PIN_REL_SOLAIRE, (sourceActive == "SOLAIRE") ? RELAY_ON : RELAY_OFF);
+
+  // 2) Protection Disjoncteur Q1 (IN3) : surcharge ou surchauffe
+  bool defautCritique = (iCharge > I_MAX_SURCHARGE) || (tempTransfo > TEMP_MAX_CRIT) || (sourceActive == "COUPURE");
+  disjFerme = !defautCritique;
+  digitalWrite(PIN_REL_DISJ, disjFerme ? RELAY_ON : RELAY_OFF);
+
+  // 3) Régulation hydraulique Polytank par hystérésis (30% -> ON, 85% -> OFF)
+  if (eauPct < EAU_SEUIL_BAS && disjFerme) {
+    pompeActive = true;
+  } else if (eauPct >= EAU_SEUIL_HAUT || !disjFerme) {
+    pompeActive = false;
+  }
+  digitalWrite(PIN_REL_POMPE, pompeActive ? RELAY_ON : RELAY_OFF);
+
+  // 4) Feu Tricolore LED & Buzzer Actif 5V
+  bool alarmeSonore = (!disjFerme) || (eauPct < EAU_SEUIL_BAS);
+  digitalWrite(PIN_LED_VERT,  (disjFerme && sourceActive == "SONABEL") ? HIGH : LOW);
+  digitalWrite(PIN_LED_JAUNE, (disjFerme && sourceActive == "SOLAIRE") ? HIGH : LOW);
+  digitalWrite(PIN_LED_ROUGE, (!disjFerme) ? HIGH : LOW);
+  digitalWrite(PIN_BUZZER,    alarmeSonore ? HIGH : LOW);
+}
+
+// -------------------- 7. AFFICHAGE LCD 2004 I2C ------------------------
+void majEcranLCD() {
+  char l1[21], l2[21], l3[21], l4[21];
+  snprintf(l1, sizeof(l1), "SRC:%-7s Q1:%-5s", sourceActive.c_str(), disjFerme ? "FERME" : "OUV. ");
+  snprintf(l2, sizeof(l2), "U:%4.1fV  I:%4.1fA    ", vActive, iCharge);
+  snprintf(l3, sizeof(l3), "T:%4.1fC  BATT:%3d%%  ", tempTransfo, battPct);
+  snprintf(l4, sizeof(l4), "EAU:%3d%% POMPE:%-3s  ", eauPct, pompeActive ? "ON " : "OFF");
+
+  lcd.setCursor(0, 0); lcd.print(l1);
+  lcd.setCursor(0, 1); lcd.print(l2);
+  lcd.setCursor(0, 2); lcd.print(l3);
+  lcd.setCursor(0, 3); lcd.print(l4);
+}
+
+// -------------------- 8. CONNEXION WI-FI & PUBLICATION MQTT ------------
+void connecterWiFi() {
+  if (WiFi.status() == WL_CONNECTED) return;
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+}
+
+void verifierMQTT() {
+  if (WiFi.status() != WL_CONNECTED) return;
+  if (mqtt.connected()) return;
+
+  if (millis() - lastReconnectMs > 4000) {
+    lastReconnectMs = millis();
+    String clientId = "ESP32-UAUBEN-" + String((uint32_t)ESP.getEfuseMac(), HEX);
+    if (mqtt.connect(clientId.c_str())) {
+      Serial.println("[MQTT] Connecté au broker HiveMQ.");
+    }
+  }
+}
+
+void publierTelemetrieMQTT() {
+  if (!mqtt.connected()) return;
+
+  // Format JSON 100% compatible avec ./scada_smartgrid.html
+  char payload[256];
+  snprintf(
+    payload, sizeof(payload),
+    "{\"v\":%.1f,\"i\":%.2f,\"t\":%.1f,\"batt\":%d,\"eau\":%d,"
+    "\"src\":\"%s\",\"disj\":%d,\"pompe\":%d,"
+    "\"v_sonabel\":%.1f,\"v_batt\":%.1f,\"i_solaire\":%.2f}",
+    vActive, iCharge, tempTransfo, battPct, eauPct,
+    sourceActive.c_str(), disjFerme ? 1 : 0, pompeActive ? 1 : 0,
+    vSonabel, vBatterie, iSolaire
+  );
+
+  mqtt.publish(MQTT_TOPIC, payload);
+  Serial.println(payload);
+}
+
+// -------------------- 9. SETUP & BOUCLE PRINCIPALE ---------------------
+void setup() {
+  Serial.begin(115200);
+  analogReadResolution(12); // Résolution 12 bits (0..4095)
+
+  // Initialisation Relais (tous ouverts par sécurité au démarrage)
+  int relaisPins[] = { PIN_REL_SONABEL, PIN_REL_SOLAIRE, PIN_REL_DISJ, PIN_REL_POMPE };
+  for (int p : relaisPins) {
+    pinMode(p, OUTPUT);
+    digitalWrite(p, RELAY_OFF);
+  }
+
+  // Signalisation & Ultrason
+  pinMode(PIN_LED_VERT, OUTPUT);
+  pinMode(PIN_LED_JAUNE, OUTPUT);
+  pinMode(PIN_LED_ROUGE, OUTPUT);
+  pinMode(PIN_BUZZER, OUTPUT);
+  pinMode(PIN_TRIG, OUTPUT);
+  pinMode(PIN_ECHO, INPUT);
+
+  // Bus I2C sur GPIO 21 (SDA) et GPIO 22 (SCL) + LCD 2004
+  Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);
+  lcd.init();
+  lcd.backlight();
+  lcd.setCursor(0, 0); lcd.print(" CLUB U-AUBEN 2026  ");
+  lcd.setCursor(0, 1); lcd.print(" SMART GRID 12V DC  ");
+  lcd.setCursor(0, 2); lcd.print(" Calibration ACS... ");
+
+  // Sonde thermique DS18B20
+  ds18b20.begin();
+
+  // Calibration automatique du zéro ACS712 à vide (relais ouverts)
+  delay(500);
+  acsLoadZeroV  = lireTensionADC(PIN_I_CHARGE, 40);
+  acsSolarZeroV = lireTensionADC(PIN_I_SOLAIRE, 40);
+
+  // Connexion Wi-Fi & MQTT HiveMQ
+  connecterWiFi();
+  mqtt.setServer(MQTT_BROKER, MQTT_PORT);
+  lcd.clear();
+}
+
+void loop() {
+  unsigned long now = millis();
+
+  // 1) Acquisition capteurs + contrôle local toutes les 1000 ms
+  if (now - lastSensorMs >= 1000) {
+    lastSensorMs = now;
+
+    vSonabel  = lireTensionDC(PIN_V_SONABEL);
+    vBatterie = lireTensionDC(PIN_V_BATTERIE);
+    iCharge   = lireCourantACS(PIN_I_CHARGE, acsLoadZeroV);
+    iSolaire  = lireCourantACS(PIN_I_SOLAIRE, acsSolarZeroV);
+
+    battPct = constrain(
+      (int)round(((vBatterie - V_BATT_MIN) / (V_BATT_MAX - V_BATT_MIN)) * 100.0),
+      0, 100
+    );
+
+    ds18b20.requestTemperatures();
+    float tLus = ds18b20.getTempCByIndex(0);
+    if (tLus > -50.0 && tLus < 125.0) tempTransfo = tLus;
+
+    eauPct = lireNiveauPolytankPct();
+
+    appliquerSorties();
+    majEcranLCD();
+  }
+
+  // 2) Maintien MQTT & télémétrie SCADA toutes les 2000 ms
+  verifierMQTT();
+  mqtt.loop();
+
+  if (now - lastMqttMs >= 2000) {
+    lastMqttMs = now;
+    publierTelemetrieMQTT();
+  }
+}`;
+
+    function renderEsp32Code() {
+      const el = document.getElementById("esp32-code-block");
+      if (el) el.textContent = ESP32_SKETCH;
+    }
+
+    function copyEsp32Code() {
+      const done = () => {
+        ["btn-copy-sketch", "btn-copy-sketch-top"].forEach(id => {
+          const btn = document.getElementById(id);
+          if (!btn) return;
+          btn.classList.add("copied");
+          btn.textContent = "✓ Code copié !";
+          setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.textContent = "Copier le code";
+          }, 2200);
+        });
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(ESP32_SKETCH).then(done).catch(() => fallbackCopy(ESP32_SKETCH, done));
+      } else {
+        fallbackCopy(ESP32_SKETCH, done);
+      }
+    }
+
+    function fallbackCopy(text, onDone) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+      if (onDone) onDone();
+    }
+
+    // =========================================================
+    // ONGLET 3 : MAQUETTE 3D INTERACTIVE (THREE.JS + ORBIT)
+    // =========================================================
+    const maquette3D = {
+      initialized: false,
+      active: false,
+      transparent: false,
+      scene: null,
+      camera: null,
+      renderer: null,
+      controls: null,
+      shellMaterials: [],
+      shellWireframes: [],
+      fanBlades: null,
+      waterMesh: null,
+      waterMeniscus: null,
+      defaultCamPos: [4.3, 3.45, 4.95],
+      defaultTarget: [0.05, 0.55, -0.02]
+    };
+
+    function makePlywoodTexture() {
+      const c = document.createElement("canvas");
+      c.width = 512; c.height = 512;
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#D6B588";
+      ctx.fillRect(0, 0, 512, 512);
+      for (let i = 0; i < 160; i++) {
+        const y = (i / 160) * 512;
+        ctx.strokeStyle = i % 3 === 0 ? "rgba(146,102,52,0.16)" : "rgba(180,136,80,0.11)";
+        ctx.lineWidth = 1 + (i % 4);
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        for (let x = 0; x <= 512; x += 32) {
+          ctx.lineTo(x, y + Math.sin(x * 0.018 + i * 0.4) * 3.5);
+        }
+        ctx.stroke();
+      }
+      // Marquage de zones sobre sur le plateau
+      ctx.strokeStyle = "rgba(17,24,39,0.22)";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(14, 14, 484, 484);
+      const tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = 4;
+      return tex;
+    }
+
+    function makeLcd2004Texture() {
+      const c = document.createElement("canvas");
+      c.width = 512; c.height = 240;
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#0B3B8C";
+      ctx.fillRect(0, 0, 512, 240);
+      ctx.fillStyle = "#1D4ED8";
+      ctx.fillRect(10, 10, 492, 220);
+      ctx.strokeStyle = "#60A5FA";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(10, 10, 492, 220);
+
+      ctx.fillStyle = "#E0F2FE";
+      ctx.font = "bold 28px monospace";
+      ctx.fillText("SRC:SONABEL  Q1:OK ", 28, 62);
+      ctx.fillText("U:12.2V   I: 1.4A  ", 28, 112);
+      ctx.fillText("T:32.5C   BATT: 84%", 28, 162);
+      ctx.fillText("EAU: 68%  POMPE:OFF", 28, 210);
+      const tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = 4;
+      return tex;
+    }
+
+    function makeSolarTexture() {
+      const c = document.createElement("canvas");
+      c.width = 256; c.height = 384;
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#0F2A56";
+      ctx.fillRect(0, 0, 256, 384);
+      // Cellules photovoltaïques
+      ctx.strokeStyle = "rgba(226,232,240,0.45)";
+      ctx.lineWidth = 2;
+      for (let x = 32; x < 256; x += 32) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 384); ctx.stroke();
+      }
+      ctx.strokeStyle = "rgba(255,255,255,0.75)";
+      ctx.lineWidth = 2.5;
+      for (let y = 48; y < 384; y += 48) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(256, y); ctx.stroke();
+      }
+      // Busbars fins
+      ctx.strokeStyle = "rgba(191,219,254,0.85)";
+      ctx.lineWidth = 3;
+      [64, 192].forEach(bx => {
+        ctx.beginPath(); ctx.moveTo(bx, 0); ctx.lineTo(bx, 384); ctx.stroke();
+      });
+      const tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = 4;
+      return tex;
+    }
+
+    function makeLabelPlaqueTexture(text, bg = "#111827", fg = "#F0CE5B") {
+      const c = document.createElement("canvas");
+      c.width = 512; c.height = 96;
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 512, 96);
+      ctx.strokeStyle = fg;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(4, 4, 504, 88);
+      ctx.fillStyle = fg;
+      ctx.font = "bold 28px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(text, 256, 48);
+      const tex = new THREE.CanvasTexture(c);
+      tex.anisotropy = 4;
+      return tex;
+    }
+
+    function addCable3D(scene, points, colorHex, radius = 0.017) {
+      const vecs = points.map(p => new THREE.Vector3(p[0], p[1], p[2]));
+      const curve = new THREE.CatmullRomCurve3(vecs);
+      const geo = new THREE.TubeGeometry(curve, 24, radius, 8, false);
+      const mat = new THREE.MeshStandardMaterial({ color: colorHex, roughness: 0.45, metalness: 0.08 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      scene.add(mesh);
+      return mesh;
+    }
+
+    function initMaquette3D() {
+      const container = document.getElementById("maquette-3d-container");
+      if (!container) return;
+
+      if (typeof THREE === "undefined" || typeof THREE.OrbitControls === "undefined") {
+        container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;padding:24px;text-align:center;color:#374151;font-weight:600;">Impossible de charger Three.js depuis le CDN (vérifiez la connexion Internet pour la vue 3D interactive).</div>`;
+        return;
+      }
+
+      const w = container.clientWidth || 900;
+      const h = container.clientHeight || 540;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xEEF2F6);
+
+      const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 50);
+      camera.position.set(...maquette3D.defaultCamPos);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(w, h);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.domElement.style.touchAction = "none";
+      container.appendChild(renderer.domElement);
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.target.set(...maquette3D.defaultTarget);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.07;
+      controls.minDistance = 2.2;
+      controls.maxDistance = 12.5;
+      controls.maxPolarAngle = Math.PI / 2 - 0.03;
+      controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_PAN };
+      controls.update();
+
+      // Éclairage atelier propre (studio industriel sobre)
+      const hemi = new THREE.HemisphereLight(0xFFFFFF, 0xCBD5E1, 0.85);
+      hemi.position.set(0, 8, 0);
+      scene.add(hemi);
+
+      const dirLight = new THREE.DirectionalLight(0xFFFFFF, 0.88);
+      dirLight.position.set(5.5, 8.5, 5.2);
+      dirLight.castShadow = true;
+      dirLight.shadow.mapSize.set(1024, 1024);
+      dirLight.shadow.camera.near = 1;
+      dirLight.shadow.camera.far = 20;
+      dirLight.shadow.camera.left = -4.2;
+      dirLight.shadow.camera.right = 4.2;
+      dirLight.shadow.camera.top = 3.2;
+      dirLight.shadow.camera.bottom = -3.2;
+      dirLight.shadow.bias = -0.0008;
+      scene.add(dirLight);
+
+      const fillLight = new THREE.DirectionalLight(0xE0F2FE, 0.32);
+      fillLight.position.set(-5, 4, -4);
+      scene.add(fillLight);
+
+      // Plan de table discret recevant les ombres
+      const tablePlane = new THREE.Mesh(
+        new THREE.PlaneGeometry(24, 24),
+        new THREE.ShadowMaterial({ opacity: 0.14 })
+      );
+      tablePlane.rotation.x = -Math.PI / 2;
+      tablePlane.position.y = -0.22;
+      tablePlane.receiveShadow = true;
+      scene.add(tablePlane);
+
+      // =====================================================
+      // 1. SOCLE RÉALISTE EN CONTREPLAQUÉ DÉCOUPÉ (5.4 × 3.4)
+      // =====================================================
+      const plyTopMat = new THREE.MeshStandardMaterial({ map: makePlywoodTexture(), roughness: 0.78, metalness: 0.02 });
+      const plyEdgeMat = new THREE.MeshStandardMaterial({ color: 0xB8915E, roughness: 0.86 });
+      const baseMesh = new THREE.Mesh(
+        new THREE.BoxGeometry(5.4, 0.16, 3.4),
+        [plyEdgeMat, plyEdgeMat, plyTopMat, plyEdgeMat, plyEdgeMat, plyEdgeMat]
+      );
+      baseMesh.position.set(0, -0.08, 0);
+      baseMesh.receiveShadow = true;
+      baseMesh.castShadow = true;
+      scene.add(baseMesh);
+
+      // 4 patins caoutchouc sous le socle
+      const footMat = new THREE.MeshStandardMaterial({ color: 0x1F2937, roughness: 0.9 });
+      [[-2.45, -1.45], [2.45, -1.45], [-2.45, 1.45], [2.45, 1.45]].forEach(([fx, fz]) => {
+        const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.12, 0.06, 16), footMat);
+        foot.position.set(fx, -0.19, fz);
+        scene.add(foot);
+      });
+
+      // Plaque signalétique avant du socle
+      const frontBadge = new THREE.Mesh(
+        new THREE.BoxGeometry(1.75, 0.02, 0.24),
+        new THREE.MeshStandardMaterial({ map: makeLabelPlaqueTexture("CLUB U-AUBEN — SMART GRID 12V"), roughness: 0.5 })
+      );
+      frontBadge.position.set(-1.45, 0.01, 1.48);
+      scene.add(frontBadge);
+
+      // =====================================================
+      // 2. COFFRET TECHNIQUE PRINCIPAL IMPRIMÉ EN 3D (GAUCHE)
+      //    x: -2.45 .. -0.45 (W=2.0), z: -1.25 .. +1.15 (D=2.4)
+      // =====================================================
+      const shellMat = new THREE.MeshStandardMaterial({
+        color: 0x2B3440,
+        roughness: 0.58,
+        metalness: 0.12,
+        transparent: false,
+        opacity: 1.0
+      });
+      const shellAccentMat = new THREE.MeshStandardMaterial({
+        color: 0x374151,
+        roughness: 0.52,
+        metalness: 0.15,
+        transparent: false,
+        opacity: 1.0
+      });
+      maquette3D.shellMaterials.push(shellMat, shellAccentMat);
+
+      function addShellPanel(geo, mat, pos, rot = [0, 0, 0]) {
+        const m = new THREE.Mesh(geo, mat);
+        m.position.set(pos[0], pos[1], pos[2]);
+        m.rotation.set(rot[0], rot[1], rot[2]);
+        m.castShadow = true;
+        m.receiveShadow = true;
+        scene.add(m);
+
+        const edges = new THREE.LineSegments(
+          new THREE.EdgesGeometry(geo),
+          new THREE.LineBasicMaterial({ color: 0x64748B, transparent: true, opacity: 0.0 })
+        );
+        edges.position.copy(m.position);
+        edges.rotation.copy(m.rotation);
+        scene.add(edges);
+        maquette3D.shellWireframes.push(edges.material);
+        return m;
+      }
+
+      // Plateau interne noir mat (reste toujours opaque pour supporter les composants)
+      const innerPlate = new THREE.Mesh(
+        new THREE.BoxGeometry(1.94, 0.05, 2.34),
+        new THREE.MeshStandardMaterial({ color: 0x1E293B, roughness: 0.75 })
+      );
+      innerPlate.position.set(-1.45, 0.025, -0.05);
+      innerPlate.receiveShadow = true;
+      scene.add(innerPlate);
+
+      // Paroi arrière (z = -1.22, h = 1.15)
+      addShellPanel(new THREE.BoxGeometry(2.0, 1.15, 0.06), shellMat, [-1.45, 0.575, -1.22]);
+      // Paroi avant basse (z = +1.12, h = 0.56)
+      addShellPanel(new THREE.BoxGeometry(2.0, 0.56, 0.06), shellMat, [-1.45, 0.28, 1.12]);
+      // Dessus plat arrière (z: -1.25 .. +0.15, depth = 1.40, y = 1.12)
+      addShellPanel(new THREE.BoxGeometry(2.0, 0.06, 1.40), shellAccentMat, [-1.45, 1.12, -0.55]);
+
+      // Parois latérales profilées (extrudées en trapèze pour épouser la façade inclinée)
+      const sideShape = new THREE.Shape();
+      sideShape.moveTo(-1.25, 0);
+      sideShape.lineTo(1.15, 0);
+      sideShape.lineTo(1.15, 0.56);
+      sideShape.lineTo(0.15, 1.15);
+      sideShape.lineTo(-1.25, 1.15);
+      sideShape.closePath();
+      const sideGeo = new THREE.ExtrudeGeometry(sideShape, { depth: 0.06, bevelEnabled: false });
+      // Rotation Y = -PI/2 : +X_shape -> +Z_world, +Y_shape -> +Y_world, +Z_extrude -> -X_world
+      addShellPanel(sideGeo, shellMat, [-2.39, 0, 0], [0, -Math.PI / 2, 0]);
+      addShellPanel(sideGeo, shellMat, [-0.45, 0, 0], [0, -Math.PI / 2, 0]);
+
+      // Façade avant inclinée (de z=0.15,y=1.15 à z=1.15,y=0.56)
+      const slopeAngle = Math.atan2(1.15 - 0.56, 1.15 - 0.15); // ~0.533 rad
+      const slopeLen = Math.hypot(1.0, 0.59);
+      addShellPanel(
+        new THREE.BoxGeometry(2.0, 0.05, slopeLen),
+        shellAccentMat,
+        [-1.45, 0.855, 0.65],
+        [slopeAngle, 0, 0]
+      );
+
+      // Pattes de fixation imprimées en 3D sur le contreplaqué
+      const flangeMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.6 });
+      [[-2.52, -1.05], [-2.52, 0.92], [-0.38, -1.05], [-0.38, 0.92]].forEach(([fx, fz]) => {
+        const tab = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.04, 0.22), flangeMat);
+        tab.position.set(fx, 0.02, fz);
+        scene.add(tab);
+        const screw = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.05, 10), new THREE.MeshStandardMaterial({ color: 0xCBD5E1, metalness: 0.8, roughness: 0.3 }));
+        screw.position.set(fx, 0.03, fz);
+        scene.add(screw);
+      });
+
+      // --- ÉLÉMENTS INTÉGRÉS SUR LA FAÇADE INCLINÉE (LCD 2004 + FEU TRICOLORE) ---
+      const consoleGroup = new THREE.Group();
+      consoleGroup.position.set(-1.45, 0.855, 0.65);
+      consoleGroup.rotation.x = slopeAngle;
+      scene.add(consoleGroup);
+
+      // Cadre bezel LCD 2004
+      const lcdBezel = new THREE.Mesh(
+        new THREE.BoxGeometry(1.10, 0.06, 0.64),
+        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4 })
+      );
+      lcdBezel.position.set(-0.24, 0.035, -0.06);
+      consoleGroup.add(lcdBezel);
+
+      // Écran LCD 2004 rétroéclairé bleu
+      const lcdScreen = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.98, 0.48),
+        new THREE.MeshStandardMaterial({
+          map: makeLcd2004Texture(),
+          emissive: 0x1D4ED8,
+          emissiveIntensity: 0.28,
+          roughness: 0.25
+        })
+      );
+      lcdScreen.rotation.x = -Math.PI / 2;
+      lcdScreen.position.set(-0.24, 0.068, -0.06);
+      consoleGroup.add(lcdScreen);
+
+      // Module Feu Tricolore LED (à droite du LCD sur la façade inclinée)
+      const trafficBox = new THREE.Mesh(
+        new THREE.BoxGeometry(0.24, 0.07, 0.56),
+        new THREE.MeshStandardMaterial({ color: 0x0F172A, roughness: 0.5 })
+      );
+      trafficBox.position.set(0.60, 0.04, -0.06);
+      consoleGroup.add(trafficBox);
+
+      const ledDefs = [
+        { z: -0.23, col: 0xEF4444, em: 0x7F1D1D, ei: 0.2 }, // Rouge (veille)
+        { z: -0.06, col: 0xF59E0B, em: 0x78350F, ei: 0.2 }, // Jaune (veille)
+        { z: +0.11, col: 0x22C55E, em: 0x22C55E, ei: 1.1 }  // Vert (SONABEL actif)
+      ];
+      ledDefs.forEach(l => {
+        const dome = new THREE.Mesh(
+          new THREE.SphereGeometry(0.056, 16, 12),
+          new THREE.MeshStandardMaterial({ color: l.col, emissive: l.em, emissiveIntensity: l.ei, roughness: 0.25 })
+        );
+        dome.position.set(0.60, 0.08, l.z);
+        consoleGroup.add(dome);
+      });
+
+      // Buzzer actif 5V + 2 boutons poussoirs de test en bas de façade
+      const buzzerBody = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.08, 0.08, 0.06, 18),
+        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.45 })
+      );
+      buzzerBody.position.set(0.60, 0.045, 0.36);
+      consoleGroup.add(buzzerBody);
+
+      [-0.52, -0.28].forEach((bx, idx) => {
+        const cap = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.05, 0.055, 0.05, 16),
+          new THREE.MeshStandardMaterial({ color: idx === 0 ? 0xF0CE5B : 0xDC2626, roughness: 0.4 })
+        );
+        cap.position.set(bx, 0.045, 0.36);
+        consoleGroup.add(cap);
+      });
+
+      // =====================================================
+      // 3. COMPOSANTS INTERNES DU COFFRET (VISIBLES EN TRANSPARENCE)
+      // =====================================================
+      // A) ESP32 DevKit V1 sur carte bornier à vis (arrière-gauche coffret)
+      const espGroup = new THREE.Group();
+      espGroup.position.set(-1.86, 0.06, -0.56);
+      scene.add(espGroup);
+
+      const bornierPcb = new THREE.Mesh(
+        new THREE.BoxGeometry(0.66, 0.04, 0.90),
+        new THREE.MeshStandardMaterial({ color: 0x15803D, roughness: 0.55 })
+      );
+      bornierPcb.position.y = 0.02;
+      espGroup.add(bornierPcb);
+
+      // Borniers à vis verts sur les 2 côtés
+      const termMat = new THREE.MeshStandardMaterial({ color: 0x16A34A, roughness: 0.5 });
+      [-0.27, 0.27].forEach(tx => {
+        const strip = new THREE.Mesh(new THREE.BoxGeometry(0.10, 0.09, 0.80), termMat);
+        strip.position.set(tx, 0.08, 0);
+        espGroup.add(strip);
+      });
+      // Carte ESP32 noire + blindage RF argenté
+      const espBoard = new THREE.Mesh(
+        new THREE.BoxGeometry(0.32, 0.04, 0.68),
+        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.5 })
+      );
+      espBoard.position.y = 0.11;
+      espGroup.add(espBoard);
+      const espShield = new THREE.Mesh(
+        new THREE.BoxGeometry(0.24, 0.04, 0.28),
+        new THREE.MeshStandardMaterial({ color: 0xCBD5E1, metalness: 0.85, roughness: 0.22 })
+      );
+      espShield.position.set(0, 0.15, -0.10);
+      espGroup.add(espShield);
+
+      // B) Module 4 Relais 5V (arrière-droite coffret)
+      const relayGroup = new THREE.Group();
+      relayGroup.position.set(-0.98, 0.06, -0.56);
+      scene.add(relayGroup);
+
+      const relayPcb = new THREE.Mesh(
+        new THREE.BoxGeometry(0.66, 0.04, 0.88),
+        new THREE.MeshStandardMaterial({ color: 0x1D4ED8, roughness: 0.55 })
+      );
+      relayPcb.position.y = 0.02;
+      relayGroup.add(relayPcb);
+
+      const relayCubeMat = new THREE.MeshStandardMaterial({ color: 0x2563EB, roughness: 0.35 });
+      const relayTermMat = new THREE.MeshStandardMaterial({ color: 0x15803D, roughness: 0.5 });
+      for (let i = 0; i < 4; i++) {
+        const rz = -0.30 + i * 0.20;
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.22, 0.16), relayCubeMat);
+        cube.position.set(-0.04, 0.15, rz);
+        relayGroup.add(cube);
+
+        const term = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.11, 0.16), relayTermMat);
+        term.position.set(0.22, 0.09, rz);
+        relayGroup.add(term);
+
+        // LED témoin relais (IN1 SONABEL & IN3 Disjoncteur allumés)
+        const rLed = new THREE.Mesh(
+          new THREE.BoxGeometry(0.03, 0.03, 0.03),
+          new THREE.MeshStandardMaterial({
+            color: (i === 0 || i === 2) ? 0x22C55E : 0x64748B,
+            emissive: (i === 0 || i === 2) ? 0x22C55E : 0x000000,
+            emissiveIntensity: 0.9
+          })
+        );
+        rLed.position.set(-0.24, 0.06, rz);
+        relayGroup.add(rLed);
+      }
+
+      // C) Convertisseur Abaisseur LM2596 (avant-gauche coffret)
+      const lmGroup = new THREE.Group();
+      lmGroup.position.set(-1.86, 0.06, 0.36);
+      scene.add(lmGroup);
+
+      const lmPcb = new THREE.Mesh(
+        new THREE.BoxGeometry(0.56, 0.04, 0.32),
+        new THREE.MeshStandardMaterial({ color: 0x1E40AF, roughness: 0.5 })
+      );
+      lmPcb.position.y = 0.02;
+      lmGroup.add(lmPcb);
+
+      const lmCoil = new THREE.Mesh(
+        new THREE.BoxGeometry(0.14, 0.12, 0.14),
+        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.6 })
+      );
+      lmCoil.position.set(-0.10, 0.10, 0);
+      lmGroup.add(lmCoil);
+
+      [-0.22, 0.22].forEach(cx => {
+        const cap = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.048, 0.048, 0.11, 14),
+          new THREE.MeshStandardMaterial({ color: 0xCBD5E1, metalness: 0.8, roughness: 0.25 })
+        );
+        cap.position.set(cx, 0.095, -0.06);
+        lmGroup.add(cap);
+      });
+
+      const lmPot = new THREE.Mesh(
+        new THREE.BoxGeometry(0.10, 0.11, 0.06),
+        new THREE.MeshStandardMaterial({ color: 0x0284C7, roughness: 0.4 })
+      );
+      lmPot.position.set(0.08, 0.095, 0.07);
+      lmGroup.add(lmPot);
+
+      // D) Pack Batterie 3S 18650 + Support + BMS 3S 40A (avant-droite coffret)
+      const battGroup = new THREE.Group();
+      battGroup.position.set(-0.98, 0.06, 0.42);
+      scene.add(battGroup);
+
+      const holder = new THREE.Mesh(
+        new THREE.BoxGeometry(0.76, 0.12, 0.66),
+        new THREE.MeshStandardMaterial({ color: 0x18181B, roughness: 0.75 })
+      );
+      holder.position.y = 0.06;
+      battGroup.add(holder);
+
+      const cellMat = new THREE.MeshStandardMaterial({ color: 0x0E7490, roughness: 0.35, metalness: 0.2 });
+      const capMetalMat = new THREE.MeshStandardMaterial({ color: 0xE2E8F0, metalness: 0.85, roughness: 0.2 });
+      [-0.20, 0, 0.20].forEach(cz => {
+        const cell = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, 0.66, 18), cellMat);
+        cell.rotation.z = Math.PI / 2;
+        cell.position.set(0, 0.13, cz);
+        battGroup.add(cell);
+
+        const posCap = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.04, 12), capMetalMat);
+        posCap.rotation.z = Math.PI / 2;
+        posCap.position.set(0.34, 0.13, cz);
+        battGroup.add(posCap);
+      });
+
+      // Carte BMS 3S 40A collée sur le côté du pack batterie
+      const bmsPcb = new THREE.Mesh(
+        new THREE.BoxGeometry(0.62, 0.03, 0.24),
+        new THREE.MeshStandardMaterial({ color: 0x15803D, roughness: 0.45 })
+      );
+      bmsPcb.position.set(0, 0.25, -0.14);
+      battGroup.add(bmsPcb);
+
+      // =====================================================
+      // 4. PLATEAU CENTRE : 2 PANNEAUX SOLAIRES + CHARGES TEST
+      // =====================================================
+      // A) Support imprimé en 3D + 2 Panneaux solaires 5.5V inclinés (centre-arrière)
+      const pvGroup = new THREE.Group();
+      pvGroup.position.set(0.42, 0, -0.82);
+      scene.add(pvGroup);
+
+      const standMat = new THREE.MeshStandardMaterial({ color: 0x374151, roughness: 0.65 });
+      const standBase = new THREE.Mesh(new THREE.BoxGeometry(1.18, 0.05, 0.72), standMat);
+      standBase.position.y = 0.025;
+      standBase.castShadow = true;
+      standBase.receiveShadow = true;
+      pvGroup.add(standBase);
+
+      // 2 montants inclinés du support 3D
+      [-0.44, 0.44].forEach(sx => {
+        const postBack = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.56, 0.07), standMat);
+        postBack.position.set(sx, 0.30, -0.24);
+        postBack.castShadow = true;
+        pvGroup.add(postBack);
+
+        const postFront = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.22, 0.07), standMat);
+        postFront.position.set(sx, 0.13, 0.24);
+        postFront.castShadow = true;
+        pvGroup.add(postFront);
+      });
+
+      const pvTiltGroup = new THREE.Group();
+      pvTiltGroup.position.set(0, 0.42, 0);
+      pvTiltGroup.rotation.x = 0.56; // Inclinaison ~32°
+      pvGroup.add(pvTiltGroup);
+
+      const pvFrameMat = new THREE.MeshStandardMaterial({ color: 0xCBD5E1, metalness: 0.55, roughness: 0.35 });
+      const pvCellMat = new THREE.MeshStandardMaterial({ map: makeSolarTexture(), roughness: 0.22, metalness: 0.25 });
+
+      [-0.31, 0.31].forEach(px => {
+        const frame = new THREE.Mesh(new THREE.BoxGeometry(0.56, 0.035, 0.74), pvFrameMat);
+        frame.position.set(px, 0, 0);
+        frame.castShadow = true;
+        pvTiltGroup.add(frame);
+
+        const cells = new THREE.Mesh(new THREE.PlaneGeometry(0.50, 0.68), pvCellMat);
+        cells.rotation.x = -Math.PI / 2;
+        cells.position.set(px, 0.019, 0);
+        pvTiltGroup.add(cells);
+      });
+
+      // B) Bloc Charges de test 12V : 2 Lampes LED 12V + Mini Ventilateur 12V (centre-avant)
+      const loadGroup = new THREE.Group();
+      loadGroup.position.set(0.42, 0, 0.66);
+      scene.add(loadGroup);
+
+      const loadDeck = new THREE.Mesh(
+        new THREE.BoxGeometry(1.22, 0.09, 0.84),
+        new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.6 })
+      );
+      loadDeck.position.y = 0.045;
+      loadDeck.castShadow = true;
+      loadDeck.receiveShadow = true;
+      loadGroup.add(loadDeck);
+
+      const loadPlaque = new THREE.Mesh(
+        new THREE.PlaneGeometry(1.06, 0.16),
+        new THREE.MeshStandardMaterial({ map: makeLabelPlaqueTexture("CHARGES TEST 12V", "#1E293B", "#F0CE5B"), roughness: 0.5 })
+      );
+      loadPlaque.rotation.x = -Math.PI / 2;
+      loadPlaque.position.set(0, 0.092, 0.30);
+      loadGroup.add(loadPlaque);
+
+      // 2 Lampes LED 12V
+      [-0.38, -0.05].forEach(lx => {
+        const socket = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.085, 0.095, 0.14, 18),
+          new THREE.MeshStandardMaterial({ color: 0x94A3B8, metalness: 0.45, roughness: 0.35 })
+        );
+        socket.position.set(lx, 0.16, -0.04);
+        socket.castShadow = true;
+        loadGroup.add(socket);
+
+        const bulb = new THREE.Mesh(
+          new THREE.SphereGeometry(0.115, 20, 16),
+          new THREE.MeshStandardMaterial({
+            color: 0xFEF08A,
+            emissive: 0xFACC15,
+            emissiveIntensity: 0.85,
+            roughness: 0.2
+          })
+        );
+        bulb.position.set(lx, 0.28, -0.04);
+        loadGroup.add(bulb);
+      });
+
+      // Mini Ventilateur 12V (boîtier + pales rotatives)
+      const fanGroup = new THREE.Group();
+      fanGroup.position.set(0.34, 0.31, -0.04);
+      loadGroup.add(fanGroup);
+
+      const fanHousing = new THREE.Mesh(
+        new THREE.BoxGeometry(0.42, 0.42, 0.12),
+        new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.55 })
+      );
+      fanHousing.castShadow = true;
+      fanGroup.add(fanHousing);
+
+      const fanCavity = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.175, 0.175, 0.13, 24),
+        new THREE.MeshStandardMaterial({ color: 0x1E293B, roughness: 0.7 })
+      );
+      fanCavity.rotation.x = Math.PI / 2;
+      fanGroup.add(fanCavity);
+
+      const bladesGroup = new THREE.Group();
+      bladesGroup.position.z = 0.025;
+      fanGroup.add(bladesGroup);
+
+      const hub = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.055, 0.055, 0.06, 16),
+        new THREE.MeshStandardMaterial({ color: 0xF0CE5B, roughness: 0.4 })
+      );
+      hub.rotation.x = Math.PI / 2;
+      bladesGroup.add(hub);
+
+      const bladeMat = new THREE.MeshStandardMaterial({ color: 0x64748B, roughness: 0.4 });
+      for (let b = 0; b < 7; b++) {
+        const ang = (b / 7) * Math.PI * 2;
+        const bladePivot = new THREE.Group();
+        bladePivot.rotation.z = ang;
+        const blade = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.13, 0.015), bladeMat);
+        blade.position.y = 0.10;
+        blade.rotation.y = 0.42;
+        bladePivot.add(blade);
+        bladesGroup.add(bladePivot);
+      }
+      maquette3D.fanBlades = bladesGroup;
+
+      // =====================================================
+      // 5. ZONE HYDRAULIQUE DROITE : POLYTANK, HC-SR04, POMPE & TUYAU
+      // =====================================================
+      // A) Réservoir Polytank transparent (arrière-droite)
+      const tankX = 1.92, tankZ = -0.58;
+      const tankStand = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.56, 0.60, 0.22, 28),
+        new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.65 })
+      );
+      tankStand.position.set(tankX, 0.11, tankZ);
+      tankStand.castShadow = true;
+      tankStand.receiveShadow = true;
+      scene.add(tankStand);
+
+      // Eau bleue à l'intérieur du Polytank (~68%)
+      const waterMat = new THREE.MeshStandardMaterial({
+        color: 0x0284C7,
+        emissive: 0x0369A1,
+        emissiveIntensity: 0.15,
+        transparent: true,
+        opacity: 0.72,
+        roughness: 0.18
+      });
+      const waterMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.455, 0.455, 0.84, 28), waterMat);
+      waterMesh.position.set(tankX, 0.22 + 0.42, tankZ);
+      scene.add(waterMesh);
+      maquette3D.waterMesh = waterMesh;
+
+      const waterMeniscus = new THREE.Mesh(
+        new THREE.CircleGeometry(0.455, 28),
+        new THREE.MeshStandardMaterial({ color: 0x38BDF8, transparent: true, opacity: 0.85, roughness: 0.1 })
+      );
+      waterMeniscus.rotation.x = -Math.PI / 2;
+      waterMeniscus.position.set(tankX, 0.22 + 0.842, tankZ);
+      scene.add(waterMeniscus);
+      maquette3D.waterMeniscus = waterMeniscus;
+
+      // Paroi transparente Polytank + nervures horizontales
+      const tankGlassMat = new THREE.MeshStandardMaterial({
+        color: 0xE0F2FE,
+        transparent: true,
+        opacity: 0.28,
+        roughness: 0.12,
+        metalness: 0.08,
+        depthWrite: false
+      });
+      const tankWall = new THREE.Mesh(new THREE.CylinderGeometry(0.50, 0.50, 1.24, 32, 1, false), tankGlassMat);
+      tankWall.position.set(tankX, 0.22 + 0.62, tankZ);
+      scene.add(tankWall);
+
+      const ribMat = new THREE.MeshStandardMaterial({ color: 0x94A3B8, transparent: true, opacity: 0.55, roughness: 0.35 });
+      [0.48, 0.84, 1.20].forEach(ry => {
+        const rib = new THREE.Mesh(new THREE.TorusGeometry(0.505, 0.014, 10, 32), ribMat);
+        rib.rotation.x = Math.PI / 2;
+        rib.position.set(tankX, ry, tankZ);
+        scene.add(rib);
+      });
+
+      // Couvercle annulaire bleu/noir du Polytank
+      const tankRim = new THREE.Mesh(
+        new THREE.TorusGeometry(0.50, 0.032, 12, 32),
+        new THREE.MeshStandardMaterial({ color: 0x1E293B, roughness: 0.5 })
+      );
+      tankRim.rotation.x = Math.PI / 2;
+      tankRim.position.set(tankX, 1.46, tankZ);
+      scene.add(tankRim);
+
+      // B) Capteur Ultrason HC-SR04 fixé au sommet du Polytank
+      const sr04Bridge = new THREE.Mesh(
+        new THREE.BoxGeometry(1.04, 0.04, 0.18),
+        new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.55 })
+      );
+      sr04Bridge.position.set(tankX, 1.49, tankZ);
+      sr04Bridge.castShadow = true;
+      scene.add(sr04Bridge);
+
+      const sr04Pcb = new THREE.Mesh(
+        new THREE.BoxGeometry(0.36, 0.03, 0.16),
+        new THREE.MeshStandardMaterial({ color: 0x2563EB, roughness: 0.45 })
+      );
+      sr04Pcb.position.set(tankX, 1.52, tankZ);
+      scene.add(sr04Pcb);
+
+      const transMat = new THREE.MeshStandardMaterial({ color: 0xE2E8F0, metalness: 0.88, roughness: 0.18 });
+      [-0.095, 0.095].forEach(tx => {
+        const cyl = new THREE.Mesh(new THREE.CylinderGeometry(0.052, 0.052, 0.08, 16), transMat);
+        cyl.position.set(tankX + tx, 1.44, tankZ);
+        scene.add(cyl);
+      });
+
+      // C) Bac bas transparent (réservoir de puisage, avant-droite)
+      const basinX = 1.92, basinZ = 0.82;
+      const basinWater = new THREE.Mesh(
+        new THREE.BoxGeometry(0.92, 0.25, 0.78),
+        new THREE.MeshStandardMaterial({ color: 0x0EA5E9, transparent: true, opacity: 0.68, roughness: 0.18 })
+      );
+      basinWater.position.set(basinX, 0.145, basinZ);
+      scene.add(basinWater);
+
+      const basinShell = new THREE.Mesh(
+        new THREE.BoxGeometry(0.98, 0.46, 0.84),
+        new THREE.MeshStandardMaterial({ color: 0xE0F2FE, transparent: true, opacity: 0.28, roughness: 0.15, depthWrite: false })
+      );
+      basinShell.position.set(basinX, 0.23, basinZ);
+      scene.add(basinShell);
+
+      const basinEdges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(new THREE.BoxGeometry(0.98, 0.46, 0.84)),
+        new THREE.LineBasicMaterial({ color: 0x64748B, transparent: true, opacity: 0.55 })
+      );
+      basinEdges.position.copy(basinShell.position);
+      scene.add(basinEdges);
+
+      // D) Mini-pompe submersible 12V AD20P-1230C dans le bac bas
+      const pumpX = 1.76, pumpZ = 0.76;
+      const pumpMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.45 });
+      const pumpBody = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.20, 0.20), pumpMat);
+      pumpBody.position.set(pumpX, 0.12, pumpZ);
+      pumpBody.castShadow = true;
+      scene.add(pumpBody);
+
+      const pumpNozzle = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.042, 0.12, 14), pumpMat);
+      pumpNozzle.position.set(pumpX, 0.26, pumpZ);
+      scene.add(pumpNozzle);
+
+      // E) Tuyau souple transparent reliant la mini-pompe au Polytank
+      const hoseCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(pumpX, 0.30, pumpZ),
+        new THREE.Vector3(1.66, 0.78, 0.46),
+        new THREE.Vector3(1.56, 1.38, 0.08),
+        new THREE.Vector3(1.60, 1.56, -0.32),
+        new THREE.Vector3(1.68, 1.38, -0.48)
+      ]);
+      const hoseOuter = new THREE.Mesh(
+        new THREE.TubeGeometry(hoseCurve, 36, 0.038, 12, false),
+        new THREE.MeshStandardMaterial({ color: 0xE2E8F0, transparent: true, opacity: 0.42, roughness: 0.15, depthWrite: false })
+      );
+      scene.add(hoseOuter);
+      const hoseInner = new THREE.Mesh(
+        new THREE.TubeGeometry(hoseCurve, 36, 0.021, 10, false),
+        new THREE.MeshStandardMaterial({ color: 0x38BDF8, transparent: true, opacity: 0.75, roughness: 0.2 })
+      );
+      scene.add(hoseInner);
+
+      // =====================================================
+      // 6. CÂBLAGE COLORÉ 3D (INTERNE COFFRET + LIAISONS PLATEAU)
+      //    12V Rouge • 5V Orange • GND Noir • Signaux Bleu & Vert
+      // =====================================================
+      // 12V Rouge (#DC2626)
+      addCable3D(scene, [[-0.98, 0.28, 0.28], [-1.42, 0.24, 0.34], [-1.74, 0.14, 0.36]], 0xDC2626); // BMS -> LM2596 IN+
+      addCable3D(scene, [[-0.94, 0.28, 0.24], [-0.76, 0.22, -0.10], [-0.76, 0.16, -0.56]], 0xDC2626); // BMS -> Relais COM
+      addCable3D(scene, [[-0.76, 0.16, -0.46], [-0.40, 0.12, -0.20], [-0.15, 0.05, 0.45], [0.15, 0.09, 0.62]], 0xDC2626); // Relais IN3 -> Charges 12V
+      addCable3D(scene, [[-0.76, 0.16, -0.26], [-0.36, 0.08, 0.05], [1.18, 0.04, 0.26], [1.66, 0.32, 0.68], [1.74, 0.20, 0.74]], 0xDC2626, 0.015); // Relais IN4 -> Pompe 12V
+      addCable3D(scene, [[0.10, 0.22, -0.82], [-0.28, 0.12, -0.82], [-0.76, 0.26, -0.15], [-0.88, 0.28, 0.24]], 0xDC2626, 0.015); // Solaire + -> BMS
+
+      // 5V Orange (#EA580C)
+      addCable3D(scene, [[-1.98, 0.14, 0.26], [-2.12, 0.16, -0.12], [-2.12, 0.15, -0.56]], 0xEA580C); // LM2596 OUT -> ESP32 VIN
+      addCable3D(scene, [[-1.70, 0.14, 0.26], [-1.42, 0.16, -0.12], [-1.22, 0.12, -0.56]], 0xEA580C); // LM2596 OUT -> Relais VCC
+      addCable3D(scene, [[-1.96, 0.14, 0.32], [-1.96, 0.56, 0.38], [-1.72, 0.78, 0.52]], 0xEA580C, 0.014); // LM2596 OUT -> LCD 5V
+
+      // GND Noir (#18181B)
+      addCable3D(scene, [[-1.08, 0.28, 0.28], [-1.52, 0.12, 0.22], [-1.86, 0.12, 0.22], [-2.06, 0.12, -0.45]], 0x18181B); // Bus GND interne
+      addCable3D(scene, [[-0.76, 0.12, -0.36], [-0.36, 0.06, 0.12], [-0.10, 0.04, 0.54], [0.18, 0.09, 0.70]], 0x18181B, 0.015); // GND Charges
+      addCable3D(scene, [[0.10, 0.19, -0.76], [-0.28, 0.08, -0.76], [-0.82, 0.12, -0.60]], 0x18181B, 0.014); // GND Solaire
+
+      // Signaux Bleu (#2563EB) : I2C LCD (GPIO 21/22) & Capteurs
+      addCable3D(scene, [[-1.60, 0.15, -0.48], [-1.54, 0.58, 0.05], [-1.62, 0.80, 0.52]], 0x2563EB, 0.014); // SDA
+      addCable3D(scene, [[-1.60, 0.15, -0.40], [-1.48, 0.56, 0.08], [-1.56, 0.80, 0.52]], 0x2563EB, 0.014); // SCL
+
+      // Signaux Vert (#16A34A) : Relais IN1-IN4 & Câble HC-SR04 vers Polytank
+      [-0.74, -0.62, -0.50, -0.38].forEach(zPos => {
+        addCable3D(scene, [[-1.58, 0.15, zPos], [-1.40, 0.22, zPos], [-1.22, 0.12, zPos]], 0x16A34A, 0.012);
+      });
+      // Faisceau signal HC-SR04 montant au sommet du Polytank
+      addCable3D(scene, [[-1.58, 0.15, -0.78], [-0.42, 0.12, -1.16], [1.28, 0.08, -1.16], [1.44, 0.88, -0.92], [1.62, 1.50, -0.64], [1.80, 1.52, -0.58]], 0x16A34A, 0.015);
+
+      maquette3D.scene = scene;
+      maquette3D.camera = camera;
+      maquette3D.renderer = renderer;
+      maquette3D.controls = controls;
+      maquette3D.initialized = true;
+      maquette3D.active = true;
+
+      window.addEventListener("resize", resizeMaquette3D);
+
+      let t = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        if (!maquette3D.active) return;
+        t += 0.02;
+        if (maquette3D.fanBlades) maquette3D.fanBlades.rotation.z -= 0.18;
+        if (maquette3D.waterMesh && maquette3D.waterMeniscus) {
+          const s = 1 + Math.sin(t * 1.4) * 0.022;
+          maquette3D.waterMesh.scale.y = s;
+          maquette3D.waterMesh.position.y = 0.22 + 0.42 * s;
+          maquette3D.waterMeniscus.position.y = 0.22 + 0.84 * s + 0.002;
+        }
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+    }
+
+    function resizeMaquette3D() {
+      if (!maquette3D.initialized || !maquette3D.renderer || !maquette3D.camera) return;
+      const container = document.getElementById("maquette-3d-container");
+      if (!container) return;
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w < 10 || h < 10) return;
+      maquette3D.camera.aspect = w / h;
+      maquette3D.camera.updateProjectionMatrix();
+      maquette3D.renderer.setSize(w, h);
+    }
+
+    function setMaquetteTransparency(enable) {
+      maquette3D.transparent = !!enable;
+      const btnNorm = document.getElementById("btn-3d-normal");
+      const btnTrans = document.getElementById("btn-3d-transparent");
+      const badge = document.getElementById("maquette-3d-mode-badge");
+      if (btnNorm) btnNorm.classList.toggle("active", !enable);
+      if (btnTrans) btnTrans.classList.toggle("active", !!enable);
+      if (badge) badge.textContent = enable ? "MODE : TRANSPARENCE (CÂBLAGE INTERNE)" : "MODE : COFFRET OPAQUE";
+
+      maquette3D.shellMaterials.forEach(m => {
+        m.transparent = !!enable;
+        m.opacity = enable ? 0.16 : 1.0;
+        m.depthWrite = !enable;
+        m.needsUpdate = true;
+      });
+      maquette3D.shellWireframes.forEach(wm => {
+        wm.opacity = enable ? 0.55 : 0.0;
+        wm.needsUpdate = true;
+      });
+    }
+
+    function resetMaquetteCamera() {
+      if (!maquette3D.camera || !maquette3D.controls) return;
+      maquette3D.camera.position.set(...maquette3D.defaultCamPos);
+      maquette3D.controls.target.set(...maquette3D.defaultTarget);
+      maquette3D.controls.update();
+    }
+
     // Initialisation complète
     buildCirkitSVG();
     renderQuickPins();
     renderInspector("esp32");
     renderGallery();
+    renderConnectionsTable();
+    renderEsp32Code();
   </script>
 </body>
 </html>
