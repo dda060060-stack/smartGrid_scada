@@ -721,6 +721,57 @@
     .ft-btn.danger:hover:not(:disabled) { background: var(--err-bg); }
     .ft-sep { width: 1px; height: 20px; background: var(--border); margin: 0 3px; }
 
+    .ft-pill-btn {
+      height: 34px;
+      padding: 0 11px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--bg-white);
+      color: var(--ink-2);
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: var(--shadow-float);
+      transition: background 0.12s, color 0.12s, border-color 0.12s;
+      white-space: nowrap;
+    }
+    .ft-pill-btn svg { flex-shrink: 0; }
+    .ft-pill-btn:hover { background: var(--indigo-soft); color: var(--indigo-dark); border-color: #c7d2fe; }
+    .ft-pill-btn.is-active-sound {
+      background: #eef2ff;
+      color: var(--indigo-dark);
+      border-color: #a5b4fc;
+    }
+    .ft-pill-btn.is-muted-sound {
+      background: var(--bg-white);
+      color: var(--muted);
+      border-color: var(--border);
+    }
+    .ft-pill-btn.is-locked {
+      background: #1e293b;
+      color: #f8fafc;
+      border-color: #0f172a;
+    }
+    .ft-pill-btn.is-locked:hover {
+      background: #334155;
+      color: #ffffff;
+      border-color: #1e293b;
+    }
+    .ft-pill-btn.is-unlocked {
+      background: #fffbeb;
+      color: #b45309;
+      border-color: #fde68a;
+    }
+
+    .canvas-area.is-wiring-locked .comp-delete-btn { display: none !important; }
+    .canvas-area.is-wiring-locked .pin-group { pointer-events: none !important; }
+    .canvas-area.is-wiring-locked .comp-group:not([data-comp-type="push_button"]) { cursor: grab; }
+    .canvas-area.is-wiring-locked .comp-group[data-comp-type="push_button"] { cursor: pointer; }
+
     /* Floating Bottom Bar: Layer Filter + Wire Color Legend */
     .floating-bottom {
       position: absolute;
@@ -1711,15 +1762,16 @@
         order: 1;
         height: auto;
         min-height: 0;
-        padding: 52px 6px 10px 6px;
+        padding: 8px 6px 10px 6px;
         display: flex;
         flex-direction: column;
         gap: 8px;
         border-bottom: 1px solid var(--border);
       }
       #workspace-svg { height: 230px; }
-      .floating-toolbar { top: 8px; right: 8px; gap: 6px; }
-      .btn-play-circle { width: 36px; height: 36px; }
+      .floating-toolbar { position: static; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+      .btn-play-circle { width: 34px; height: 34px; }
+      .ft-pill-btn { height: 30px; padding: 0 8px; font-size: 10.5px; }
       .ft-btn { width: 27px; height: 27px; }
       .floating-bottom { position: static; }
       .color-swatches { display: none; }
@@ -2016,13 +2068,32 @@
     </aside>
 
     <!-- CENTER SCHEMATIC CANVAS (#F5F7FA + FINE GRID) -->
-    <section id="canvas-area" class="canvas-area show-grid" aria-label="Plan de travail schéma électrique">
+    <section id="canvas-area" class="canvas-area show-grid is-wiring-locked" aria-label="Plan de travail schéma électrique">
       <!-- Cirkit Designer Floating Top-Right Toolbar -->
       <div class="floating-toolbar">
         <button type="button" id="btn-play" class="btn-play-circle" title="Mettre sous tension / Simuler">
           <svg id="play-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <polygon points="7,4 20,12 7,20" />
           </svg>
+        </button>
+
+        <!-- Bouton Audio Web Audio API (Son : Actif / Son : Silencieux) -->
+        <button type="button" id="btn-sound-toggle" class="ft-pill-btn is-active-sound" title="Activer ou couper les effets sonores physiques (Relais, Pompe 12V, Ventilateur 12V, Buzzer)">
+          <svg id="icon-sound-svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+          </svg>
+          <span id="lbl-sound-toggle">Son : Actif</span>
+        </button>
+
+        <!-- Bouton Verrouiller le câblage -->
+        <button type="button" id="btn-lock-wiring" class="ft-pill-btn is-locked" title="Verrouiller / Déverrouiller la modification des composants et du câblage">
+          <svg id="icon-lock-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          <span id="lbl-lock-wiring">Câblage verrouillé</span>
         </button>
 
         <div class="float-tools-pill" role="toolbar" aria-label="Outils du plan de travail">
@@ -2169,10 +2240,26 @@
             <stop offset="100%" stop-color="#64748b" />
           </radialGradient>
           <radialGradient id="g-lamp-on" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#fef9c3" stop-opacity="1" />
-            <stop offset="48%" stop-color="#facc15" stop-opacity="0.88" />
-            <stop offset="100%" stop-color="#f59e0b" stop-opacity="0" />
+            <stop offset="0%" stop-color="#FFFDE7" stop-opacity="1" />
+            <stop offset="28%" stop-color="#FFD54F" stop-opacity="0.96" />
+            <stop offset="64%" stop-color="#FFB300" stop-opacity="0.62" />
+            <stop offset="100%" stop-color="#FFB300" stop-opacity="0" />
           </radialGradient>
+          <radialGradient id="g-lamp-ambient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFFDE7" stop-opacity="0.95" />
+            <stop offset="34%" stop-color="#FFD54F" stop-opacity="0.78" />
+            <stop offset="68%" stop-color="#FFB300" stop-opacity="0.38" />
+            <stop offset="100%" stop-color="#FFB300" stop-opacity="0" />
+          </radialGradient>
+          <filter id="f-lamp-glow" x="-90%" y="-90%" width="280%" height="280%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="blurOuter" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4.5" result="blurInner" />
+            <feMerge>
+              <feMergeNode in="blurOuter" />
+              <feMergeNode in="blurInner" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
           <radialGradient id="g-led-red" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stop-color="#ff7878" stop-opacity="1" />
             <stop offset="48%" stop-color="#ef4444" stop-opacity="0.72" />
@@ -3174,16 +3261,19 @@
           ],
           render(id) {
             return `
-              <rect x="18" y="4" width="182" height="110" rx="5" fill="#f8fafc" stroke="#64748b" stroke-width="1.3" filter="url(#comp-shadow)" />
+              <circle id="${id}-ambient" cx="108" cy="64" r="78" fill="url(#g-lamp-ambient)" filter="url(#f-lamp-glow)" opacity="0" pointer-events="none" />
+              <rect id="${id}- housing" x="18" y="4" width="182" height="110" rx="5" fill="#f8fafc" stroke="#64748b" stroke-width="1.3" filter="url(#comp-shadow)" />
               <rect x="18" y="4" width="182" height="20" rx="4" fill="#1e293b" />
               <text x="109" y="17" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.8" font-weight="700" fill="#f8fafc">CHARGE PRIORITAIRE 12V</text>
               <line x1="10" y1="34" x2="36" y2="34" stroke="#c81e1e" stroke-width="2.8" /><line x1="10" y1="82" x2="36" y2="82" stroke="#18181b" stroke-width="2.8" />
               <circle cx="10" cy="34" r="5" fill="#c81e1e" stroke="#7f1d1d" stroke-width="0.9" /><circle cx="10" cy="82" r="5" fill="#18181b" stroke="#64748b" stroke-width="0.9" />
-              <circle id="${id}-glow" cx="108" cy="64" r="38" fill="url(#g-lamp-on)" opacity="0" />
+              <circle id="${id}-glow" cx="108" cy="64" r="46" fill="url(#g-lamp-on)" filter="url(#f-lamp-glow)" opacity="0" pointer-events="none" />
+              <g id="${id}-rays" opacity="0" pointer-events="none">${[0,45,90,135,180,225,270,315].map(a => { const r = a * Math.PI / 180; return `<line x1="${(108+Math.cos(r)*25).toFixed(1)}" y1="${(64+Math.sin(r)*25).toFixed(1)}" x2="${(108+Math.cos(r)*40).toFixed(1)}" y2="${(64+Math.sin(r)*40).toFixed(1)}" stroke="#FFB300" stroke-width="2.1" stroke-linecap="round" />`; }).join("")}</g>
               <circle cx="108" cy="64" r="28" fill="url(#g-metal)" stroke="#475569" stroke-width="1.3" />
-              <circle id="${id}-bulb" cx="108" cy="64" r="21" fill="#cbd5e1" stroke="#64748b" stroke-width="1" />
-              ${[0,60,120,180,240,300].map(a => { const r = a * Math.PI / 180; return `<rect x="${(108+Math.cos(r)*11-2.5).toFixed(1)}" y="${(64+Math.sin(r)*11-2.5).toFixed(1)}" width="5" height="5" rx="0.8" fill="#fef08a" stroke="#ca8a04" stroke-width="0.6" />`; }).join("")}
-              <circle cx="108" cy="64" r="4.5" fill="#fef08a" stroke="#ca8a04" stroke-width="0.6" />
+              <circle id="${id}-bulb" cx="108" cy="64" r="21" fill="#cbd5e1" stroke="#64748b" stroke-width="1.2" />
+              <circle id="${id}-core" cx="108" cy="64" r="14.5" fill="#FFFDE7" filter="url(#f-lamp-glow)" opacity="0" pointer-events="none" />
+              ${[0,60,120,180,240,300].map(a => { const r = a * Math.PI / 180; return `<rect x="${(108+Math.cos(r)*11-2.5).toFixed(1)}" y="${(64+Math.sin(r)*11-2.5).toFixed(1)}" width="5" height="5" rx="0.8" fill="#FFFDE7" stroke="#FFB300" stroke-width="0.7" />`; }).join("")}
+              <circle cx="108" cy="64" r="5.2" fill="#FFFDE7" stroke="#FFB300" stroke-width="0.7" />
               <text id="${id}-st" x="108" y="106" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.8" font-weight="700" fill="#64748b">ECLAIRAGE : ETEINT</text>
             `;
           }
@@ -3550,7 +3640,9 @@
         drawingFrom: null,
         mouseSvg: { x: 0, y: 0 },
         powered: true,
-        buzzerSound: false,
+        soundEnabled: true,
+        buzzerSound: true,
+        wiringLocked: true,
         acsScale4x: false,
 
         vb: { x: 0, y: 0, w: 1940, h: 930 },
@@ -4449,24 +4541,423 @@
       }
 
       // =====================================================================
-      // 9. OPTIONAL WEB AUDIO BUZZER
+      // 9. REALISTIC WEB AUDIO API PHYSICAL ENGINE (RELAIS, POMPE, VENTILO, BUZZER)
       // =====================================================================
-      let audioCtx = null, oscNode = null, gainNode = null;
-      function updateBuzzerAudio(active) {
-        const want = state.buzzerSound && active;
-        if (want) {
-          try {
-            if (!audioCtx) { const Ctx = window.AudioContext || window.webkitAudioContext; if (!Ctx) return; audioCtx = new Ctx(); }
-            if (audioCtx.state === "suspended") audioCtx.resume();
-            if (!oscNode) {
-              oscNode = audioCtx.createOscillator(); gainNode = audioCtx.createGain();
-              oscNode.type = "square"; oscNode.frequency.value = 2100; gainNode.gain.value = 0.022;
-              oscNode.connect(gainNode); gainNode.connect(audioCtx.destination); oscNode.start();
+      let audioCtx = null;
+      let sharedNoiseBuffer = null;
+      let audioUnlocked = false;
+      let pumpNodes = null;
+      let fanNodes = null;
+      let buzzerNodes = null;
+      const prevRelayAudio = { initialized: false, active: false, k1: false, k2: false, k3: false, k4: false };
+      const audioStats = { relayClicks: 0, pumpRunning: false, fanRunning: false, buzzerActive: false };
+      window.__audioEngineState = audioStats;
+
+      function ensureAudioCtx() {
+        if (!audioCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (!Ctx) return null;
+          audioCtx = new Ctx();
+        }
+        if (audioCtx.state === "suspended") {
+          try { audioCtx.resume(); } catch (_) {}
+        }
+        if (!sharedNoiseBuffer && audioCtx) {
+          const sr = audioCtx.sampleRate || 44100;
+          const len = sr * 2;
+          sharedNoiseBuffer = audioCtx.createBuffer(1, len, sr);
+          const data = sharedNoiseBuffer.getChannelData(0);
+          for (let i = 0; i < len; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+        }
+        return audioCtx;
+      }
+
+      function unlockAudioEngine() {
+        try {
+          const ctx = ensureAudioCtx();
+          if (!ctx) return;
+          if (ctx.state === "suspended") {
+            ctx.resume().then(() => {
+              audioUnlocked = true;
+              if (state.soundEnabled) syncCircuitAudio(computeSim(), false);
+            }).catch(() => {});
+          }
+          audioUnlocked = true;
+          if (state.soundEnabled) {
+            syncCircuitAudio(computeSim(), false);
+          }
+        } catch (_) {}
+      }
+
+      window.addEventListener("pointerdown", unlockAudioEngine, { capture: true });
+      window.addEventListener("keydown", unlockAudioEngine, { capture: true });
+
+      // 1. Claquement mécanique sec des relais électromagnétiques (K1, K2, K3, K4)
+      function playRelayClick(isClosing = true, delayMs = 0) {
+        if (!state.soundEnabled || document.documentElement.classList.contains("embed-mode")) return;
+        audioStats.relayClicks += 1;
+        try {
+          const ctx = ensureAudioCtx();
+          if (!ctx) return;
+          const t0 = ctx.currentTime + Math.max(0, delayMs / 1000);
+
+          // Impulsion bruitée filtrée passe-bande (contact métallique)
+          if (sharedNoiseBuffer) {
+            const nSrc = ctx.createBufferSource();
+            nSrc.buffer = sharedNoiseBuffer;
+            const bp = ctx.createBiquadFilter();
+            bp.type = "bandpass";
+            bp.frequency.setValueAtTime(isClosing ? 2450 : 1920, t0);
+            bp.Q.setValueAtTime(3.6, t0);
+            const nGain = ctx.createGain();
+            nGain.gain.setValueAtTime(0.0001, t0);
+            nGain.gain.linearRampToValueAtTime(isClosing ? 0.28 : 0.21, t0 + 0.0014);
+            nGain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.021);
+            nSrc.connect(bp);
+            bp.connect(nGain);
+            nGain.connect(ctx.destination);
+            nSrc.start(t0, Math.random() * 1.2, 0.026);
+
+            // Micro-rebond mécanique de l'armature (+6,5 ms)
+            const bounceSrc = ctx.createBufferSource();
+            bounceSrc.buffer = sharedNoiseBuffer;
+            const bp2 = ctx.createBiquadFilter();
+            bp2.type = "bandpass";
+            bp2.frequency.setValueAtTime(isClosing ? 3150 : 2580, t0 + 0.0065);
+            bp2.Q.setValueAtTime(4.2, t0 + 0.0065);
+            const bGain = ctx.createGain();
+            bGain.gain.setValueAtTime(0.0001, t0 + 0.0065);
+            bGain.gain.linearRampToValueAtTime(isClosing ? 0.11 : 0.08, t0 + 0.0075);
+            bGain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.017);
+            bounceSrc.connect(bp2);
+            bp2.connect(bGain);
+            bGain.connect(ctx.destination);
+            bounceSrc.start(t0 + 0.0065, Math.random() * 1.2, 0.014);
+          }
+
+          // Transitoire basse fréquence de butée mécanique de la bobine
+          const thudOsc = ctx.createOscillator();
+          const thudGain = ctx.createGain();
+          thudOsc.type = "triangle";
+          thudOsc.frequency.setValueAtTime(isClosing ? 185 : 148, t0);
+          thudOsc.frequency.exponentialRampToValueAtTime(isClosing ? 56 : 44, t0 + 0.024);
+          thudGain.gain.setValueAtTime(0.0001, t0);
+          thudGain.gain.linearRampToValueAtTime(isClosing ? 0.19 : 0.14, t0 + 0.0015);
+          thudGain.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.026);
+          thudOsc.connect(thudGain);
+          thudGain.connect(ctx.destination);
+          thudOsc.start(t0);
+          thudOsc.stop(t0 + 0.028);
+        } catch (_) {}
+      }
+
+      // 2. Mini Pompe 12V (K4) : rampe d'accélération DC (~0,8 s) + bourdonnement grave fluide + ralentissement à l'arrêt
+      function updatePumpAudio(shouldRun, immediateCut = false) {
+        const want = Boolean(state.soundEnabled && shouldRun && !document.documentElement.classList.contains("embed-mode"));
+        audioStats.pumpRunning = want;
+        try {
+          if (want) {
+            if (!audioUnlocked) return;
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            if (!pumpNodes) {
+              const osc1 = ctx.createOscillator();
+              const osc2 = ctx.createOscillator();
+              osc1.type = "sawtooth";
+              osc2.type = "triangle";
+              osc1.frequency.setValueAtTime(52, now);
+              osc1.frequency.exponentialRampToValueAtTime(136, now + 0.82);
+              osc2.frequency.setValueAtTime(104, now);
+              osc2.frequency.exponentialRampToValueAtTime(272, now + 0.82);
+
+              const lp = ctx.createBiquadFilter();
+              lp.type = "lowpass";
+              lp.frequency.setValueAtTime(135, now);
+              lp.frequency.exponentialRampToValueAtTime(320, now + 0.82);
+              lp.Q.setValueAtTime(2.1, now);
+
+              const osc2Gain = ctx.createGain();
+              osc2Gain.gain.setValueAtTime(0.42, now);
+
+              let flowSrc = null;
+              let flowGain = null;
+              if (sharedNoiseBuffer) {
+                flowSrc = ctx.createBufferSource();
+                flowSrc.buffer = sharedNoiseBuffer;
+                flowSrc.loop = true;
+                const flowBp = ctx.createBiquadFilter();
+                flowBp.type = "bandpass";
+                flowBp.frequency.setValueAtTime(480, now);
+                flowBp.Q.setValueAtTime(1.5, now);
+                flowGain = ctx.createGain();
+                flowGain.gain.setValueAtTime(0.22, now);
+                flowSrc.connect(flowBp);
+                flowBp.connect(flowGain);
+              }
+
+              const master = ctx.createGain();
+              master.gain.setValueAtTime(0.0001, now);
+              master.gain.linearRampToValueAtTime(0.048, now + 0.82);
+
+              osc1.connect(lp);
+              osc2.connect(osc2Gain);
+              osc2Gain.connect(lp);
+              if (flowGain) flowGain.connect(lp);
+              lp.connect(master);
+              master.connect(ctx.destination);
+
+              osc1.start(now);
+              osc2.start(now);
+              if (flowSrc) flowSrc.start(now);
+
+              pumpNodes = { osc1, osc2, lp, flowSrc, master, stopTimer: null };
+            } else if (pumpNodes.stopTimer) {
+              clearTimeout(pumpNodes.stopTimer);
+              pumpNodes.stopTimer = null;
+              pumpNodes.osc1.frequency.cancelScheduledValues(now);
+              pumpNodes.osc2.frequency.cancelScheduledValues(now);
+              pumpNodes.lp.frequency.cancelScheduledValues(now);
+              pumpNodes.master.gain.cancelScheduledValues(now);
+              pumpNodes.osc1.frequency.setTargetAtTime(136, now, 0.22);
+              pumpNodes.osc2.frequency.setTargetAtTime(272, now, 0.22);
+              pumpNodes.lp.frequency.setTargetAtTime(320, now, 0.22);
+              pumpNodes.master.gain.setTargetAtTime(0.048, now, 0.2);
             }
-          } catch (e) {}
-        } else if (oscNode) {
-          try { oscNode.stop(); oscNode.disconnect(); gainNode.disconnect(); } catch (e) {}
-          oscNode = null; gainNode = null;
+          } else if (pumpNodes) {
+            const nodes = pumpNodes;
+            if (immediateCut || !audioCtx) {
+              if (nodes.stopTimer) clearTimeout(nodes.stopTimer);
+              pumpNodes = null;
+              try { nodes.osc1.stop(); nodes.osc2.stop(); if (nodes.flowSrc) nodes.flowSrc.stop(); nodes.master.disconnect(); } catch (_) {}
+            } else if (!nodes.stopTimer) {
+              const now = audioCtx.currentTime;
+              nodes.osc1.frequency.cancelScheduledValues(now);
+              nodes.osc2.frequency.cancelScheduledValues(now);
+              nodes.lp.frequency.cancelScheduledValues(now);
+              nodes.master.gain.cancelScheduledValues(now);
+              nodes.osc1.frequency.setValueAtTime(Math.max(40, nodes.osc1.frequency.value || 136), now);
+              nodes.osc1.frequency.exponentialRampToValueAtTime(38, now + 0.48);
+              nodes.osc2.frequency.setValueAtTime(Math.max(80, nodes.osc2.frequency.value || 272), now);
+              nodes.osc2.frequency.exponentialRampToValueAtTime(76, now + 0.48);
+              nodes.lp.frequency.setValueAtTime(Math.max(100, nodes.lp.frequency.value || 320), now);
+              nodes.lp.frequency.exponentialRampToValueAtTime(95, now + 0.48);
+              nodes.master.gain.setValueAtTime(Math.max(0.0002, nodes.master.gain.value || 0.048), now);
+              nodes.master.gain.exponentialRampToValueAtTime(0.0001, now + 0.48);
+              nodes.stopTimer = setTimeout(() => {
+                if (pumpNodes === nodes) pumpNodes = null;
+                try { nodes.osc1.stop(); nodes.osc2.stop(); if (nodes.flowSrc) nodes.flowSrc.stop(); nodes.master.disconnect(); } catch (_) {}
+              }, 500);
+            }
+          }
+        } catch (_) {}
+      }
+
+      // 3. Ventilateur 12V (K3) : accélération progressive + souffle d'air doux filtré passe-bande + léger ronronnement moteur
+      function updateFanAudio(shouldRun, immediateCut = false) {
+        const want = Boolean(state.soundEnabled && shouldRun && !document.documentElement.classList.contains("embed-mode"));
+        audioStats.fanRunning = want;
+        try {
+          if (want) {
+            if (!audioUnlocked) return;
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            if (!fanNodes) {
+              const purrOsc = ctx.createOscillator();
+              purrOsc.type = "triangle";
+              purrOsc.frequency.setValueAtTime(68, now);
+              purrOsc.frequency.exponentialRampToValueAtTime(164, now + 0.72);
+
+              const purrLp = ctx.createBiquadFilter();
+              purrLp.type = "lowpass";
+              purrLp.frequency.setValueAtTime(240, now);
+              const purrGain = ctx.createGain();
+              purrGain.gain.setValueAtTime(0.32, now);
+
+              let airSrc = null;
+              let airBp = null;
+              if (sharedNoiseBuffer) {
+                airSrc = ctx.createBufferSource();
+                airSrc.buffer = sharedNoiseBuffer;
+                airSrc.loop = true;
+                airBp = ctx.createBiquadFilter();
+                airBp.type = "bandpass";
+                airBp.frequency.setValueAtTime(210, now);
+                airBp.frequency.exponentialRampToValueAtTime(540, now + 0.72);
+                airBp.Q.setValueAtTime(1.15, now);
+              }
+
+              const master = ctx.createGain();
+              master.gain.setValueAtTime(0.0001, now);
+              master.gain.linearRampToValueAtTime(0.036, now + 0.72);
+
+              purrOsc.connect(purrLp);
+              purrLp.connect(purrGain);
+              purrGain.connect(master);
+              if (airSrc && airBp) {
+                airSrc.connect(airBp);
+                airBp.connect(master);
+              }
+              master.connect(ctx.destination);
+
+              purrOsc.start(now);
+              if (airSrc) airSrc.start(now);
+
+              fanNodes = { purrOsc, airSrc, airBp, master, stopTimer: null };
+            } else if (fanNodes.stopTimer) {
+              clearTimeout(fanNodes.stopTimer);
+              fanNodes.stopTimer = null;
+              fanNodes.purrOsc.frequency.cancelScheduledValues(now);
+              if (fanNodes.airBp) fanNodes.airBp.frequency.cancelScheduledValues(now);
+              fanNodes.master.gain.cancelScheduledValues(now);
+              fanNodes.purrOsc.frequency.setTargetAtTime(164, now, 0.2);
+              if (fanNodes.airBp) fanNodes.airBp.frequency.setTargetAtTime(540, now, 0.2);
+              fanNodes.master.gain.setTargetAtTime(0.036, now, 0.2);
+            }
+          } else if (fanNodes) {
+            const nodes = fanNodes;
+            if (immediateCut || !audioCtx) {
+              if (nodes.stopTimer) clearTimeout(nodes.stopTimer);
+              fanNodes = null;
+              try { nodes.purrOsc.stop(); if (nodes.airSrc) nodes.airSrc.stop(); nodes.master.disconnect(); } catch (_) {}
+            } else if (!nodes.stopTimer) {
+              const now = audioCtx.currentTime;
+              nodes.purrOsc.frequency.cancelScheduledValues(now);
+              nodes.purrOsc.frequency.setValueAtTime(Math.max(55, nodes.purrOsc.frequency.value || 164), now);
+              nodes.purrOsc.frequency.exponentialRampToValueAtTime(52, now + 0.55);
+              if (nodes.airBp) {
+                nodes.airBp.frequency.cancelScheduledValues(now);
+                nodes.airBp.frequency.setValueAtTime(Math.max(180, nodes.airBp.frequency.value || 540), now);
+                nodes.airBp.frequency.exponentialRampToValueAtTime(170, now + 0.55);
+              }
+              nodes.master.gain.cancelScheduledValues(now);
+              nodes.master.gain.setValueAtTime(Math.max(0.0002, nodes.master.gain.value || 0.036), now);
+              nodes.master.gain.exponentialRampToValueAtTime(0.0001, now + 0.55);
+              nodes.stopTimer = setTimeout(() => {
+                if (fanNodes === nodes) fanNodes = null;
+                try { nodes.purrOsc.stop(); if (nodes.airSrc) nodes.airSrc.stop(); nodes.master.disconnect(); } catch (_) {}
+              }, 570);
+            }
+          }
+        } catch (_) {}
+      }
+
+      // 4. Buzzer d'alarme piézoélectrique (~2,7 kHz intermittent) uniquement sur alerte critique
+      function updateBuzzerAudio(active) {
+        const want = Boolean(state.soundEnabled && active && !document.documentElement.classList.contains("embed-mode"));
+        audioStats.buzzerActive = want;
+        if (want) {
+          if (!audioUnlocked) return;
+          try {
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+            if (!buzzerNodes) {
+              const osc = ctx.createOscillator();
+              const bp = ctx.createBiquadFilter();
+              const g = ctx.createGain();
+              osc.type = "square";
+              osc.frequency.setValueAtTime(2720, ctx.currentTime);
+              bp.type = "bandpass";
+              bp.frequency.setValueAtTime(2720, ctx.currentTime);
+              bp.Q.setValueAtTime(5.5, ctx.currentTime);
+              g.gain.setValueAtTime(0.032, ctx.currentTime);
+              osc.connect(bp);
+              bp.connect(g);
+              g.connect(ctx.destination);
+              osc.start();
+              let pulseOn = true;
+              const pulseTimer = setInterval(() => {
+                if (!buzzerNodes || !audioCtx || !state.soundEnabled) return;
+                pulseOn = !pulseOn;
+                const t = audioCtx.currentTime;
+                g.gain.setTargetAtTime(pulseOn ? 0.032 : 0.0001, t, 0.008);
+              }, 165);
+              buzzerNodes = { osc, bp, g, pulseTimer };
+            }
+          } catch (_) {}
+        } else if (buzzerNodes) {
+          const nodes = buzzerNodes;
+          buzzerNodes = null;
+          if (nodes.pulseTimer) clearInterval(nodes.pulseTimer);
+          try { nodes.osc.stop(); nodes.osc.disconnect(); nodes.g.disconnect(); } catch (_) {}
+        }
+      }
+
+      function stopAllContinuousAudioImmediate() {
+        updatePumpAudio(false, true);
+        updateFanAudio(false, true);
+        updateBuzzerAudio(false);
+      }
+
+      function syncCircuitAudio(s, allowRelayClicks = true) {
+        const a = state.analysis;
+        const k1 = Boolean(s.active && s.k1Solar);
+        const k2 = Boolean(s.active && s.k2Prio);
+        const k3 = Boolean(s.active && s.k3NonPrio);
+        const k4 = Boolean(s.active && s.k4Pump);
+
+        if (prevRelayAudio.initialized && allowRelayClicks && state.soundEnabled) {
+          const changes = [];
+          if (k1 !== prevRelayAudio.k1) changes.push(k1);
+          if (k2 !== prevRelayAudio.k2) changes.push(k2);
+          if (k3 !== prevRelayAudio.k3) changes.push(k3);
+          if (k4 !== prevRelayAudio.k4) changes.push(k4);
+          changes.forEach((isClosing, idx) => playRelayClick(isClosing, idx * 20));
+        }
+        prevRelayAudio.initialized = true;
+        prevRelayAudio.active = Boolean(s.active);
+        prevRelayAudio.k1 = k1;
+        prevRelayAudio.k2 = k2;
+        prevRelayAudio.k3 = k3;
+        prevRelayAudio.k4 = k4;
+
+        if (!state.soundEnabled) {
+          stopAllContinuousAudioImmediate();
+          return;
+        }
+        const pumpRun = Boolean(s.active && s.k4Pump && a && a.pumpOk);
+        const fanRun = Boolean(s.active && s.k3NonPrio && a && a.nonPrioOk);
+        updatePumpAudio(pumpRun, false);
+        updateFanAudio(fanRun, false);
+        updateBuzzerAudio(Boolean(s.buzzer));
+      }
+
+      function syncSoundUI() {
+        const btn = document.getElementById("btn-sound-toggle");
+        const lbl = document.getElementById("lbl-sound-toggle");
+        const icon = document.getElementById("icon-sound-svg");
+        const drawerBtn = document.getElementById("btn-buzzer-sound");
+        if (btn) {
+          btn.classList.toggle("is-active-sound", state.soundEnabled);
+          btn.classList.toggle("is-muted-sound", !state.soundEnabled);
+        }
+        if (lbl) {
+          lbl.textContent = state.soundEnabled ? "Son : Actif" : "Son : Silencieux";
+        }
+        if (icon) {
+          icon.innerHTML = state.soundEnabled
+            ? `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" />`
+            : `<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" />`;
+        }
+        if (drawerBtn) {
+          drawerBtn.textContent = state.soundEnabled ? "Son : Actif" : "Son : Silencieux";
+        }
+      }
+
+      function toggleSound(forceState) {
+        state.soundEnabled = typeof forceState === "boolean" ? forceState : !state.soundEnabled;
+        state.buzzerSound = state.soundEnabled;
+        syncSoundUI();
+        if (!state.soundEnabled) {
+          stopAllContinuousAudioImmediate();
+          showToast("Son : Silencieux (tous les effets sonores coupés)");
+        } else {
+          unlockAudioEngine();
+          syncCircuitAudio(computeSim(), false);
+          showToast("Son : Actif (Relais, Pompe 12V, Ventilateur 12V, Buzzer)");
         }
       }
 
@@ -4747,9 +5238,15 @@
           }
           if (c.type === "load_priority") {
             const lit = s.active && s.k2Prio && a.prioOk;
-            const gl = document.getElementById(`${c.id}-glow`), bl = document.getElementById(`${c.id}-bulb`), st = document.getElementById(`${c.id}-st`);
-            if (gl) gl.setAttribute("opacity", lit ? "0.9" : "0");
-            if (bl) bl.setAttribute("fill", lit ? "#fef08a" : "#cbd5e1");
+            const amb = document.getElementById(`${c.id}-ambient`), gl = document.getElementById(`${c.id}-glow`), rays = document.getElementById(`${c.id}-rays`), bl = document.getElementById(`${c.id}-bulb`), core = document.getElementById(`${c.id}-core`), st = document.getElementById(`${c.id}-st`);
+            if (amb) amb.setAttribute("opacity", lit ? "0.95" : "0");
+            if (gl) gl.setAttribute("opacity", lit ? "1" : "0");
+            if (rays) rays.setAttribute("opacity", lit ? "0.92" : "0");
+            if (bl) {
+              bl.setAttribute("fill", lit ? "#FFD54F" : "#cbd5e1");
+              bl.setAttribute("stroke", lit ? "#FFB300" : "#64748b");
+            }
+            if (core) core.setAttribute("opacity", lit ? "1" : "0");
             if (st) { st.textContent = lit ? "ECLAIRAGE : ALLUME" : "ECLAIRAGE : ETEINT"; st.setAttribute("fill", lit ? "#15803d" : "#64748b"); }
           }
           if (c.type === "load_nonpriority") {
@@ -4806,8 +5303,37 @@
             if (cap) cap.setAttribute("r", isPressed ? "8.8" : "10.5");
           }
         });
-        updateBuzzerAudio(s.buzzer);
+        syncCircuitAudio(s, true);
         updateSimUI(s);
+      }
+
+      function syncWiringLockUI() {
+        const btn = document.getElementById("btn-lock-wiring");
+        const lbl = document.getElementById("lbl-lock-wiring");
+        const icon = document.getElementById("icon-lock-svg");
+        if (canvasArea) canvasArea.classList.toggle("is-wiring-locked", state.wiringLocked);
+        if (btn) {
+          btn.classList.toggle("is-locked", state.wiringLocked);
+          btn.classList.toggle("is-unlocked", !state.wiringLocked);
+        }
+        if (lbl) {
+          lbl.textContent = state.wiringLocked ? "Câblage verrouillé" : "Câblage déverrouillé";
+        }
+        if (icon) {
+          icon.innerHTML = state.wiringLocked
+            ? `<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />`
+            : `<rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 9.9-1" />`;
+        }
+      }
+
+      function toggleWiringLock(forceState) {
+        state.wiringLocked = typeof forceState === "boolean" ? forceState : !state.wiringLocked;
+        if (state.wiringLocked && state.drawingFrom) cancelWiring();
+        syncWiringLockUI();
+        updateSimUI(computeSim());
+        showToast(state.wiringLocked
+          ? "Câblage verrouillé : déplacement et suppression désactivés (BP & simulation actifs)"
+          : "Câblage déverrouillé : édition des composants et des conducteurs autorisée");
       }
 
       // =====================================================================
@@ -4886,11 +5412,11 @@
           aK4.textContent = s.k4Pump ? "MARCHE" : "ARRET"; aK4.className = "act-v " + (s.k4Pump ? "info" : "");
         }
 
-        document.getElementById("btn-undo").disabled = state.undoStack.length === 0;
+        document.getElementById("btn-undo").disabled = state.wiringLocked || state.undoStack.length === 0;
         const selComp = state.components.find(c => c.id === state.selectedCompId);
-        const movableSel = Boolean(selComp && !COMPONENT_DEFS[selComp.type].fixed);
+        const movableSel = Boolean(!state.wiringLocked && selComp && !COMPONENT_DEFS[selComp.type].fixed);
         document.getElementById("ft-rotate").disabled = !movableSel;
-        document.getElementById("ft-delete").disabled = !(Boolean(state.selectedWireId) || movableSel);
+        document.getElementById("ft-delete").disabled = state.wiringLocked || !(Boolean(state.selectedWireId) || movableSel);
       }
 
       function refreshAll({ wireDisconnectedEvent = false } = {}) {
@@ -4963,6 +5489,10 @@
       }
 
       function spawnComponent(type, dropX = null, dropY = null) {
+        if (state.wiringLocked) {
+          showToast("Câblage verrouillé : déverrouillez pour ajouter un composant.");
+          return;
+        }
         const def = COMPONENT_DEFS[type];
         if (!def || def.fixed) return;
         pushUndo();
@@ -4984,6 +5514,10 @@
       }
 
       function duplicateComponent(cid) {
+        if (state.wiringLocked) {
+          showToast("Câblage verrouillé : déverrouillez pour dupliquer un composant.");
+          return;
+        }
         const orig = state.components.find(c => c.id === cid);
         if (!orig) return;
         const def = COMPONENT_DEFS[orig.type];
@@ -4999,6 +5533,10 @@
       }
 
       function rotateSelectedComponent() {
+        if (state.wiringLocked) {
+          showToast("Câblage verrouillé : déverrouillez pour pivoter un composant.");
+          return;
+        }
         const comp = state.components.find(c => c.id === state.selectedCompId);
         if (!comp || COMPONENT_DEFS[comp.type].fixed) return;
         pushUndo();
@@ -5064,9 +5602,13 @@
       }
 
       let draggingComp = null, panning = null;
-      canvasArea.addEventListener("dragover", ev => { ev.preventDefault(); ev.dataTransfer.dropEffect = "copy"; });
+      canvasArea.addEventListener("dragover", ev => { ev.preventDefault(); ev.dataTransfer.dropEffect = state.wiringLocked ? "none" : "copy"; });
       canvasArea.addEventListener("drop", ev => {
         ev.preventDefault();
+        if (state.wiringLocked) {
+          showToast("Câblage verrouillé : déverrouillez pour déposer un composant.");
+          return;
+        }
         const type = ev.dataTransfer.getData("text/plain");
         if (COMPONENT_DEFS[type]) { const pt = clientToSvg(ev.clientX, ev.clientY); spawnComponent(type, pt.x, pt.y); }
       });
@@ -5084,17 +5626,30 @@
         closeAllMenus();
 
         const delBtn = ev.target.closest("[data-delete-comp]");
-        if (delBtn) { ev.stopPropagation(); deleteComponent(delBtn.getAttribute("data-delete-comp")); return; }
+        if (delBtn) {
+          ev.stopPropagation();
+          if (!state.wiringLocked) deleteComponent(delBtn.getAttribute("data-delete-comp"));
+          return;
+        }
 
         const pinEl = ev.target.closest("[data-endpoint]");
-        if (pinEl) { ev.stopPropagation(); handlePinClick(pinEl.getAttribute("data-endpoint"), ev.clientX, ev.clientY); return; }
+        if (pinEl && !state.wiringLocked) {
+          ev.stopPropagation();
+          handlePinClick(pinEl.getAttribute("data-endpoint"), ev.clientX, ev.clientY);
+          return;
+        }
 
         const wireEl = ev.target.closest("[data-wire-id]");
         if (wireEl) {
           ev.stopPropagation();
           if (state.drawingFrom) { cancelWiring(); return; }
           state.selectedWireId = wireEl.getAttribute("data-wire-id"); state.selectedCompId = null;
-          syncSelectionClasses(); updateSimUI(computeSim()); return;
+          syncSelectionClasses(); updateSimUI(computeSim());
+          if (state.wiringLocked) {
+            panning = { startX: ev.clientX, startY: ev.clientY, vbX: state.vb.x, vbY: state.vb.y };
+            try { svgEl.setPointerCapture(ev.pointerId); } catch (_) {}
+          }
+          return;
         }
 
         const compEl = ev.target.closest("[data-comp-id]");
@@ -5104,6 +5659,15 @@
           const cid = compEl.getAttribute("data-comp-id"), comp = state.components.find(c => c.id === cid);
           state.selectedCompId = cid; state.selectedWireId = null;
           syncSelectionClasses(); updateSimUI(computeSim());
+          if (state.wiringLocked) {
+            if (comp && comp.type === "push_button") {
+              draggingComp = { comp, offsetX: 0, offsetY: 0, moved: false, lockedButtonOnly: true };
+            } else {
+              panning = { startX: ev.clientX, startY: ev.clientY, vbX: state.vb.x, vbY: state.vb.y };
+            }
+            try { svgEl.setPointerCapture(ev.pointerId); } catch (_) {}
+            return;
+          }
           if (comp && !COMPONENT_DEFS[comp.type].fixed) {
             const pt = clientToSvg(ev.clientX, ev.clientY);
             draggingComp = { comp, offsetX: pt.x - comp.x, offsetY: pt.y - comp.y, moved: false };
@@ -5120,6 +5684,7 @@
       });
 
       svgEl.addEventListener("dblclick", ev => {
+        if (state.wiringLocked) return;
         const wireEl = ev.target.closest("[data-wire-id]");
         if (wireEl) { ev.stopPropagation(); deleteWire(wireEl.getAttribute("data-wire-id")); }
       });
@@ -5129,6 +5694,7 @@
         state.mouseSvg = pt;
 
         if (draggingComp) {
+          if (state.wiringLocked || draggingComp.lockedButtonOnly) return;
           const nx = Math.round((pt.x - draggingComp.offsetX) / 4) * 4;
           const ny = Math.round((pt.y - draggingComp.offsetY) / 4) * 4;
           if (nx !== draggingComp.comp.x || ny !== draggingComp.comp.y) {
@@ -5171,7 +5737,11 @@
           const w = state.wires.find(x => x.id === wireEl.getAttribute("data-wire-id"));
           if (w) {
             const p1 = getPinWorldPos(w.from), p2 = getPinWorldPos(w.to);
-            if (p1 && p2) { showTooltip(ev.clientX, ev.clientY, `<span class="tt-pin">${escapeHtml(p1.def.name)} (${escapeHtml(p1.pin.label)}) -- ${escapeHtml(p2.def.name)} (${escapeHtml(p2.pin.label)})</span><span class="tt-sub">Double-clic pour supprimer ce conducteur</span>`); return; }
+            if (p1 && p2) {
+              const subTxt = state.wiringLocked ? "Conducteur verrouillé (schéma protégé)" : "Double-clic pour supprimer ce conducteur";
+              showTooltip(ev.clientX, ev.clientY, `<span class="tt-pin">${escapeHtml(p1.def.name)} (${escapeHtml(p1.pin.label)}) -- ${escapeHtml(p2.def.name)} (${escapeHtml(p2.pin.label)})</span><span class="tt-sub">${subTxt}</span>`);
+              return;
+            }
           }
         }
         hideTooltip();
@@ -5192,6 +5762,7 @@
       svgEl.addEventListener("wheel", ev => { ev.preventDefault(); const pt = clientToSvg(ev.clientX, ev.clientY); zoomBy(ev.deltaY > 0 ? 1.12 : 0.89, pt.x, pt.y); }, { passive: false });
 
       function handlePinClick(ep, cx, cy) {
+        if (state.wiringLocked) return;
         if (!state.drawingFrom) {
           state.drawingFrom = ep; state.mouseSvg = clientToSvg(cx, cy);
           canvasArea.classList.add("is-wiring"); syncActivePinClass(); renderDraftWire(); return;
@@ -5207,11 +5778,19 @@
       }
       function cancelWiring() { state.drawingFrom = null; canvasArea.classList.remove("is-wiring"); layerDraft.innerHTML = ""; syncActivePinClass(); }
       function deleteWire(wid) {
+        if (state.wiringLocked) {
+          showToast("Câblage verrouillé : déverrouillez pour supprimer un conducteur.");
+          return;
+        }
         const idx = state.wires.findIndex(w => w.id === wid); if (idx === -1) return;
         pushUndo(); state.wires.splice(idx, 1); if (state.selectedWireId === wid) state.selectedWireId = null;
         hideTooltip(); refreshAll({ wireDisconnectedEvent: true });
       }
       function deleteComponent(cid) {
+        if (state.wiringLocked) {
+          showToast("Câblage verrouillé : déverrouillez pour supprimer un composant.");
+          return;
+        }
         const comp = state.components.find(c => c.id === cid); if (!comp || COMPONENT_DEFS[comp.type].fixed) return;
         pushUndo(); state.components = state.components.filter(c => c.id !== cid);
         state.wires = state.wires.filter(w => !w.from.startsWith(cid + ".") && !w.to.startsWith(cid + "."));
@@ -5219,6 +5798,10 @@
         hideTooltip(); refreshAll({ wireDisconnectedEvent: true });
       }
       function performUndo() {
+        if (state.wiringLocked) {
+          showToast("Câblage verrouillé : déverrouillez pour annuler une action.");
+          return;
+        }
         if (!state.undoStack.length) return;
         const snap = state.undoStack.pop();
         state.components = snap.components; state.wires = snap.wires;
@@ -5258,7 +5841,7 @@
           syncSelectionClasses(); updateSimUI(computeSim());
         }
 
-        const isCanvasMovable = Boolean(comp && !def.fixed);
+        const isCanvasMovable = Boolean(!state.wiringLocked && comp && !def.fixed);
         document.getElementById("ctx-comp-title").textContent = (comp && comp.tag) ? `${def.name} · ${comp.tag}` : def.name;
         document.getElementById("ctx-rotate").disabled = !isCanvasMovable;
         document.getElementById("ctx-dup").disabled = !isCanvasMovable;
@@ -5560,7 +6143,10 @@
         state.undoStack = [];
         state.selectedCompId = null; state.selectedWireId = null; state.drawingFrom = null;
         state.sim.manualMode = false;
+        state.wiringLocked = (name === "smartgrid");
+        prevRelayAudio.initialized = false;
         canvasArea.classList.remove("is-wiring");
+        syncWiringLockUI();
 
         document.querySelectorAll(".preset-item-btn").forEach(b => b.classList.toggle("active", b.getAttribute("data-load-preset") === name));
         refreshAll();
@@ -5803,6 +6389,8 @@
         document.getElementById("ft-ortho").classList.toggle("active", state.strictSharp90);
         renderWires();
       }
+      document.getElementById("btn-sound-toggle").addEventListener("click", () => toggleSound());
+      document.getElementById("btn-lock-wiring").addEventListener("click", () => toggleWiringLock());
       document.getElementById("ft-labels").addEventListener("click", toggleLabels);
       document.getElementById("ft-grid").addEventListener("click", toggleGrid);
       document.getElementById("ft-ortho").addEventListener("click", toggleOrtho);
@@ -5885,11 +6473,7 @@
           updateDiagnosticUI();
         });
       }
-      document.getElementById("btn-buzzer-sound").addEventListener("click", ev => {
-        state.buzzerSound = !state.buzzerSound;
-        ev.currentTarget.textContent = state.buzzerSound ? "Audio : Actif" : "Audio : Muet";
-        updateLiveVisuals();
-      });
+      document.getElementById("btn-buzzer-sound").addEventListener("click", () => toggleSound());
       document.getElementById("wire-color-picker").addEventListener("click", ev => {
         const b = ev.target.closest("[data-color]"); if (!b) return;
         state.wireColorMode = b.getAttribute("data-color");
@@ -5919,7 +6503,11 @@
         state.leftOpen = false;
         state.rightOpen = false;
         state.mqttEnabled = false;
+        state.soundEnabled = false;
+        state.buzzerSound = false;
       }
+      syncSoundUI();
+      syncWiringLockUI();
       renderPalette();
       syncDrawers();
       loadPreset("smartgrid");
