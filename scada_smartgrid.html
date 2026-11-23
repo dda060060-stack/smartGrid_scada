@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Supervision Smart Grid" />
   <title>Supervision Smart Grid · U-AUBEN</title>
-  <meta name="description" content="Application de supervision industrielle temps réel Smart Grid 12V DC &amp; Polytank (U-AUBEN) : mesures réseau et batterie, température, niveau d'eau, commandes directes et alertes WhatsApp/Telegram." />
+  <meta name="description" content="Application de supervision industrielle temps réel Smart Grid 12V DC &amp; Polytank (U-AUBEN) : mesures réseau et batterie, température, niveau d'eau, commandes directes et journal d'alarmes horodaté." />
   <meta name="theme-color" content="#FFFFFF" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
@@ -715,11 +715,11 @@
     }
 
     /* =========================================================
-       3. LIGNE 3 : JOURNAL D'ALARMES + PARAMÈTRES D'ALERTES REPLIABLES
+       3. LIGNE 3 : JOURNAL D'ALARMES HORODATÉ
        ========================================================= */
     .row-bottom {
       display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      grid-template-columns: minmax(0, 1fr);
       gap: 12px;
       align-items: start;
     }
@@ -774,249 +774,11 @@
     .log-item.warn { border-left-color: #D97706; color: #92400E; }
     .log-item.err  { border-left-color: var(--red-bright); color: #991B1B; background: #FEF2F2; }
 
-    /* Panneau repliable Paramètres d'alertes (WhatsApp & Telegram) */
-    .collapse-trigger {
-      width: 100%;
-      min-height: 50px;
-      padding: 10px 14px;
-      border: none;
-      background: var(--surface);
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      cursor: pointer;
-      text-align: left;
-    }
-    .collapse-trigger:hover { background: var(--surface-alt); }
-
-    .collapse-title-group {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      min-width: 0;
-    }
-    .collapse-title-group svg { flex-shrink: 0; color: var(--blue); }
-
-    .collapse-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .chevron-ico {
-      transition: transform 0.2s ease;
-      color: var(--muted);
-      flex-shrink: 0;
-    }
-    .collapse-trigger[aria-expanded="true"] .chevron-ico {
-      transform: rotate(180deg);
-    }
-
-    .collapse-body {
-      display: none;
-      border-top: 1px solid var(--border);
-      padding: 12px 14px 14px;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .collapse-body.open { display: flex; }
-
-    .channels-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .channel-panel {
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--surface-alt);
-      padding: 11px;
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-      min-width: 0;
-    }
-    .channel-panel.enabled {
-      background: var(--surface);
-      border-color: var(--blue-border);
-    }
-
-    .channel-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .channel-name {
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--ink);
-    }
-
-    .toggle-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      min-height: 36px;
-    }
-    .toggle-lbl {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 700;
-      color: var(--muted);
-    }
-    .toggle-wrap.on .toggle-lbl { color: var(--green); }
-    .toggle-input { position: absolute; opacity: 0; width: 0; height: 0; }
-    .toggle-track {
-      position: relative;
-      width: 42px;
-      height: 24px;
-      border-radius: 999px;
-      background: #CBD5E1;
-      transition: background 0.18s ease;
-    }
-    .toggle-track::after {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: #FFFFFF;
-      transition: transform 0.18s ease;
-    }
-    .toggle-input:checked + .toggle-track { background: var(--green-toggle); }
-    .toggle-input:checked + .toggle-track::after { transform: translateX(18px); }
-
-    .field-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .field-group {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      min-width: 0;
-    }
-
-    .field-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    .field-input {
-      width: 100%;
-      min-height: 44px;
-      padding: 0 10px;
-      border: 1px solid var(--border-strong);
-      border-radius: var(--radius-sm);
-      background: var(--surface);
-      color: var(--ink);
-      font-family: var(--font-mono);
-      font-size: 13px;
-      outline: none;
-    }
-    .field-input:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.14);
-    }
-
-    .secret-wrap {
-      display: flex;
-      gap: 6px;
-      min-width: 0;
-    }
-    .secret-wrap .field-input { flex: 1; min-width: 0; }
-
-    .secret-btn {
-      min-height: 44px;
-      padding: 0 10px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--ink-2);
-      font-size: 11.5px;
-      font-weight: 600;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-
-    .channel-foot {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .channel-status {
-      font-size: 11px;
-      color: var(--muted);
-      min-width: 0;
-      word-break: break-word;
-    }
-    .channel-status.ok   { color: var(--green); font-weight: 600; }
-    .channel-status.warn { color: var(--amber); font-weight: 600; }
-    .channel-status.err  { color: var(--red); font-weight: 600; }
-
-    .latch-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      padding-top: 8px;
-      border-top: 1px solid var(--border);
-    }
-
-    .latch-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-
-    .latch-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: var(--surface-alt);
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--ink-2);
-    }
-    .latch-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--green-toggle);
-    }
-    .latch-pill.locked {
-      background: var(--red-soft);
-      border-color: var(--red-border);
-      color: var(--red);
-    }
-    .latch-pill.locked .latch-dot { background: var(--red-bright); }
-
     /* =========================================================
        4. RESPONSIVE MOBILE (CHROME ANDROID & SAFARI iOS 360px/390px)
        ========================================================= */
     @media (max-width: 1160px) {
       .row-main { grid-template-columns: 1fr; }
-      .row-bottom { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 760px) {
@@ -1060,8 +822,7 @@
 
       /* Ligne 2 : empilé compact sur mobile */
       .sub-pair-left,
-      .sub-pair-right,
-      .channels-grid {
+      .sub-pair-right {
         grid-template-columns: 1fr;
         gap: 10px;
       }
@@ -1069,8 +830,7 @@
       .panel-card { padding: 12px; }
 
       /* Police >= 16px sur inputs mobile pour bloquer le zoom automatique Safari iOS */
-      .sp-input,
-      .field-input {
+      .sp-input {
         font-size: 16px;
         min-height: 44px;
       }
@@ -1375,10 +1135,9 @@
     </section>
 
     <!-- =========================================================
-         LIGNE 3 : JOURNAL D'ALARMES + ALERTES AGENT REPLIABLES
+         LIGNE 3 : JOURNAL D'ALARMES HORODATÉ
          ========================================================= -->
-    <section class="row-bottom" aria-label="Alarmes et notifications">
-      <!-- Journal d'alarmes (compact avec scroll interne) -->
+    <section class="row-bottom" aria-label="Journal d'alarmes">
       <article class="panel-card" aria-label="Journal d'alarmes">
         <div class="panel-head">
           <h2 class="panel-title">Journal d'alarmes</h2>
@@ -1397,92 +1156,6 @@
           <div class="log-item">Initialisation de la supervision en cours...</div>
         </div>
       </article>
-
-      <!-- Alertes Agent (WhatsApp & Telegram) dans un panneau repliable -->
-      <section class="card" id="agent-alerts-panel" aria-label="Paramètres d'alertes WhatsApp et Telegram">
-        <button id="btn-toggle-alerts" class="collapse-trigger" type="button" aria-expanded="false" aria-controls="alerts-collapse-body" onclick="toggleAlertsPanel()">
-          <span class="collapse-title-group">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
-            <span class="panel-title">Paramètres d'alertes (WhatsApp &amp; Telegram)</span>
-          </span>
-          <span class="collapse-right">
-            <span id="agent-channels-badge" class="badge bg-gray">INACTIF</span>
-            <svg class="chevron-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
-          </span>
-        </button>
-
-        <div id="alerts-collapse-body" class="collapse-body">
-          <div class="channels-grid">
-            <!-- WhatsApp (TextMeBot) -->
-            <div id="panel-wa" class="channel-panel">
-              <div class="channel-head">
-                <span class="channel-name">WhatsApp (TextMeBot)</span>
-                <label id="wa-toggle-wrap" class="toggle-wrap">
-                  <span id="wa-toggle-lbl" class="toggle-lbl">OFF</span>
-                  <input id="alert-wa-enabled" class="toggle-input" type="checkbox" onchange="saveAlertConfig()" />
-                  <span class="toggle-track"></span>
-                </label>
-              </div>
-              <div class="field-stack">
-                <div class="field-group">
-                  <label class="field-label" for="alert-wa-phone">Numéro WhatsApp</label>
-                  <input id="alert-wa-phone" class="field-input" type="tel" inputmode="tel" placeholder="+22670000000" autocomplete="off" oninput="saveAlertConfig()" />
-                </div>
-                <div class="field-group">
-                  <label class="field-label" for="alert-wa-apikey">Clé API TextMeBot</label>
-                  <div class="secret-wrap">
-                    <input id="alert-wa-apikey" class="field-input" type="password" placeholder="Clé API" autocomplete="off" oninput="saveAlertConfig()" />
-                    <button class="secret-btn" type="button" onclick="toggleSecretField('alert-wa-apikey', this)">Voir</button>
-                  </div>
-                </div>
-              </div>
-              <div class="channel-foot">
-                <span id="alert-wa-status" class="channel-status">Canal désactivé</span>
-                <button id="btn-test-wa" class="btn-outline" type="button" onclick="testWhatsAppAlert()">Tester WhatsApp</button>
-              </div>
-            </div>
-
-            <!-- Telegram -->
-            <div id="panel-tg" class="channel-panel">
-              <div class="channel-head">
-                <span class="channel-name">Telegram</span>
-                <label id="tg-toggle-wrap" class="toggle-wrap">
-                  <span id="tg-toggle-lbl" class="toggle-lbl">OFF</span>
-                  <input id="alert-tg-enabled" class="toggle-input" type="checkbox" onchange="saveAlertConfig()" />
-                  <span class="toggle-track"></span>
-                </label>
-              </div>
-              <div class="field-stack">
-                <div class="field-group">
-                  <label class="field-label" for="alert-tg-token">Bot Token</label>
-                  <div class="secret-wrap">
-                    <input id="alert-tg-token" class="field-input" type="password" placeholder="123456:ABC..." autocomplete="off" oninput="saveAlertConfig()" />
-                    <button class="secret-btn" type="button" onclick="toggleSecretField('alert-tg-token', this)">Voir</button>
-                  </div>
-                </div>
-                <div class="field-group">
-                  <label class="field-label" for="alert-tg-chatid">Chat ID</label>
-                  <input id="alert-tg-chatid" class="field-input" type="text" placeholder="Ex. 123456789" autocomplete="off" oninput="saveAlertConfig()" />
-                </div>
-              </div>
-              <div class="channel-foot">
-                <span id="alert-tg-status" class="channel-status">Canal désactivé</span>
-                <button id="btn-test-tg" class="btn-outline" type="button" onclick="testTelegramAlert()">Tester Telegram</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="latch-bar">
-            <div class="latch-pills">
-              <span id="latch-sonabel" class="latch-pill"><span class="latch-dot"></span>SONABEL : PRÊT</span>
-              <span id="latch-acs" class="latch-pill"><span class="latch-dot"></span>COURANT : PRÊT</span>
-              <span id="latch-temp" class="latch-pill"><span class="latch-dot"></span>TEMP : PRÊT</span>
-              <span id="latch-eau" class="latch-pill"><span class="latch-dot"></span>CUVE : PRÊT</span>
-            </div>
-            <button class="btn-outline" type="button" onclick="resetAlertLatches()">Réarmer verrous</button>
-          </div>
-        </div>
-      </section>
     </section>
   </main>
 
@@ -1518,15 +1191,6 @@
       deferredInstallPrompt = null;
       const btn = document.getElementById("btn-install-pwa");
       if (btn) btn.classList.remove("visible");
-    }
-
-    function toggleAlertsPanel(forceOpen) {
-      const btn = document.getElementById("btn-toggle-alerts");
-      const body = document.getElementById("alerts-collapse-body");
-      if (!btn || !body) return;
-      const open = typeof forceOpen === "boolean" ? forceOpen : !body.classList.contains("open");
-      body.classList.toggle("open", open);
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
     }
 
     // =========================================================
@@ -2188,7 +1852,7 @@
       }
 
       // Évaluation anti-rebond (2 mesures consécutives) + hystérésis + cooldown 60s
-      evaluateAgentAlerts(lastTelemetry);
+      evaluateAlarms(lastTelemetry);
       refreshThresholdDrivenStates(lastTelemetry);
 
       // Journalisation des transitions d'état
@@ -2207,278 +1871,14 @@
     }
 
     // =========================================================================
-    // 5. ALERTES AGENT DE MAINTENANCE (WHATSAPP TEXTMEBOT + TELEGRAM)
+    // 5. SURVEILLANCE D'ALARMES LOCALES (ANTI-REBOND, HYSTÉRÉSIS, JOURNAL)
     // =========================================================================
-    const ALERT_CFG_KEY = "uauben_scada_agent_alerts_v1";
-
-    const alertConfig = {
-      waEnabled: false,
-      waPhone: "",
-      waApiKey: "",
-      tgEnabled: false,
-      tgToken: "",
-      tgChatId: ""
-    };
-
-    const alertLatch = {
-      sonabel: false,
-      acs: false,
-      temp: false,
-      eau: false
-    };
-
-    function setChannelStatus(channel, text, level = "") {
-      const el = document.getElementById(channel === "wa" ? "alert-wa-status" : "alert-tg-status");
-      if (!el) return;
-      el.textContent = text;
-      el.className = "channel-status" + (level ? " " + level : "");
-    }
-
-    function updateAlertUI() {
-      const waOn = Boolean(alertConfig.waEnabled);
-      const tgOn = Boolean(alertConfig.tgEnabled);
-
-      const panelWa = document.getElementById("panel-wa");
-      const panelTg = document.getElementById("panel-tg");
-      const waWrap = document.getElementById("wa-toggle-wrap");
-      const tgWrap = document.getElementById("tg-toggle-wrap");
-      const waLbl = document.getElementById("wa-toggle-lbl");
-      const tgLbl = document.getElementById("tg-toggle-lbl");
-      const badge = document.getElementById("agent-channels-badge");
-
-      if (panelWa) panelWa.classList.toggle("enabled", waOn);
-      if (panelTg) panelTg.classList.toggle("enabled", tgOn);
-      if (waWrap) waWrap.classList.toggle("on", waOn);
-      if (tgWrap) tgWrap.classList.toggle("on", tgOn);
-      if (waLbl) waLbl.textContent = waOn ? "ON" : "OFF";
-      if (tgLbl) tgLbl.textContent = tgOn ? "ON" : "OFF";
-
-      const activeCount = (waOn ? 1 : 0) + (tgOn ? 1 : 0);
-      if (badge) {
-        if (activeCount === 2) {
-          badge.textContent = "WA + TG ACTIFS";
-          badge.className = "badge bg-green";
-        } else if (activeCount === 1) {
-          badge.textContent = waOn ? "WHATSAPP ACTIF" : "TELEGRAM ACTIF";
-          badge.className = "badge bg-blue";
-        } else {
-          badge.textContent = "INACTIF";
-          badge.className = "badge bg-gray";
-        }
-      }
-
-      if (!waOn) {
-        setChannelStatus("wa", "Canal désactivé");
-      } else if (!alertConfig.waPhone.trim() || !alertConfig.waApiKey.trim()) {
-        setChannelStatus("wa", "Renseignez numéro et clé API", "warn");
-      } else {
-        setChannelStatus("wa", "Prêt — " + alertConfig.waPhone.trim(), "ok");
-      }
-
-      if (!tgOn) {
-        setChannelStatus("tg", "Canal désactivé");
-      } else if (!alertConfig.tgToken.trim() || !alertConfig.tgChatId.trim()) {
-        setChannelStatus("tg", "Renseignez Bot Token et Chat ID", "warn");
-      } else {
-        setChannelStatus("tg", "Prêt — Chat " + alertConfig.tgChatId.trim(), "ok");
-      }
-    }
-
-    function updateLatchUI() {
-      const map = [
-        { key: "sonabel", id: "latch-sonabel", label: "SONABEL" },
-        { key: "acs",     id: "latch-acs",     label: "COURANT" },
-        { key: "temp",    id: "latch-temp",    label: "TEMP" },
-        { key: "eau",     id: "latch-eau",     label: "CUVE" }
-      ];
-      map.forEach(item => {
-        const el = document.getElementById(item.id);
-        if (!el) return;
-        const locked = Boolean(alertLatch[item.key]);
-        el.classList.toggle("locked", locked);
-        el.innerHTML = `<span class="latch-dot"></span>${item.label} : ${locked ? "ENVOYÉE" : "PRÊT"}`;
-      });
-    }
-
-    function loadAlertConfig() {
-      try {
-        const raw = localStorage.getItem(ALERT_CFG_KEY);
-        if (raw) {
-          const saved = JSON.parse(raw);
-          if (saved && typeof saved === "object") {
-            alertConfig.waEnabled = Boolean(saved.waEnabled);
-            alertConfig.waPhone   = typeof saved.waPhone === "string" ? saved.waPhone : "";
-            alertConfig.waApiKey  = typeof saved.waApiKey === "string" ? saved.waApiKey : "";
-            alertConfig.tgEnabled = Boolean(saved.tgEnabled);
-            alertConfig.tgToken   = typeof saved.tgToken === "string" ? saved.tgToken : "";
-            alertConfig.tgChatId  = typeof saved.tgChatId === "string" ? saved.tgChatId : "";
-          }
-        }
-      } catch (e) {}
-
-      const waEn = document.getElementById("alert-wa-enabled");
-      const waPh = document.getElementById("alert-wa-phone");
-      const waAk = document.getElementById("alert-wa-apikey");
-      const tgEn = document.getElementById("alert-tg-enabled");
-      const tgTk = document.getElementById("alert-tg-token");
-      const tgId = document.getElementById("alert-tg-chatid");
-
-      if (waEn) waEn.checked = alertConfig.waEnabled;
-      if (waPh) waPh.value   = alertConfig.waPhone;
-      if (waAk) waAk.value   = alertConfig.waApiKey;
-      if (tgEn) tgEn.checked = alertConfig.tgEnabled;
-      if (tgTk) tgTk.value   = alertConfig.tgToken;
-      if (tgId) tgId.value   = alertConfig.tgChatId;
-
-      updateAlertUI();
-      updateLatchUI();
-    }
-
-    function saveAlertConfig() {
-      const waEn = document.getElementById("alert-wa-enabled");
-      const waPh = document.getElementById("alert-wa-phone");
-      const waAk = document.getElementById("alert-wa-apikey");
-      const tgEn = document.getElementById("alert-tg-enabled");
-      const tgTk = document.getElementById("alert-tg-token");
-      const tgId = document.getElementById("alert-tg-chatid");
-
-      alertConfig.waEnabled = waEn ? waEn.checked : false;
-      alertConfig.waPhone   = waPh ? waPh.value.trim() : "";
-      alertConfig.waApiKey  = waAk ? waAk.value.trim() : "";
-      alertConfig.tgEnabled = tgEn ? tgEn.checked : false;
-      alertConfig.tgToken   = tgTk ? tgTk.value.trim() : "";
-      alertConfig.tgChatId  = tgId ? tgId.value.trim() : "";
-
-      try { localStorage.setItem(ALERT_CFG_KEY, JSON.stringify(alertConfig)); } catch (e) {}
-      updateAlertUI();
-    }
-
-    function toggleSecretField(inputId, btn) {
-      const input = document.getElementById(inputId);
-      if (!input) return;
-      const isHidden = input.type === "password";
-      input.type = isHidden ? "text" : "password";
-      if (btn) btn.textContent = isHidden ? "Cacher" : "Voir";
-    }
-
-    function resetAlertLatches() {
-      Object.keys(alarmState).forEach(key => {
-        alarmState[key].active = false;
-        alarmState[key].faultStreak = 0;
-        alarmState[key].normalStreak = 0;
-        alarmState[key].lastAlertAt = 0;
-        alarmState[key].lastRecoveryAt = 0;
-      });
-      alertLatch.sonabel = false;
-      alertLatch.acs = false;
-      alertLatch.temp = false;
-      alertLatch.eau = false;
-      updateLatchUI();
-      if (lastTelemetry) refreshThresholdDrivenStates(lastTelemetry);
-      ajouterLog("Verrous anti-spam réarmés manuellement.", "ok");
-    }
-
-    async function sendWhatsAppMessage(msg, isTest = false) {
-      const rawPhone = alertConfig.waPhone.trim();
-      const phone = rawPhone.replace(/\+/g, "").replace(/\s+/g, "");
-      const apikey = alertConfig.waApiKey.trim();
-      if (!phone || !apikey) {
-        setChannelStatus("wa", "Numéro ou clé API manquant", "err");
-        ajouterLog("Échec alerte WhatsApp : renseignez le numéro et la clé API.", "warn");
-        return false;
-      }
-
-      const url = `https://api.textmebot.com/send.php?recipient=${encodeURIComponent(phone)}&apikey=${encodeURIComponent(apikey)}&text=${encodeURIComponent(msg)}`;
-      setChannelStatus("wa", "Envoi en cours...", "warn");
-
-      try {
-        await fetch(url, { method: "GET", mode: "no-cors" });
-        setChannelStatus("wa", `Transmise (${new Date().toLocaleTimeString()})`, "ok");
-        ajouterLog(`Notification WhatsApp transmise${isTest ? " [TEST]" : ""} (${phone}).`, "ok");
-        return true;
-      } catch (err) {
-        setChannelStatus("wa", "Échec réseau", "err");
-        ajouterLog("Échec réseau lors de l'envoi WhatsApp.", "err");
-        return false;
-      }
-    }
-
-    async function sendTelegramMessage(msg, isTest = false) {
-      const token = alertConfig.tgToken.trim();
-      const chatId = alertConfig.tgChatId.trim();
-      if (!token || !chatId) {
-        setChannelStatus("tg", "Bot Token ou Chat ID manquant", "err");
-        ajouterLog("Échec alerte Telegram : renseignez le Bot Token et le Chat ID.", "warn");
-        return false;
-      }
-
-      const url = `https://api.telegram.org/bot${encodeURIComponent(token)}/sendMessage?chat_id=${encodeURIComponent(chatId)}&text=${encodeURIComponent(msg)}`;
-      setChannelStatus("tg", "Envoi en cours...", "warn");
-
-      try {
-        const resp = await fetch(url, { method: "GET" });
-        let data = null;
-        try { data = await resp.json(); } catch (e) {}
-        if (resp.ok && (!data || data.ok !== false)) {
-          setChannelStatus("tg", `${isTest ? "Test envoyé" : "Alerte envoyée"} (${new Date().toLocaleTimeString()})`, "ok");
-          ajouterLog(`Notification Telegram envoyée${isTest ? " [TEST]" : ""}.`, "ok");
-          return true;
-        }
-        const desc = (data && data.description) ? data.description : `HTTP ${resp.status}`;
-        setChannelStatus("tg", `Erreur : ${desc}`, "err");
-        ajouterLog(`Erreur Telegram : ${desc}.`, "err");
-        return false;
-      } catch (err) {
-        try {
-          await fetch(url, { method: "GET", mode: "no-cors" });
-          setChannelStatus("tg", `${isTest ? "Test transmis" : "Alerte transmise"} (${new Date().toLocaleTimeString()})`, "ok");
-          ajouterLog(`Notification Telegram transmise${isTest ? " [TEST]" : ""}.`, "ok");
-          return true;
-        } catch (err2) {
-          setChannelStatus("tg", "Échec réseau", "err");
-          ajouterLog("Échec réseau lors de l'envoi Telegram.", "err");
-          return false;
-        }
-      }
-    }
-
-    async function testWhatsAppAlert() {
-      saveAlertConfig();
-      const btn = document.getElementById("btn-test-wa");
-      if (btn) btn.disabled = true;
-      const msg = `[TEST SUPERVISION] Smart Grid U-AUBEN — Canal WhatsApp opérationnel (${new Date().toLocaleTimeString()}).`;
-      try { await sendWhatsAppMessage(msg, true); } finally { if (btn) btn.disabled = false; }
-    }
-
-    async function testTelegramAlert() {
-      saveAlertConfig();
-      const btn = document.getElementById("btn-test-tg");
-      if (btn) btn.disabled = true;
-      const msg = `[TEST SUPERVISION] Smart Grid U-AUBEN — Canal Telegram opérationnel (${new Date().toLocaleTimeString()}).`;
-      try { await sendTelegramMessage(msg, true); } finally { if (btn) btn.disabled = false; }
-    }
-
-    function dispatchAgentAlert(faultTitle, msg, isRecovery = false) {
+    function recordAlarmJournal(title, detail, isRecovery = false) {
       dispatchedAlertsCount += 1;
-      const channels = [];
-      if (alertConfig.waEnabled) channels.push("WhatsApp");
-      if (alertConfig.tgEnabled) channels.push("Telegram");
-
-      if (channels.length === 0) {
-        ajouterLog(
-          `${isRecovery ? "Retour normal" : "Défaut confirmé"} [${faultTitle}] — aucun canal activé.`,
-          isRecovery ? "ok" : "warn"
-        );
-        return;
-      }
-
       ajouterLog(
-        `Envoi ${isRecovery ? "retour normal" : "alerte"} [${faultTitle}] via ${channels.join(" + ")}.`,
+        `${isRecovery ? "Retour normal" : "Alarme confirmée"} [${title}] — ${detail}`,
         isRecovery ? "ok" : "err"
       );
-
-      if (alertConfig.waEnabled) sendWhatsAppMessage(msg, false);
-      if (alertConfig.tgEnabled) sendTelegramMessage(msg, false);
     }
 
     function stepAlarmMachine(key, rawFault, rawClear, nowMs) {
@@ -2522,7 +1922,7 @@
       return "ACTIVE";
     }
 
-    function evaluateAgentAlerts(m) {
+    function evaluateAlarms(m) {
       const nowMs = Date.now();
 
       const sonabelFault = (m.src !== "SONABEL") ||
@@ -2547,70 +1947,32 @@
       stepAlarmMachine("disj", disjFault, disjClear, nowMs);
 
       const evSonabel = stepAlarmMachine("sonabel", sonabelFault, sonabelClear, nowMs);
-      alertLatch.sonabel = alarmState.sonabel.active;
       if (evSonabel === "TRIGGER_NOTIFY") {
-        dispatchAgentAlert(
-          "Coupure SONABEL",
-          `[ALERTE] SMART GRID — COUPURE SONABEL\nSource active : ${m.src}\nBus DC : ${m.v.toFixed(1)} V | Batterie : ${m.batt}%\nHeure : ${m.nowStr}`,
-          false
-        );
+        recordAlarmJournal("Coupure SONABEL", `source ${m.src} (${m.v.toFixed(1)} V, batterie ${m.batt}%).`, false);
       } else if (evSonabel === "CLEAR_NOTIFY") {
-        dispatchAgentAlert(
-          "SONABEL rétabli",
-          `[RETOUR NORMAL] SONABEL\nAlimentation principale rétablie (${m.v.toFixed(1)} V).\nHeure : ${m.nowStr}`,
-          true
-        );
+        recordAlarmJournal("SONABEL rétabli", `alimentation principale rétablie (${m.v.toFixed(1)} V).`, true);
       }
 
       const evAcs = stepAlarmMachine("acs", acsFault, acsClear, nowMs);
-      alertLatch.acs = alarmState.acs.active;
       if (evAcs === "TRIGGER_NOTIFY") {
-        dispatchAgentAlert(
-          "Surcharge courant",
-          `[ALERTE] SMART GRID — SURCHARGE COURANT\nCourant mesuré : ${m.i.toFixed(2)} A (> ${CURRENT_OVERLOAD_LIMIT.toFixed(1)} A)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
-          false
-        );
+        recordAlarmJournal("Surcharge courant", `${m.i.toFixed(2)} A (> ${CURRENT_OVERLOAD_LIMIT.toFixed(1)} A), Q1 ${m.disj ? "FERMÉ" : "OUVERT"}.`, false);
       } else if (evAcs === "CLEAR_NOTIFY") {
-        dispatchAgentAlert(
-          "Courant nominal",
-          `[RETOUR NORMAL] COURANT\nCourant stabilisé à ${m.i.toFixed(2)} A | Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}.\nHeure : ${m.nowStr}`,
-          true
-        );
+        recordAlarmJournal("Courant nominal", `stabilisé à ${m.i.toFixed(2)} A, Q1 ${m.disj ? "FERMÉ" : "OUVERT"}.`, true);
       }
 
       const evTemp = stepAlarmMachine("temp", tempFault, tempClear, nowMs);
-      alertLatch.temp = alarmState.temp.active;
       if (evTemp === "TRIGGER_NOTIFY") {
-        dispatchAgentAlert(
-          "Surchauffe",
-          `[ALERTE] SMART GRID — SURCHAUFFE TRANSFORMATEUR\nTempérature : ${m.t.toFixed(1)} °C (> ${scadaLimits.tempHigh} °C)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
-          false
-        );
+        recordAlarmJournal("Surchauffe", `${m.t.toFixed(1)} °C (> ${scadaLimits.tempHigh} °C).`, false);
       } else if (evTemp === "CLEAR_NOTIFY") {
-        dispatchAgentAlert(
-          "Température nominale",
-          `[RETOUR NORMAL] TEMPÉRATURE\nTempérature redescendue à ${m.t.toFixed(1)} °C.\nHeure : ${m.nowStr}`,
-          true
-        );
+        recordAlarmJournal("Température nominale", `redescendue à ${m.t.toFixed(1)} °C.`, true);
       }
 
       const evEau = stepAlarmMachine("eau", eauFault, eauClear, nowMs);
-      alertLatch.eau = alarmState.eau.active;
       if (evEau === "TRIGGER_NOTIFY") {
-        dispatchAgentAlert(
-          "Polytank niveau bas",
-          `[ALERTE] POLYTANK — NIVEAU CRITIQUE BAS\nNiveau mesuré : ${m.eau}% (< ${scadaLimits.tankLow}%)\nPompe 12V : ${m.pompe ? "EN MARCHE" : "ARRÊTÉE"}\nHeure : ${m.nowStr}`,
-          false
-        );
+        recordAlarmJournal("Polytank niveau bas", `${m.eau}% (< ${scadaLimits.tankLow}%), pompe ${m.pompe ? "ON" : "OFF"}.`, false);
       } else if (evEau === "CLEAR_NOTIFY") {
-        dispatchAgentAlert(
-          "Polytank rétabli",
-          `[RETOUR NORMAL] POLYTANK\nNiveau d'eau rétabli à ${m.eau}% | Pompe 12V : ${m.pompe ? "EN MARCHE" : "ARRÊTÉE"}.\nHeure : ${m.nowStr}`,
-          true
-        );
+        recordAlarmJournal("Polytank rétabli", `niveau d'eau rétabli à ${m.eau}%.`, true);
       }
-
-      updateLatchUI();
     }
 
     window.getScadaAlarmDebug = () => ({
@@ -2620,12 +1982,10 @@
       hasRealTelemetry,
       dispatchedAlertsCount,
       lastTelemetry,
-      alarmState: JSON.parse(JSON.stringify(alarmState)),
-      alertLatch: { ...alertLatch }
+      alarmState: JSON.parse(JSON.stringify(alarmState))
     });
 
     loadScadaLimits();
-    loadAlertConfig();
   </script>
 </body>
 </html>
