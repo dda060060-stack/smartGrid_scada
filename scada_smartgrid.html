@@ -1571,20 +1571,27 @@
           </p>
         </article>
 
-        <!-- CARTE 2 : COMMANDE MANUELLE POMPE & RELAIS -->
-        <article class="hmi-card" aria-label="Commande manuelle Pompe et Relais">
-          <h2 class="hmi-card-title">Commande manuelle Pompe &amp; Relais</h2>
+        <!-- CARTE 2 : COMMANDE MANUELLE CHARGES & POMPE -->
+        <article class="hmi-card" aria-label="Commande manuelle Lumière, Ventilateur et Pompe">
+          <h2 class="hmi-card-title">Commande manuelle Pompe &amp; Relais (K2 / K3 / K4)</h2>
+          <div class="hmi-btn-row" style="margin-bottom:8px;">
+            <button id="btn-hmi-lumiere-on" class="hmi-btn" type="button" onclick="sendHmiCommand('IN2', 27, 'ON', 'Lumière ON')">Lumière ON</button>
+            <button id="btn-hmi-lumiere-off" class="hmi-btn secondary" type="button" onclick="sendHmiCommand('IN2', 27, 'OFF', 'Lumière OFF')">Lumière OFF</button>
+            <span id="hmi-lumiere-badge" class="hmi-status-pill is-running" style="margin-left:auto;">K2 : ALLUMÉE</span>
+          </div>
+          <div class="hmi-btn-row" style="margin-bottom:8px;">
+            <button id="btn-hmi-ventilo-on" class="hmi-btn" type="button" onclick="sendHmiCommand('IN3', 14, 'ON', 'Ventilateur ON')">Ventilateur ON</button>
+            <button id="btn-hmi-ventilo-off" class="hmi-btn secondary" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Ventilateur OFF')">Ventilateur OFF</button>
+            <button id="btn-hmi-delestage" class="hmi-btn secondary" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Délestage Q1')">Délestage</button>
+            <span id="hmi-ventilo-badge" class="hmi-status-pill is-running" style="margin-left:auto;">K3 : EN MARCHE</span>
+          </div>
           <div class="hmi-btn-row">
             <button id="btn-hmi-pompe-on" class="hmi-btn" type="button" onclick="sendHmiCommand('IN4', 12, 'ON', 'Pompe ON')">Pompe ON</button>
-            <button id="btn-hmi-pompe-off" class="hmi-btn" type="button" onclick="sendHmiCommand('IN4', 12, 'OFF', 'Pompe OFF')">Pompe OFF</button>
-            <button id="btn-hmi-delestage" class="hmi-btn secondary" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Délestage Q1')">Délestage</button>
-          </div>
-          <div class="hmi-row">
-            <span class="hmi-label">État Pompe :</span>
-            <span id="hmi-pompe-badge" class="hmi-status-pill">ARRÊTÉE</span>
+            <button id="btn-hmi-pompe-off" class="hmi-btn secondary" type="button" onclick="sendHmiCommand('IN4', 12, 'OFF', 'Pompe OFF')">Pompe OFF</button>
+            <span id="hmi-pompe-badge" class="hmi-status-pill" style="margin-left:auto;">K4 : ARRÊTÉE</span>
           </div>
           <p class="hmi-helper">
-            Pilote directement les relais <span class="mono">IN4 (GPIO 12)</span> et <span class="mono">IN3 (GPIO 14)</span> via MQTT. Le retour d'état provient de la télémétrie ESP32.
+            Pilote en temps réel la Lumière <span class="mono">K2 (IN2 / GPIO 27)</span>, le Ventilateur <span class="mono">K3 (IN3 / GPIO 14)</span> et la Pompe <span class="mono">K4 (IN4 / GPIO 12)</span> sur <span class="mono">cge/uauben/david/smartgrid/cmd</span>.
           </p>
         </article>
 
@@ -2009,49 +2016,49 @@
           <div class="relay-list">
             <div class="relay-row">
               <div class="relay-meta">
-                <strong>Relais IN1 — Source SONABEL 12V</strong>
-                <span>GPIO 26 · Commutation arrivée principale</span>
+                <strong>Relais K1 (IN1) — ATS Source SONABEL / Solaire</strong>
+                <span>GPIO 26 · Commutation arrivée 12V SONABEL (NC) / Batterie 3S (NO)</span>
               </div>
               <div class="relay-controls">
                 <span id="rel-st-1" class="badge bg-gray">ATTENTE</span>
-                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN1', 26, 'ON')" disabled>Fermer</button>
-                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN1', 26, 'OFF')" disabled>Ouvrir</button>
+                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN1', 26, 'ON')">SONABEL</button>
+                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN1', 26, 'OFF')">Solaire</button>
               </div>
             </div>
 
             <div class="relay-row">
               <div class="relay-meta">
-                <strong>Relais IN2 — Source Solaire / Batterie 3S</strong>
-                <span>GPIO 27 · Commutation secours 12,6V</span>
+                <strong>Relais K2 (IN2) — Charge Prioritaire : Lumière 12V</strong>
+                <span>GPIO 27 · Éclairage LED 12V + BP Lumière (GPIO 16)</span>
               </div>
               <div class="relay-controls">
                 <span id="rel-st-2" class="badge bg-gray">ATTENTE</span>
-                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN2', 27, 'ON')" disabled>Fermer</button>
-                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN2', 27, 'OFF')" disabled>Ouvrir</button>
+                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN2', 27, 'ON')">Allumer</button>
+                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN2', 27, 'OFF')">Éteindre</button>
               </div>
             </div>
 
             <div class="relay-row">
               <div class="relay-meta">
-                <strong>Relais IN3 — Disjoncteur Q1 (Charges 12V)</strong>
-                <span>GPIO 14 · Départ 2x LED 12V + Ventilateur</span>
+                <strong>Relais K3 (IN3) — Charge Non-Prioritaire : Ventilateur 12V</strong>
+                <span>GPIO 14 · Ventilateur 12V délestable + BP Ventilateur (GPIO 17)</span>
               </div>
               <div class="relay-controls">
                 <span id="rel-st-3" class="badge bg-gray">ATTENTE</span>
-                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN3', 14, 'ON')" disabled>Réarmer</button>
-                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN3', 14, 'OFF')" disabled>Déclencher</button>
+                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN3', 14, 'ON')">Allumer</button>
+                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN3', 14, 'OFF')">Éteindre</button>
               </div>
             </div>
 
             <div class="relay-row">
               <div class="relay-meta">
-                <strong>Relais IN4 — Mini-pompe Polytank</strong>
+                <strong>Relais K4 (IN4) — Mini-pompe Polytank 12V</strong>
                 <span>GPIO 12 · Pompe submersible AD20P-1230C</span>
               </div>
               <div class="relay-controls">
                 <span id="rel-st-4" class="badge bg-gray">ATTENTE</span>
-                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN4', 12, 'ON')" disabled>Démarrer</button>
-                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN4', 12, 'OFF')" disabled>Arrêter</button>
+                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN4', 12, 'ON')">Démarrer</button>
+                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN4', 12, 'OFF')">Arrêter</button>
               </div>
             </div>
           </div>
@@ -2638,29 +2645,50 @@
     function onDriveModeToggle(isAuto) {
       updateDriveModeUI(isAuto);
       if (isAuto) {
-        if (client && brokerOnline) {
-          sendAutoModeCommand();
-        } else {
-          ajouterLog("Mode de conduite basculé sur AUTO (en attente de connexion broker MQTT).", "ok");
-        }
+        sendAutoModeCommand();
       } else {
+        const cmdObj = { mode: "MANUAL", ts: Date.now() };
+        if (typeof scadaBus !== "undefined" && scadaBus) {
+          try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
+        }
         if (client && brokerOnline) {
-          const payload = JSON.stringify({ mode: "MANUAL", ts: Date.now() });
-          client.publish(COMMAND_TOPIC, payload, { qos: 0 });
+          client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
           ajouterLog("Commande MQTT envoyée : passage en mode MANUEL opérateur.", "warn");
         } else {
-          ajouterLog("Mode de conduite basculé sur MANUEL (commandes locales prêtes dès reconnexion MQTT).", "warn");
+          ajouterLog("Mode de conduite basculé sur MANUEL.", "warn");
         }
+      }
+    }
+
+    function updateLocalChargeBadges(relayId, isOn, label) {
+      if (relayId === "IN2") {
+        const b = document.getElementById("hmi-lumiere-badge");
+        if (b) {
+          b.textContent = isOn ? "K2 : ALLUMÉE" : "K2 : ÉTEINTE";
+          b.className = "hmi-status-pill " + (isOn ? "is-running" : "");
+        }
+        majBadgeRelais("rel-st-2", isOn, "ALLUMÉE (ON)", "ÉTEINTE (OFF)", "bg-green", "bg-gray");
+      } else if (relayId === "IN3") {
+        const isShed = !isOn && label === "Délestage Q1";
+        const b = document.getElementById("hmi-ventilo-badge");
+        if (b) {
+          b.textContent = isOn ? "K3 : EN MARCHE" : (isShed ? "K3 : DÉLESTÉ" : "K3 : ARRÊTÉ");
+          b.className = "hmi-status-pill " + (isOn ? "is-running" : (isShed ? "is-manual" : ""));
+        }
+        majBadgeRelais("rel-st-3", isOn, "EN MARCHE (ON)", isShed ? "DÉLESTÉ" : "ARRÊTÉ (OFF)", "bg-green", isShed ? "bg-red" : "bg-gray");
+      } else if (relayId === "IN4") {
+        const b = document.getElementById("hmi-pompe-badge");
+        if (b) {
+          b.textContent = isOn ? "K4 : EN MARCHE" : "K4 : ARRÊTÉE";
+          b.className = "hmi-status-pill " + (isOn ? "is-running" : "");
+        }
+        majBadgeRelais("rel-st-4", isOn, "EN MARCHE", "ARRÊTÉE", "bg-blue");
       }
     }
 
     function sendHmiCommand(relayId, gpio, cmd, label) {
       updateDriveModeUI(false);
-      if (client && brokerOnline) {
-        sendRelayCommand(relayId, gpio, cmd);
-      } else {
-        ajouterLog(`Broker MQTT hors ligne : commande "${label}" (${relayId} / GPIO ${gpio} : ${cmd}) non transmise.`, "warn");
-      }
+      sendRelayCommand(relayId, gpio, cmd, label);
     }
 
     // =========================================================
@@ -2836,7 +2864,7 @@
       const cmds = document.querySelectorAll(".mqtt-cmd-btn, #btn-cmd-auto");
 
       brokerOnline = (state === "online");
-      cmds.forEach(btn => { btn.disabled = !brokerOnline; });
+      cmds.forEach(btn => { btn.disabled = !(brokerOnline || typeof BroadcastChannel !== "undefined"); });
 
       if (state === "online") {
         pill.className = "broker-pill online";
@@ -2911,25 +2939,47 @@
       ajouterLog("Mode hors ligne détecté : client MQTT indisponible sans connexion réseau.", "warn");
     }
 
-    function sendRelayCommand(relayId, gpio, cmd) {
-      if (!client || !brokerOnline) return;
-      const payload = JSON.stringify({
+    const scadaBus = (typeof BroadcastChannel !== "undefined") ? new BroadcastChannel("cge_uauben_smartgrid_bus") : null;
+    if (scadaBus) {
+      scadaBus.addEventListener("message", ev => {
+        if (ev.data && ev.data.topic === TELEMETRY_TOPIC && ev.data.payload) {
+          traiterTrameMQTT(ev.data.payload);
+        }
+      });
+    }
+
+    function sendRelayCommand(relayId, gpio, cmd, label) {
+      const cmdObj = {
         mode: "MANUAL",
         relay: relayId,
         gpio: gpio,
         cmd: cmd,
+        label: label || `${relayId} ${cmd}`,
+        action: label === "Délestage Q1" ? "SHED" : undefined,
         ts: Date.now()
-      });
-      client.publish(COMMAND_TOPIC, payload, { qos: 0 });
+      };
       updateDriveModeUI(false);
-      ajouterLog(`Commande MQTT envoyée -> ${relayId} (GPIO ${gpio}) : ${cmd}`, cmd === "ON" ? "ok" : "warn");
+      updateLocalChargeBadges(relayId, cmd === "ON", label);
+      if (scadaBus) {
+        try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
+      }
+      if (client && brokerOnline) {
+        client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
+        ajouterLog(`Commande MQTT envoyée -> ${label || relayId} (GPIO ${gpio}) : ${cmd}`, cmd === "ON" ? "ok" : "warn");
+      } else {
+        ajouterLog(`Commande envoyée au simulateur local -> ${label || relayId} (GPIO ${gpio}) : ${cmd}`, cmd === "ON" ? "ok" : "warn");
+      }
     }
 
     function sendAutoModeCommand() {
       updateDriveModeUI(true);
-      if (!client || !brokerOnline) return;
-      const payload = JSON.stringify({ mode: "AUTO", ts: Date.now() });
-      client.publish(COMMAND_TOPIC, payload, { qos: 0 });
+      const cmdObj = { mode: "AUTO", ts: Date.now() };
+      if (scadaBus) {
+        try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
+      }
+      if (client && brokerOnline) {
+        client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
+      }
       ajouterLog("Commande MQTT envoyée -> Retour en régulation automatique ESP32 (Mode AUTO).", "ok");
     }
 
@@ -3049,12 +3099,14 @@
       const src = d.src || "COUPURE";
       const disj = Number(d.disj) === 1 ? 1 : 0;
       const pompe = Number(d.pompe) === 1 ? 1 : 0;
+      const lumiere = d.lumiere !== undefined ? (Number(d.lumiere) === 1 ? 1 : 0) : (src !== "COUPURE" ? 1 : 0);
+      const ventilo = d.ventilo !== undefined ? (Number(d.ventilo) === 1 ? 1 : 0) : disj;
 
       if (d.mode === "AUTO") updateDriveModeUI(true);
       else if (d.mode === "MANUAL") updateDriveModeUI(false);
 
       lastTelemetry = {
-        src, v, i, t, batt, eau, disj, pompe,
+        src, v, i, t, batt, eau, disj, lumiere, ventilo, pompe,
         vSonabel: d.v_sonabel !== undefined ? Number(d.v_sonabel) : undefined,
         nowStr
       };
@@ -3072,16 +3124,26 @@
       barBatt.style.width = batt + "%";
       barBatt.style.background = batt < 25 ? "#DC2626" : (batt < 55 ? "#D97706" : "#2E7D32");
 
-      // 2. État des 4 relais
-      majBadgeRelais("rel-st-1", src === "SONABEL", "FERMÉ (ON)", "OUVERT", "bg-green");
-      majBadgeRelais("rel-st-2", src === "SOLAIRE", "FERMÉ (ON)", "OUVERT", "bg-yellow");
-      majBadgeRelais("rel-st-3", disj === 1, "FERMÉ (OK)", "OUVERT (DÉFAUT)", "bg-green", "bg-red");
+      // 2. État des 4 relais (K1 ATS, K2 Lumière, K3 Ventilateur, K4 Pompe)
+      majBadgeRelais("rel-st-1", src === "SONABEL", "SONABEL (NC)", src === "SOLAIRE" ? "SOLAIRE (NO)" : "COUPURE", "bg-green", src === "SOLAIRE" ? "bg-yellow" : "bg-red");
+      majBadgeRelais("rel-st-2", lumiere === 1, "ALLUMÉE (ON)", "ÉTEINTE (OFF)", "bg-green", "bg-gray");
+      majBadgeRelais("rel-st-3", ventilo === 1, "EN MARCHE (ON)", disj === 0 ? "DÉLESTÉ" : "ARRÊTÉ (OFF)", "bg-green", disj === 0 ? "bg-red" : "bg-gray");
       majBadgeRelais("rel-st-4", pompe === 1, "EN MARCHE", "ARRÊTÉE", "bg-blue");
 
-      // Badge pompe HMI
+      // Badges HMI Lumière (K2), Ventilateur (K3) et Pompe (K4)
+      const hmiLumBadge = document.getElementById("hmi-lumiere-badge");
+      if (hmiLumBadge) {
+        hmiLumBadge.textContent = lumiere === 1 ? "K2 : ALLUMÉE" : "K2 : ÉTEINTE";
+        hmiLumBadge.className = "hmi-status-pill " + (lumiere === 1 ? "is-running" : "");
+      }
+      const hmiFanBadge = document.getElementById("hmi-ventilo-badge");
+      if (hmiFanBadge) {
+        hmiFanBadge.textContent = ventilo === 1 ? "K3 : EN MARCHE" : (disj === 0 ? "K3 : DÉLESTÉ" : "K3 : ARRÊTÉ");
+        hmiFanBadge.className = "hmi-status-pill " + (ventilo === 1 ? "is-running" : (disj === 0 ? "is-manual" : ""));
+      }
       const hmiPompeBadge = document.getElementById("hmi-pompe-badge");
       if (hmiPompeBadge) {
-        hmiPompeBadge.textContent = pompe === 1 ? "EN MARCHE" : "ARRÊTÉE";
+        hmiPompeBadge.textContent = pompe === 1 ? "K4 : EN MARCHE" : "K4 : ARRÊTÉE";
         hmiPompeBadge.className = "hmi-status-pill " + (pompe === 1 ? "is-running" : "");
       }
 

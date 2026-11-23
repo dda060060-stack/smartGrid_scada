@@ -1135,6 +1135,235 @@
     .wiring-note { font-size: 12.5px; color: var(--doc-ink-2); background: var(--doc-surface-alt); border-radius: 5px; padding: 7px 10px; }
     .wiring-note.critical { background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger-ink); }
 
+    /* =========================================================
+       PINOUT INTERACTIF ESP32 (30 BROCHES) + NETLIST COMPACTE
+       ========================================================= */
+    .pinout-bus-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--doc-surface-alt);
+      border: 1px solid var(--doc-border);
+      border-radius: 6px;
+      margin: 12px 0 14px;
+    }
+    .pinout-bus-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .pinout-bus-btn {
+      padding: 5px 11px;
+      border-radius: 5px;
+      border: 1px solid var(--doc-border);
+      background: #FFFFFF;
+      color: var(--doc-ink-2);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.14s ease;
+    }
+    .pinout-bus-btn:hover {
+      border-color: var(--doc-green);
+      color: var(--doc-green);
+    }
+    .pinout-bus-btn.active {
+      background: var(--doc-green);
+      border-color: var(--doc-green);
+      color: #FFFFFF;
+    }
+    .pinout-netlist-grid {
+      display: grid;
+      grid-template-columns: minmax(360px, 1.04fr) minmax(0, 1.16fr);
+      gap: 12px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 1080px) {
+      .pinout-netlist-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .pinout-diagram-body {
+      padding: 10px 6px;
+      background: #FAFBFD;
+      overflow-x: hidden;
+    }
+    .esp32-pinout-board {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 78px minmax(0, 1fr);
+      gap: 3px;
+      align-items: stretch;
+      width: 100%;
+      margin: 0 auto;
+      font-family: var(--font-mono);
+    }
+    .esp32-pin-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 2.5px;
+      padding: 6px 0;
+      min-width: 0;
+    }
+    .esp32-pin-item {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 1.5px 2px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      user-select: none;
+      min-width: 0;
+    }
+    .esp32-pin-col.left .esp32-pin-item {
+      justify-content: flex-end;
+    }
+    .esp32-pin-col.right .esp32-pin-item {
+      justify-content: flex-start;
+    }
+    .esp32-pin-item:hover,
+    .esp32-pin-item.is-selected {
+      background: #E6F4EA;
+      border-color: #2E8555;
+    }
+    .esp32-pin-item.is-dimmed {
+      opacity: 0.25;
+    }
+    .pin-func-tag {
+      font-size: 8.8px;
+      font-weight: 700;
+      padding: 1.5px 4px;
+      border-radius: 3px;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .pin-gpio-box {
+      font-size: 9px;
+      font-weight: 700;
+      padding: 1.5px 4px;
+      border-radius: 3px;
+      background: #1E293B;
+      color: #F8FAFC;
+      white-space: nowrap;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .pin-pad-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #D9A441;
+      border: 1.2px solid #785111;
+      flex-shrink: 0;
+    }
+    .esp32-mcu-center {
+      background: #141923;
+      border: 2px solid #334155;
+      border-radius: 7px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 4px;
+      color: #E2E8F0;
+      position: relative;
+    }
+    .esp32-mcu-shield {
+      width: 66px;
+      height: 92px;
+      background: linear-gradient(145deg, #CBD5E1, #94A3B8);
+      border: 1.2px solid #64748B;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #0F172A;
+      text-align: center;
+      padding: 4px;
+      margin-top: 8px;
+    }
+    .esp32-mcu-usb {
+      width: 36px;
+      height: 14px;
+      background: #CBD5E1;
+      border: 1px solid #475569;
+      border-radius: 2px;
+      color: #0F172A;
+      font-size: 7.8px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .netlist-table-wrap {
+      max-height: 560px;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+    table.netlist-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.2px;
+    }
+    table.netlist-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--doc-surface-alt);
+      color: var(--doc-ink);
+      font-size: 11.2px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--doc-border);
+      text-align: left;
+      white-space: nowrap;
+    }
+    table.netlist-table tbody tr {
+      border-bottom: 1px solid var(--doc-border-soft);
+      cursor: pointer;
+      transition: background 0.12s ease;
+    }
+    table.netlist-table tbody tr:hover,
+    table.netlist-table tbody tr.is-selected {
+      background: #E6F4EA !important;
+    }
+    table.netlist-table tbody tr.is-selected td {
+      font-weight: 600;
+    }
+    table.netlist-table tbody td {
+      padding: 6.5px 10px;
+      vertical-align: middle;
+      color: var(--doc-ink);
+    }
+    .nl-pin-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .nl-note-tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 1.5px 6px;
+      border-radius: 4px;
+      background: var(--doc-surface-alt);
+      border: 1px solid var(--doc-border);
+      color: var(--doc-ink-2);
+    }
+
     /* Galerie Matériel (20 photos Base64 intactes) */
     .bom-summary-bar {
       display: flex;
@@ -1540,8 +1769,7 @@
             </button>
             <ul class="tree-sublist">
               <li><button type="button" class="tree-link" data-doc="cablage" data-anchor="cablage-planche" onclick="switchDoc('cablage', 'cablage-planche')">Planche Interactive</button></li>
-              <li><button type="button" class="tree-link" data-doc="cablage" data-anchor="cablage-connexions" onclick="switchDoc('cablage', 'cablage-connexions')">Connexions broche à broche</button></li>
-              <li><button type="button" class="tree-link" data-doc="cablage" data-anchor="cablage-defauts" onclick="switchDoc('cablage', 'cablage-defauts')">Simulation Défauts Jury</button></li>
+              <li><button type="button" class="tree-link" data-doc="cablage" data-anchor="cablage-connexions" onclick="switchDoc('cablage', 'cablage-connexions')">Broches &amp; Connexions</button></li>
             </ul>
           </li>
 
@@ -1714,50 +1942,24 @@
             <h1>Câblage &amp; Brochage ESP32 (30 broches)</h1>
 
             <h2 id="cablage-planche">Planche de câblage interactive</h2>
-            <p>
-              Survolez un conducteur pour identifier son point de départ, sa destination et son niveau de tension. Utilisez les filtres ou le mode pas à pas pour vérifier les 9 groupes de liaisons sur le bornier à vis ESP32.
-            </p>
-
-            <div class="filter-strip">
-              <div class="pill-group">
-                <button class="el-pill active" data-filter="all" type="button" onclick="setFilter('all')">Tout voir</button>
-                <button class="el-pill" data-filter="power" type="button" onclick="setFilter('power')">Alimentation 12V/5V</button>
-                <button class="el-pill" data-filter="sensors" type="button" onclick="setFilter('sensors')">Capteurs</button>
-                <button class="el-pill" data-filter="relays" type="button" onclick="setFilter('relays')">Relais &amp; Pompe</button>
-                <button class="el-pill" data-filter="display" type="button" onclick="setFilter('display')">Affichage &amp; Alertes</button>
-              </div>
+            <div class="filter-strip" style="margin-bottom:12px;">
               <div class="wire-legend">
-                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-12v);"></span>12V</span>
-                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-5v);"></span>5V</span>
-                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-3v3);"></span>3.3V</span>
-                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-gnd);"></span>GND</span>
-                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-i2c);"></span>I2C / Tension</span>
-                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-acs);"></span>Courant ACS</span>
-                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-sensor);"></span>Ultrason / Temp</span>
-                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-relay);"></span>Relais</span>
-                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-alert);"></span>LED / Buzzer</span>
-              </div>
-            </div>
-
-            <div id="wizard-bar" class="wizard-bar">
-              <div class="wizard-left">
-                <button id="wizard-toggle-btn" class="wizard-toggle" type="button" onclick="toggleWizard()">Mode pas à pas</button>
-                <div class="wizard-text">
-                  <span id="wizard-title" class="wizard-step-title">Vue d'ensemble — Survolez un fil pour lire sa liaison exacte</span>
-                  <span id="wizard-desc" class="wizard-step-desc">Activez le mode pas à pas pour vérifier les 9 groupes sur le bornier ESP32.</span>
-                </div>
-              </div>
-              <div class="wizard-controls">
-                <button id="btn-prev-step" class="step-btn" type="button" onclick="stepWizard(-1)" disabled>Précédent</button>
-                <span id="wizard-counter" class="step-counter">0 / 9</span>
-                <button id="btn-next-step" class="step-btn primary" type="button" onclick="stepWizard(1)">Démarrer</button>
+                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-12v);"></span>+12V Puissance</span>
+                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-5v);"></span>+5,0V Logique (LM2596)</span>
+                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-3v3);"></span>+3,3V Capteurs</span>
+                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-gnd);"></span>GND Commun</span>
+                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-i2c);"></span>I2C / ADC1 Tension</span>
+                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-acs);"></span>Courant ACS712</span>
+                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-sensor);"></span>HC-SR04 / DS18B20 / Boutons</span>
+                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-relay);"></span>Commande 4 Relais</span>
+                <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-alert);"></span>Feu Tricolore / Buzzer</span>
               </div>
             </div>
 
             <div class="workbench-grid">
               <section class="el-card">
                 <div class="el-card-head">
-                  <h3>Planche interactive ESP32 — 30 broches</h3>
+                  <h3>Schéma de câblage réel — Smart Grid &amp; Polytank (ESP32 30 broches)</h3>
                   <div class="zoom-controls">
                     <a class="zoom-btn" href="./simulateur_cablage.html" style="text-decoration:none;">Ouvrir dans le Simulateur →</a>
                   </div>
@@ -1778,7 +1980,7 @@
 
                 <section class="el-card">
                   <div class="el-card-head">
-                    <h3>Brochage rapide ESP32</h3>
+                    <h3>Composants &amp; Broches ESP32</h3>
                   </div>
                   <div class="table-scroll">
                     <table class="pin-table">
@@ -1790,47 +1992,51 @@
               </aside>
             </div>
 
-            <h2 id="cablage-connexions">Table des connexions broche à broche</h2>
-            <p>
-              Spécification complète des 17 composants et des 17 GPIO utilisés (zéro conflit ADC). Filtrez par composant, broche ou niveau de tension :
-            </p>
+            <h2 id="cablage-connexions">Broches &amp; Connexions (Pinout Interactif + Netlist)</h2>
 
-            <section class="el-card" style="margin-bottom:18px;">
-              <div class="conn-toolbar">
-                <div class="conn-search-box">
-                  <input id="conn-search-input" class="conn-search-input" type="search" placeholder="Filtrer par composant, GPIO (ex. 18, 21, 34), 12V / 5V / 3.3V..." oninput="filterConnectionsDocs()" aria-label="Filtrer la table de connexions" />
-                  <button class="step-btn" type="button" onclick="clearConnectionsFilter()">Effacer</button>
+            <div id="pinout-bus-bar" class="pinout-bus-bar">
+              <div class="pinout-bus-pills" role="tablist" aria-label="Filtrer par bus matériel">
+                <button type="button" class="pinout-bus-btn active" data-bus="all" onclick="setPinoutBusFilter('all')">Tout</button>
+                <button type="button" class="pinout-bus-btn" data-bus="power" onclick="setPinoutBusFilter('power')">Puissance 12V/5V</button>
+                <button type="button" class="pinout-bus-btn" data-bus="adc1" onclick="setPinoutBusFilter('adc1')">Capteurs ADC1</button>
+                <button type="button" class="pinout-bus-btn" data-bus="i2c_1w" onclick="setPinoutBusFilter('i2c_1w')">Bus I2C &amp; OneWire</button>
+                <button type="button" class="pinout-bus-btn" data-bus="relays" onclick="setPinoutBusFilter('relays')">Relais &amp; Charges</button>
+                <button type="button" class="pinout-bus-btn" data-bus="buttons_alerts" onclick="setPinoutBusFilter('buttons_alerts')">Boutons &amp; Alertes</button>
+              </div>
+              <span id="pinout-active-status" class="conn-count">30 broches · 21 liaisons actives</span>
+            </div>
+
+            <div class="pinout-netlist-grid">
+              <section class="el-card">
+                <div class="el-card-head">
+                  <h3>Pinout Interactif — ESP32 DevKit V1 (30 broches)</h3>
+                  <span class="sku-pill">Datasheet</span>
                 </div>
-                <span id="conn-row-count" class="conn-count">17 / 17 composants</span>
-              </div>
-              <div class="data-table-wrap" style="margin:0;">
-                <table class="spec-table" style="border:none;">
-                  <thead>
-                    <tr>
-                      <th style="width:24%;">Composant</th>
-                      <th style="width:32%;">Rôle dans le système</th>
-                      <th style="width:24%;">Broches / Liaisons clés</th>
-                      <th style="width:20%;">Alimentation</th>
-                    </tr>
-                  </thead>
-                  <tbody id="conn-table-body"></tbody>
-                </table>
-              </div>
-            </section>
+                <div class="pinout-diagram-body">
+                  <div id="esp32-pinout-board" class="esp32-pinout-board"></div>
+                </div>
+              </section>
 
-            <h3 id="cablage-details">Détails par module (broche à broche)</h3>
-            <div id="wiring-cards-grid" class="wiring-cards-grid"></div>
-
-            <h2 id="cablage-defauts">Simulation des défauts (Protocole Jury)</h2>
-            <p>
-              Procédure de soutenance pour valider en direct les 4 scénarios critiques devant un jury (<span id="jury-progress-pill" class="mono">0 / 4 scénarios validés</span>) :
-            </p>
-            <ul>
-              <li>Vérifier 5,00 V en sortie du LM2596 et la stabilité de l'affichage sur l'écran LCD 2004.</li>
-              <li>Remplir le Polytank autour de 50 % et le bac bas aux 2/3 afin que la pompe 12V soit immergée.</li>
-              <li>Ouvrir <a href="./scada_smartgrid.html">scada_smartgrid.html</a> sur l'écran de présentation et contrôler l'état « En ligne — HiveMQ ».</li>
-            </ul>
-            <div id="jury-scenarios-grid" class="scenario-grid"></div>
+              <section class="el-card">
+                <div class="el-card-head">
+                  <h3>Netlist Matérielle</h3>
+                  <span id="netlist-row-count" class="sku-pill">21 liaisons</span>
+                </div>
+                <div class="netlist-table-wrap">
+                  <table class="netlist-table" aria-label="Netlist matérielle ESP32">
+                    <thead>
+                      <tr>
+                        <th>Broche ESP32</th>
+                        <th>Composant</th>
+                        <th>Borne</th>
+                        <th>Note technique</th>
+                      </tr>
+                    </thead>
+                    <tbody id="netlist-compact-tbody"></tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
           </article>
 
           <!-- =======================================================
@@ -2787,18 +2993,18 @@
       ["lm2596", "LM2596 Abaisseur 5.0V", "VIN (5V) • GND"],
       ["psu_sonabel", "Adaptateur 12V 5A (SONABEL)", "Rail +12V • GND"],
       ["psu_solar", "Solaire 2×5.5V + BMS 3S", "Rail +12.6V • GND"],
-      ["v_sonabel", "Tension 0-25V #1 (SONABEL)", "GPIO 34"],
-      ["v_batt", "Tension 0-25V #2 (Batterie)", "GPIO 32"],
-      ["acs_load", "Courant ACS712 #1 (Charge)", "GPIO 35"],
-      ["acs_solar", "Courant ACS712 #2 (Solaire)", "GPIO 33"],
-      ["relays", "Module 4 Relais 5V (IN1–4)", "26 • 27 • 14 • 12"],
-      ["pump", "Mini Pompe 12V AD20P", "Relais IN4 (12)"],
-      ["test_loads", "Charges Test (2×LED + Vent.)", "Relais IN3 (14)"],
+      ["v_sonabel", "Tension 0-25V #1 (SONABEL)", "GPIO 32"],
+      ["v_batt", "Tension 0-25V #2 (Batterie)", "GPIO 33"],
+      ["acs_load", "Courant ACS712 #1 (Charge)", "GPIO 34"],
+      ["acs_solar", "Courant ACS712 #2 (Solaire)", "GPIO 35"],
+      ["relays", "Module 4 Relais 5V (K1–K4)", "26 • 27 • 14 • 12"],
+      ["pump", "Mini Pompe 12V AD20P", "Relais K4 (12)"],
+      ["test_loads", "Lumière K2 (27) + Ventilo K3 (14)", "GPIO 27 • GPIO 14"],
       ["lcd", "Écran LCD 2004 I2C", "SDA 21 • SCL 22"],
-      ["hcsr04", "HC-SR04 (10kΩ/10kΩ)", "TRIG 5 • ECHO 18"],
-      ["ds18b20", "Sonde DS18B20 (3.3V)", "GPIO 4 • 3V3"],
-      ["traffic", "Feu Tricolore LED (G/Y/R)", "25 • 19 • 13"],
-      ["buzzer", "Buzzer Actif 5V", "GPIO 15"]
+      ["hcsr04", "HC-SR04 (Pont 10k/10k)", "TRIG 5 • ECHO 18"],
+      ["ds18b20", "Sonde DS18B20 (Pull-up 4.7k)", "GPIO 4 • 3V3"],
+      ["traffic", "Feu Tricolore LED (G/Y/R)", "23 • 19 • 13"],
+      ["buzzer", "Buzzer 5V + BP Lum./Vent.", "15 • BP 16 & 17"]
     ];
 
 
@@ -3194,6 +3400,7 @@
 
     function updateWizardUI() {
       const bar = document.getElementById("wizard-bar");
+      if (!bar) return;
       const tog = document.getElementById("wizard-toggle-btn");
       const title = document.getElementById("wizard-title");
       const desc = document.getElementById("wizard-desc");
@@ -3660,77 +3867,194 @@
       }
     ];
 
-    function renderConnectionsDocs(query = "") {
-      const q = query.trim().toLowerCase();
-      const filtered = WIRING_SPECS.filter(item => {
-        if (!q) return true;
-        const text = [
-          item.comp, item.cat, item.role, item.summaryPins,
-          item.rails.map(r => r.lbl).join(" "),
-          item.connections.map(c => c.from + " " + c.to).join(" "),
-          item.unused, item.note
-        ].join(" ").toLowerCase();
-        return text.includes(q);
+    // =========================================================
+    // PINOUT INTERACTIF ESP32 (30 BROCHES) + NETLIST COMPACTE
+    // =========================================================
+    const PINOUT_BUS_COLORS = {
+      power:          { bg: "#FFEDD5", fg: "#9A3412", bd: "#FDBA74" },
+      gnd:            { bg: "#1E293B", fg: "#FFFFFF", bd: "#0F172A" },
+      adc1:           { bg: "#DBEAFE", fg: "#1E40AF", bd: "#93C5FD" },
+      i2c_1w:         { bg: "#E0F2FE", fg: "#0369A1", bd: "#7DD3FC" },
+      relays:         { bg: "#DCFCE7", fg: "#166534", bd: "#86EFAC" },
+      buttons_alerts: { bg: "#FCE7F3", fg: "#9D174D", bd: "#F9A8D4" },
+      unused:         { bg: "#F1F5F9", fg: "#64748B", bd: "#CBD5E1" }
+    };
+
+    const ESP32_PINOUT_LEFT = [
+      { key: "EN",     gpio: "EN",  tag: "RESET",       bus: "unused",         style: "unused" },
+      { key: "GPIO36", gpio: "VP",  tag: "ADC1_CH0",    bus: "unused",         style: "unused" },
+      { key: "GPIO39", gpio: "VN",  tag: "ADC1_CH3",    bus: "unused",         style: "unused" },
+      { key: "GPIO34", gpio: "D34", tag: "ACS712 #1",   bus: "adc1",           style: "adc1",           compId: "acs_load" },
+      { key: "GPIO35", gpio: "D35", tag: "ACS712 #2",   bus: "adc1",           style: "adc1",           compId: "acs_solar" },
+      { key: "GPIO32", gpio: "D32", tag: "V. SONABEL",  bus: "adc1",           style: "adc1",           compId: "v_sonabel" },
+      { key: "GPIO33", gpio: "D33", tag: "V. BATTERIE", bus: "adc1",           style: "adc1",           compId: "v_batt" },
+      { key: "GPIO25", gpio: "D25", tag: "ADC2 LIBRE",  bus: "unused",         style: "unused" },
+      { key: "GPIO26", gpio: "D26", tag: "K1 ATS",      bus: "relays",         style: "relays",         compId: "relays" },
+      { key: "GPIO27", gpio: "D27", tag: "K2 LUMIÈRE",  bus: "relays",         style: "relays",         compId: "test_loads" },
+      { key: "GPIO14", gpio: "D14", tag: "K3 VENTILO",  bus: "relays",         style: "relays",         compId: "test_loads" },
+      { key: "GPIO12", gpio: "D12", tag: "K4 POMPE",    bus: "relays",         style: "relays",         compId: "pump" },
+      { key: "GPIO13", gpio: "D13", tag: "FEU ROUGE",   bus: "buttons_alerts", style: "buttons_alerts", compId: "traffic" },
+      { key: "GND",    gpio: "GND", tag: "MASSE 0V",    bus: "power",          style: "gnd",            compId: "esp32" },
+      { key: "VIN",    gpio: "VIN", tag: "+5.0V BUCK",  bus: "power",          style: "power",          compId: "lm2596" }
+    ];
+
+    const ESP32_PINOUT_RIGHT = [
+      { key: "GPIO23", gpio: "D23", tag: "FEU VERT",    bus: "buttons_alerts", style: "buttons_alerts", compId: "traffic" },
+      { key: "GPIO22", gpio: "D22", tag: "I2C SCL",     bus: "i2c_1w",         style: "i2c_1w",         compId: "lcd" },
+      { key: "TX0",    gpio: "TX0", tag: "UART0 TX",    bus: "unused",         style: "unused" },
+      { key: "RX0",    gpio: "RX0", tag: "UART0 RX",    bus: "unused",         style: "unused" },
+      { key: "GPIO21", gpio: "D21", tag: "I2C SDA",     bus: "i2c_1w",         style: "i2c_1w",         compId: "lcd" },
+      { key: "GPIO19", gpio: "D19", tag: "FEU JAUNE",   bus: "buttons_alerts", style: "buttons_alerts", compId: "traffic" },
+      { key: "GPIO18", gpio: "D18", tag: "HC ECHO",     bus: "i2c_1w",         style: "i2c_1w",         compId: "hcsr04" },
+      { key: "GPIO5",  gpio: "D5",  tag: "HC TRIG",     bus: "i2c_1w",         style: "i2c_1w",         compId: "hcsr04" },
+      { key: "GPIO17", gpio: "D17", tag: "BP VENTILO",  bus: "buttons_alerts", style: "buttons_alerts", compId: "buzzer" },
+      { key: "GPIO16", gpio: "D16", tag: "BP LUMIÈRE",  bus: "buttons_alerts", style: "buttons_alerts", compId: "buzzer" },
+      { key: "GPIO4",  gpio: "D4",  tag: "1-W DS18B20", bus: "i2c_1w",         style: "i2c_1w",         compId: "ds18b20" },
+      { key: "GPIO2",  gpio: "D2",  tag: "LED WIFI",    bus: "unused",         style: "unused" },
+      { key: "GPIO15", gpio: "D15", tag: "BUZZER 5V",   bus: "buttons_alerts", style: "buttons_alerts", compId: "buzzer" },
+      { key: "GND",    gpio: "GND", tag: "MASSE 0V",    bus: "power",          style: "gnd",            compId: "esp32" },
+      { key: "3V3",    gpio: "3V3", tag: "+3.3V OUT",   bus: "power",          style: "power",          compId: "ds18b20" }
+    ];
+
+    const NETLIST_DATA = [
+      { key: "VIN",    pin: "VIN (5V)",   comp: "Buck DC-DC LM2596 7-Seg",            borne: "OUT+ (+5.00V)", note: "Régulé 5,00V à vide (jamais 12V)", bus: "power",          style: "power",          compId: "lm2596" },
+      { key: "GND",    pin: "GND (×2)",   comp: "Rail Masse Commune",                 borne: "GND Commun",    note: "Référence 0V (12V / 5V / 3.3V)",  bus: "power",          style: "gnd",            compId: "esp32" },
+      { key: "3V3",    pin: "3V3",        comp: "Sonde DS18B20 & Pull-up",            borne: "VCC (+3.3V)",   note: "Rail logique +3,3V ESP32",        bus: "power",          style: "power",          compId: "ds18b20" },
+      { key: "GPIO32", pin: "GPIO 32",    comp: "Capteur Tension 0-25V #1 (SONABEL)", borne: "S (Signal)",    note: "ADC1_CH4 · Diviseur 5:1",         bus: "adc1",           style: "adc1",           compId: "v_sonabel" },
+      { key: "GPIO33", pin: "GPIO 33",    comp: "Capteur Tension 0-25V #2 (Batterie)",borne: "S (Signal)",    note: "ADC1_CH5 · Diviseur 5:1",         bus: "adc1",           style: "adc1",           compId: "v_batt" },
+      { key: "GPIO34", pin: "GPIO 34",    comp: "Capteur Courant ACS712 #1 (Charge)", borne: "OUT",           note: "ADC1_CH6 · Série charges 12V",    bus: "adc1",           style: "adc1",           compId: "acs_load" },
+      { key: "GPIO35", pin: "GPIO 35",    comp: "Capteur Courant ACS712 #2 (Solaire)",borne: "OUT",           note: "ADC1_CH7 · Série branche PV",     bus: "adc1",           style: "adc1",           compId: "acs_solar" },
+      { key: "GPIO21", pin: "GPIO 21",    comp: "Écran LCD 2004 I2C",                 borne: "SDA",           note: "Bus I2C Données (0x27)",          bus: "i2c_1w",         style: "i2c_1w",         compId: "lcd" },
+      { key: "GPIO22", pin: "GPIO 22",    comp: "Écran LCD 2004 I2C",                 borne: "SCL",           note: "Bus I2C Horloge (0x27)",          bus: "i2c_1w",         style: "i2c_1w",         compId: "lcd" },
+      { key: "GPIO4",  pin: "GPIO 4",     comp: "Sonde Thermique DS18B20",            borne: "DATA",          note: "Pull-up 4.7k vers 3.3V",          bus: "i2c_1w",         style: "i2c_1w",         compId: "ds18b20" },
+      { key: "GPIO5",  pin: "GPIO 5",     comp: "Ultrason HC-SR04 (Polytank)",        borne: "TRIG",          note: "Impulsion Trigger 10 µs",         bus: "i2c_1w",         style: "i2c_1w",         compId: "hcsr04" },
+      { key: "GPIO18", pin: "GPIO 18",    comp: "Ultrason HC-SR04 (Polytank)",        borne: "ECHO",          note: "Pont 10k/10k (5V -> 2.5V)",       bus: "i2c_1w",         style: "i2c_1w",         compId: "hcsr04" },
+      { key: "GPIO26", pin: "GPIO 26",    comp: "Module 4 Relais 5V — K1 ATS",        borne: "IN1",           note: "Bascule SONABEL / Solaire",       bus: "relays",         style: "relays",         compId: "relays" },
+      { key: "GPIO27", pin: "GPIO 27",    comp: "Module 4 Relais 5V — K2 Lumière",    borne: "IN2",           note: "Charge prioritaire 12V",          bus: "relays",         style: "relays",         compId: "test_loads" },
+      { key: "GPIO14", pin: "GPIO 14",    comp: "Module 4 Relais 5V — K3 Ventilateur",borne: "IN3",           note: "Délestable si I > 3.5 A",         bus: "relays",         style: "relays",         compId: "test_loads" },
+      { key: "GPIO12", pin: "GPIO 12",    comp: "Module 4 Relais 5V — K4 Pompe 12V",  borne: "IN4",           note: "Auto < 30% / Stop >= 85%",        bus: "relays",         style: "relays",         compId: "pump" },
+      { key: "GPIO16", pin: "GPIO 16",    comp: "Bouton Poussoir BP Lumière",         borne: "SIG",           note: "INPUT_PULLUP -> GND (K2)",        bus: "buttons_alerts", style: "buttons_alerts", compId: "buzzer" },
+      { key: "GPIO17", pin: "GPIO 17",    comp: "Bouton Poussoir BP Ventilateur",     borne: "SIG",           note: "INPUT_PULLUP -> GND (K3)",        bus: "buttons_alerts", style: "buttons_alerts", compId: "buzzer" },
+      { key: "GPIO23", pin: "GPIO 23",    comp: "Feu Tricolore LED — Vert",           borne: "G (Vert)",      note: "Voyant Réseau SONABEL OK",        bus: "buttons_alerts", style: "buttons_alerts", compId: "traffic" },
+      { key: "GPIO19", pin: "GPIO 19",    comp: "Feu Tricolore LED — Jaune",          borne: "Y (Jaune)",     note: "Voyant Secours Solaire",          bus: "buttons_alerts", style: "buttons_alerts", compId: "traffic" },
+      { key: "GPIO13", pin: "GPIO 13",    comp: "Feu Tricolore LED — Rouge",          borne: "R (Rouge)",     note: "Voyant Défaut / Délestage",       bus: "buttons_alerts", style: "buttons_alerts", compId: "traffic" },
+      { key: "GPIO15", pin: "GPIO 15",    comp: "Buzzer Actif 5V",                    borne: "+ (SIG)",       note: "Alarme sonore critique",          bus: "buttons_alerts", style: "buttons_alerts", compId: "buzzer" }
+    ];
+
+    let activePinoutBus = "all";
+    let lockedPinKey = null;
+
+    function renderPinItemHtml(p, side) {
+      const c = PINOUT_BUS_COLORS[p.style] || PINOUT_BUS_COLORS.unused;
+      const funcTag = `<span class="pin-func-tag" style="background:${c.bg};color:${c.fg};border-color:${c.bd};">${p.tag}</span>`;
+      const gpioBox = `<span class="pin-gpio-box">${p.gpio}</span>`;
+      const dot = `<span class="pin-pad-dot"></span>`;
+      const inner = side === "left"
+        ? `${funcTag}${gpioBox}${dot}`
+        : `${dot}${gpioBox}${funcTag}`;
+      return `<div class="esp32-pin-item" data-pin-key="${p.key}" data-bus="${p.bus}" onclick="onPinoutSelect('${p.key}', '${p.compId || ""}')" onmouseenter="onPinoutHover('${p.key}')" onmouseleave="onPinoutLeave()">${inner}</div>`;
+    }
+
+    function renderConnectionsDocs() {
+      const board = document.getElementById("esp32-pinout-board");
+      const tbody = document.getElementById("netlist-compact-tbody");
+      if (!board || !tbody) return;
+
+      const leftCol = ESP32_PINOUT_LEFT.map(p => renderPinItemHtml(p, "left")).join("");
+      const rightCol = ESP32_PINOUT_RIGHT.map(p => renderPinItemHtml(p, "right")).join("");
+
+      board.innerHTML = `
+        <div class="esp32-pin-col left">${leftCol}</div>
+        <div class="esp32-mcu-center">
+          <div style="font-size:8px;color:#94A3B8;letter-spacing:0.06em;">ANTENNE 2.4 GHz</div>
+          <div class="esp32-mcu-shield">
+            <strong style="font-size:10px;letter-spacing:0.03em;">ESP-WROOM-32</strong>
+            <span style="font-size:8.5px;color:#334155;margin-top:3px;">Dual-Core 240 MHz</span>
+            <span style="font-size:8px;color:#475569;margin-top:2px;">Wi-Fi · BLE · ADC1</span>
+          </div>
+          <div style="text-align:center;margin:8px 0;">
+            <div style="font-size:10px;font-weight:700;color:#F8FAFC;">ESP32 DevKit V1</div>
+            <div style="font-size:8.5px;color:#94A3B8;">30 Broches · CGE</div>
+          </div>
+          <div class="esp32-mcu-usb">USB-C</div>
+        </div>
+        <div class="esp32-pin-col right">${rightCol}</div>
+      `;
+
+      updateNetlistTable();
+    }
+
+    function updateNetlistTable() {
+      const tbody = document.getElementById("netlist-compact-tbody");
+      if (!tbody) return;
+      const rows = NETLIST_DATA.filter(r => activePinoutBus === "all" || r.bus === activePinoutBus);
+
+      const countEl = document.getElementById("netlist-row-count");
+      if (countEl) countEl.textContent = `${rows.length} liaison${rows.length > 1 ? "s" : ""}`;
+
+      tbody.innerHTML = rows.map(r => {
+        const c = PINOUT_BUS_COLORS[r.style] || PINOUT_BUS_COLORS.unused;
+        const isSel = lockedPinKey === r.key;
+        return `<tr data-pin-key="${r.key}" data-bus="${r.bus}" class="${isSel ? "is-selected" : ""}" onclick="onPinoutSelect('${r.key}', '${r.compId || ""}')" onmouseenter="onPinoutHover('${r.key}')" onmouseleave="onPinoutLeave()">
+          <td><span class="nl-pin-badge" style="background:${c.bg};color:${c.fg};border:1px solid ${c.bd};">${r.pin}</span></td>
+          <td><strong>${r.comp}</strong></td>
+          <td class="mono" style="font-weight:700;">${r.borne}</td>
+          <td><span class="nl-note-tag">${r.note}</span></td>
+        </tr>`;
+      }).join("");
+
+      document.querySelectorAll("#esp32-pinout-board .esp32-pin-item").forEach(el => {
+        const b = el.getAttribute("data-bus");
+        const k = el.getAttribute("data-pin-key");
+        el.classList.toggle("is-dimmed", activePinoutBus !== "all" && b !== activePinoutBus);
+        el.classList.toggle("is-selected", lockedPinKey === k);
       });
+    }
 
-      const countEl = document.getElementById("conn-row-count");
-      if (countEl) countEl.textContent = `${filtered.length} / ${WIRING_SPECS.length} composants`;
-
-      const tbody = document.getElementById("conn-table-body");
-      const cardsGrid = document.getElementById("wiring-cards-grid");
-
-      if (!filtered.length) {
-        const safeQ = query.replace(/</g, "&lt;");
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:22px; color:var(--muted);">Aucun composant trouvé pour « ${safeQ} ».</td></tr>`;
-        cardsGrid.innerHTML = `<div class="el-card" style="padding:24px; text-align:center; color:var(--muted); grid-column:1/-1;">Aucune fiche de câblage ne correspond à « ${safeQ} ».</div>`;
-        return;
+    function applyPinHighlight(key) {
+      document.querySelectorAll("#esp32-pinout-board .esp32-pin-item").forEach(el => {
+        el.classList.toggle("is-selected", el.getAttribute("data-pin-key") === key);
+      });
+      document.querySelectorAll("#netlist-compact-tbody tr").forEach(tr => {
+        tr.classList.toggle("is-selected", tr.getAttribute("data-pin-key") === key);
+      });
+      const statusEl = document.getElementById("pinout-active-status");
+      if (statusEl) {
+        const found = NETLIST_DATA.find(r => r.key === key);
+        statusEl.textContent = found
+          ? `${found.pin} → ${found.comp} (${found.borne})`
+          : `30 broches · ${NETLIST_DATA.length} liaisons actives`;
       }
-
-      tbody.innerHTML = filtered.map(item => `
-        <tr>
-          <td><strong>${item.comp}</strong><br><span class="mono" style="font-size:10.5px; color:var(--muted);">${item.cat}</span></td>
-          <td>${item.role}</td>
-          <td class="mono" style="font-size:11px;">${item.summaryPins}</td>
-          <td>${item.rails.map(r => `<span class="rail-badge ${r.cls}">${r.lbl}</span>`).join("")}</td>
-        </tr>`).join("");
-
-      cardsGrid.innerHTML = filtered.map(item => `
-        <article class="wiring-doc-card">
-          <div class="wiring-doc-head">
-            <div>
-              <h4>${item.comp}</h4>
-              <span class="wiring-doc-cat">${item.cat}</span>
-            </div>
-            <div style="text-align:right; flex-shrink:0;">
-              ${item.rails.map(r => `<span class="rail-badge ${r.cls}">${r.lbl}</span>`).join("")}
-            </div>
-          </div>
-          <div class="wiring-doc-body">
-            <ul class="wiring-pin-list">
-              ${item.connections.map(c => `
-                <li>
-                  <span class="w-dot" style="background:${c.color}; margin-right:0; flex-shrink:0;"></span>
-                  <span class="wiring-pin-from">${c.from}</span>
-                  <span class="wiring-pin-arrow">→</span>
-                  <span class="wiring-pin-to">${c.to}</span>
-                </li>`).join("")}
-            </ul>
-            <div class="wiring-unused"><strong>Broches non utilisées / réservées :</strong> ${item.unused}</div>
-            <div class="wiring-note ${item.critical ? "critical" : ""}">${item.note}</div>
-          </div>
-        </article>`).join("");
     }
 
-    function filterConnectionsDocs() {
-      const val = document.getElementById("conn-search-input").value || "";
-      renderConnectionsDocs(val);
+    function onPinoutHover(key) {
+      applyPinHighlight(key);
     }
 
-    function clearConnectionsFilter() {
-      const inp = document.getElementById("conn-search-input");
-      inp.value = "";
-      renderConnectionsDocs("");
-      inp.focus();
+    function onPinoutLeave() {
+      applyPinHighlight(lockedPinKey);
+    }
+
+    function onPinoutSelect(key, compId) {
+      lockedPinKey = (lockedPinKey === key) ? null : key;
+      applyPinHighlight(lockedPinKey);
+      if (compId && COMPONENT_SPECS[compId]) {
+        renderInspector(compId);
+      }
+      if (lockedPinKey) {
+        const row = document.querySelector(`#netlist-compact-tbody tr[data-pin-key="${lockedPinKey}"]`);
+        if (row) row.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    function setPinoutBusFilter(bus) {
+      activePinoutBus = bus || "all";
+      lockedPinKey = null;
+      document.querySelectorAll("#pinout-bus-bar .pinout-bus-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-bus") === activePinoutBus);
+      });
+      updateNetlistTable();
+      applyPinHighlight(null);
     }
 
     // =========================================================
@@ -3799,16 +4123,24 @@ const char* TELEGRAM_CHAT_ID   = "VOTRE_CHAT_ID_TELEGRAM";
 #define PIN_I_SOLAIRE     33   // Capteur courant ACS712 #2 (Solaire)
 
 // Module 4 Relais 5V (Actif à l'état BAS sur carte opto-isolée standard)
-#define PIN_REL_SONABEL   26   // IN1 : Source SONABEL 12V
-#define PIN_REL_SOLAIRE   27   // IN2 : Source Solaire / Batterie 12.6V
-#define PIN_REL_DISJ      14   // IN3 : Disjoncteur Q1 (Charges 12V)
-#define PIN_REL_POMPE     12   // IN4 : Mini-pompe eau 12V AD20P-1230C
+#define PIN_REL_SONABEL   26   // IN1 (K1) : Source ATS SONABEL / Solaire
+#define PIN_REL_SOLAIRE   27   // IN2 (K2) : Charge Prioritaire Lumière 12V
+#define PIN_REL_DISJ      14   // IN3 (K3) : Charge Non-Prio Ventilateur 12V (délestable)
+#define PIN_REL_POMPE     12   // IN4 (K4) : Mini-pompe eau 12V AD20P-1230C
+#define PIN_RELAI_ATS     26
+#define PIN_RELAI_LUMIERE 27
+#define PIN_RELAI_VENTILO 14
+#define PIN_RELAI_POMPE   12
+
+// Boutons poussoirs physiques (câblés entre GPIO et GND en INPUT_PULLUP)
+#define PIN_BP_LUMIERE    16   // Bouton poussoir Lumière K2 (anti-rebond millis)
+#define PIN_BP_VENTILO    17   // Bouton poussoir Ventilateur K3 (anti-rebond millis)
 
 #define RELAY_ON          LOW
 #define RELAY_OFF         HIGH
 
 // Signalisation & Alarme
-#define PIN_LED_VERT      25   // Feu tricolore : Vert  (SONABEL)
+#define PIN_LED_VERT      23   // Feu tricolore : Vert  (SONABEL)
 #define PIN_LED_JAUNE     19   // Feu tricolore : Jaune (SOLAIRE)
 #define PIN_LED_ROUGE     13   // Feu tricolore : Rouge (DÉFAUT)
 #define PIN_BUZZER        15   // Buzzer actif 5V

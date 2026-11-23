@@ -2631,8 +2631,8 @@
         { id: "D19",   label: "D19",  gpio: 19,   kind: "gpio",    desc: "GPIO 19 · Feu Jaune (Secours Solaire)" },
         { id: "D18",   label: "D18",  gpio: 18,   kind: "gpio",    desc: "GPIO 18 · HC-SR04 ECHO (via pont 10 kΩ / 10 kΩ)" },
         { id: "D5",    label: "D5",   gpio: 5,    kind: "gpio",    desc: "GPIO 5 · HC-SR04 TRIG" },
-        { id: "TX2",   label: "TX2",  gpio: 17,   kind: "gpio",    desc: "GPIO 17 · UART2 TX" },
-        { id: "RX2",   label: "RX2",  gpio: 16,   kind: "gpio",    desc: "GPIO 16 · UART2 RX" },
+        { id: "TX2",   label: "D17",  gpio: 17,   kind: "gpio",    desc: "GPIO 17 · Bouton Poussoir BP Ventilateur (INPUT_PULLUP -> Relais K3)" },
+        { id: "RX2",   label: "D16",  gpio: 16,   kind: "gpio",    desc: "GPIO 16 · Bouton Poussoir BP Lumière (INPUT_PULLUP -> Relais K2)" },
         { id: "D4",    label: "D4",   gpio: 4,    kind: "adc2",    desc: "GPIO 4 · Bus OneWire DS18B20 (+ pull-up 4,7 kΩ)" },
         { id: "D2",    label: "D2",   gpio: 2,    kind: "adc2",    desc: "GPIO 2 · ADC2 (conflit Wi-Fi)" },
         { id: "D15",   label: "D15",  gpio: 15,   kind: "adc2",    desc: "GPIO 15 · Buzzer Alarme 5V" },
@@ -3244,6 +3244,42 @@
               <text id="${id}-st" x="109" y="198" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.8" font-weight="700" fill="#64748b">POMPE : ARRETEE</text>
             `;
           }
+        },
+
+        push_button: {
+          type: "push_button", name: "Bouton Poussoir", simPart: true,
+          keywords: "bouton poussoir switch tactile commande lumiere ventilateur input pullup", w: 168, h: 68,
+          pins: [
+            { id: "SIG", label: "SIG", x: 10, y: 22, side: "left", kind: "sig_in", desc: "Contact Bouton Poussoir (NO) → GPIO ESP32 (INPUT_PULLUP)" },
+            { id: "GND", label: "GND", x: 10, y: 46, side: "left", kind: "gnd",    desc: "Masse commune GND (ferme le contact vers 0V au clic)" }
+          ],
+          render(id, comp) {
+            const title = (comp && comp.tag) ? comp.tag : "BOUTON POUSSOIR";
+            const isFan = (id === "bp_ventilo") || (comp && comp.target === "k3") || title.toUpperCase().includes("VENTIL");
+            const capColor = isFan ? "#0284c7" : "#f59e0b";
+            const capStroke = isFan ? "#0369a1" : "#b45309";
+            return `
+              <g data-bp-trigger="${id}" style="cursor:pointer;">
+                <rect x="18" y="3" width="146" height="62" rx="5" fill="#f8fafc" stroke="#475569" stroke-width="1.3" filter="url(#comp-shadow)" />
+                <rect x="18" y="3" width="146" height="17" rx="4" fill="#1e293b" />
+                <text x="91" y="14.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.3" font-weight="700" fill="#f8fafc">${escapeHtml(title)}</text>
+                <line x1="10" y1="22" x2="26" y2="22" stroke="${isFan ? '#0d9488' : '#0284c7'}" stroke-width="2.4" />
+                <line x1="10" y1="46" x2="26" y2="46" stroke="#18181b" stroke-width="2.4" />
+                <circle cx="10" cy="22" r="4.2" fill="#d9a441" stroke="#785111" stroke-width="0.8" /><circle cx="10" cy="22" r="1.5" fill="#0f172a" />
+                <circle cx="10" cy="46" r="4.2" fill="#d9a441" stroke="#785111" stroke-width="0.8" /><circle cx="10" cy="46" r="1.5" fill="#0f172a" />
+                <!-- Tactile 6x6mm switch housing -->
+                <rect x="31" y="24" width="32" height="32" rx="4" fill="#334155" stroke="#0f172a" stroke-width="1.1" />
+                <circle cx="35" cy="28" r="1.8" fill="#cbd5e1" /><circle cx="59" cy="28" r="1.8" fill="#cbd5e1" />
+                <circle cx="35" cy="52" r="1.8" fill="#cbd5e1" /><circle cx="59" cy="52" r="1.8" fill="#cbd5e1" />
+                <circle id="${id}-cap" cx="47" cy="40" r="10.5" fill="${capColor}" stroke="${capStroke}" stroke-width="1.3" />
+                <circle cx="44.5" cy="37.5" r="3" fill="rgba(255,255,255,0.38)" />
+                <g id="${id}-led"><circle cx="77" cy="32" r="6.5" fill="url(#g-led-green)" opacity="0" class="led-glow" /><circle cx="77" cy="32" r="2.8" fill="#14532d" stroke="#64748b" stroke-width="0.7" class="led-core" /></g>
+                <text id="${id}-st" x="114" y="35" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.7" font-weight="700" fill="#15803d">ETAT : ON</text>
+                <rect x="71" y="42" width="84" height="15" rx="3" fill="#eef2ff" stroke="#c7d2fe" stroke-width="0.9" />
+                <text x="113" y="52" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.1" font-weight="700" fill="#3f51b5">CLIC : ON / OFF</text>
+              </g>
+            `;
+          }
         }
       };
 
@@ -3253,8 +3289,8 @@
         "hcsr04", "resistor_10k", "resistor_4k7",
         "lcd2004", "battery_12v", "solar_panel",
         "psu_sonabel", "pump_12v", "load_priority",
-        "load_nonpriority", "traffic_light", "buzzer",
-        "bus_12v", "rail_5v"
+        "load_nonpriority", "push_button", "traffic_light",
+        "buzzer", "bus_12v", "rail_5v"
       ];
 
       const COMP_META = {
@@ -3275,17 +3311,18 @@
         traffic_light:    { spec: "Module colonne feu tricolore LED 5 mm (Rouge / Jaune / Vert)", role: "Signalisation d'état locale : Vert SONABEL (GPIO 23), Jaune Solaire (GPIO 19), Rouge Défaut (GPIO 13)." },
         buzzer:           { spec: "Buzzer actif piézoélectrique 5V (85 dB)", role: "Alarme sonore locale commandée par GPIO 15 en cas de défaut, surchauffe ou niveau d'eau critique." },
         relay4:           { spec: "Module 4 relais optocouplés 5V SONGLE SRD-05VDC (10A · COM/NO/NC)", role: "Commutation puissance 12V : K1 ATS (GPIO 26), K2 Prioritaire (GPIO 27), K3 Non-Prio (GPIO 14), K4 Pompe (GPIO 12)." },
-        load_priority:    { spec: "Éclairage LED de secours 12V DC (circuit prioritaire)", role: "Maintenu alimenté en permanence par K2 même lors d'un délestage de surcharge." },
-        load_nonpriority: { spec: "Ventilateur / charge secondaire 12V DC (circuit délestable)", role: "Délesté automatiquement par K3 lorsque le courant de charge dépasse 3,5 A." },
+        load_priority:    { spec: "Éclairage LED de secours 12V DC (circuit prioritaire)", role: "Maintenu alimenté par K2 même lors d'un délestage de surcharge, commandé par BP Lumière (GPIO 16) ou SCADA." },
+        load_nonpriority: { spec: "Ventilateur / charge secondaire 12V DC (circuit délestable)", role: "Commandé par BP Ventilateur (GPIO 17) ou SCADA, et délesté automatiquement par K3 si I > 3,5 A." },
+        push_button:      { spec: "Bouton poussoir tactile 6×6 mm NO (câblé entre GPIO et GND en INPUT_PULLUP)", role: "Commande locale à bascule (anti-rebond millis) pour Lumière K2 (GPIO 16) et Ventilateur K3 (GPIO 17) avec synchronisation MQTT SCADA." },
         pump_12v:         { spec: "Mini pompe centrifuge brushless 12V DC AD20P + cuve Polytank", role: "Remplissage automatique piloté par K4 (marche < 30 %, arrêt >= 85 %)." }
       };
 
       // =====================================================================
-      // 3. PRESETS — DISPOSITION EXACTE DAV (24 COMPOSANTS, 69 FILS 90°, 0 CROISEMENT)
+      // 3. PRESETS — DISPOSITION EXACTE DAV (26 COMPOSANTS, 73 FILS 90°, 0 CROISEMENT)
       // =====================================================================
       const SMARTGRID_ZONES = [
         { x: 20,   y: 58, w: 590, h: 890, title: "GAUCHE · SOURCES 12V, BUCK LM2596 7-SEG & CAPTEURS TENSION / COURANT" },
-        { x: 642,  y: 58, w: 642, h: 890, title: "CENTRE · MODULE 4 RELAIS 5V, CHARGES 12V & ESP32 (30 BROCHES)" },
+        { x: 642,  y: 58, w: 642, h: 890, title: "CENTRE · MODULE 4 RELAIS 5V, CHARGES 12V, BOUTONS & ESP32 (30 BROCHES)" },
         { x: 1320, y: 58, w: 660, h: 890, title: "DROITE · LCD 2004 I2C, DS18B20, HC-SR04, FEU TRICOLORE, BUZZER & POLYTANK" }
       ];
 
@@ -3308,10 +3345,12 @@
               { id: "acs_load",     type: "acs712",           x: 386,  y: 568, rot: 0, tag: "ACS712 #1 CHARGE" },
               { id: "rail5",        type: "rail_5v",          x: 396,  y: 678, rot: 0 },
 
-              // CENTRE : Module 4 Relais 5V + Charges 12V + ESP32 30 broches
+              // CENTRE : Module 4 Relais 5V + Charges 12V + 2 Boutons Poussoirs + ESP32 30 broches
               { id: "relay1",       type: "relay4",           x: 742,  y: 76,  rot: 0 },
               { id: "load_prio",    type: "load_priority",    x: 1066, y: 120, rot: 0 },
-              { id: "load_nonprio", type: "load_nonpriority", x: 1066, y: 292, rot: 0 },
+              { id: "load_nonprio", type: "load_nonpriority", x: 1066, y: 282, rot: 0 },
+              { id: "bp_lumiere",   type: "push_button",      x: 1094, y: 428, rot: 0, tag: "BP LUMIERE (GPIO 16)", target: "k2" },
+              { id: "bp_ventilo",   type: "push_button",      x: 1094, y: 508, rot: 0, tag: "BP VENTILATEUR (GPIO 17)", target: "k3" },
               { id: "esp32",        type: "esp32",            x: 894,  y: 556, rot: 0 },
 
               // DROITE : LCD 2004 I2C + DS18B20 + 4.7k + HC-SR04 + 2x10k + Feu tricolore + Buzzer + Pompe Polytank
@@ -3341,8 +3380,8 @@
               { id: "w_p11", from: "relay1.COM2",      to: "relay1.COM3",     color: "#c81e1e", layer: "power", via: [[966, 238], [966, 338]] },
               { id: "w_p12", from: "relay1.COM3",      to: "relay1.COM4",     color: "#c81e1e", layer: "power", via: [[966, 338], [966, 438]] },
               { id: "w_p13", from: "relay1.NO2",       to: "load_prio.POS",   color: "#c81e1e", layer: "power", via: [[1010, 262], [1010, 154]] },
-              { id: "w_p14", from: "relay1.NO3",       to: "load_nonprio.POS",color: "#c81e1e", layer: "power", via: [[1010, 362], [1010, 330]] },
-              { id: "w_p15", from: "relay1.NO4",       to: "pump1.POS",       color: "#c81e1e", layer: "power", via: [[1010, 462], [1010, 512], [1292, 512], [1292, 954], [1686, 954], [1686, 586]] },
+              { id: "w_p14", from: "relay1.NO3",       to: "load_nonprio.POS",color: "#c81e1e", layer: "power", via: [[1010, 362], [1010, 320]] },
+              { id: "w_p15", from: "relay1.NO4",       to: "pump1.POS",       color: "#c81e1e", layer: "power", via: [[1010, 462], [1010, 592], [1292, 592], [1292, 954], [1686, 954], [1686, 586]] },
 
               // B. RAIL LOGIQUE +5V (ORANGE #ea580c)
               { id: "w_5v1", from: "lm2596_1.OUT_P",   to: "rail5.P5_IN",     color: "#ea580c", layer: "power", via: [[602, 106], [602, 672], [354, 672], [354, 750]] },
@@ -3373,7 +3412,7 @@
               { id: "w_g13", from: "rail5.G2",         to: "esp32.GND_L",     color: "#18181b", layer: "power", via: [[662, 870], [662, 858.6]] },
               { id: "w_g14", from: "rail5.G3",         to: "relay1.GND",      color: "#18181b", layer: "power", via: [[672, 904], [672, 226]] },
               { id: "w_g15", from: "rail5.G3",         to: "load_prio.NEG",   color: "#18181b", layer: "power", via: [[672, 904], [672, 534], [1032, 534], [1032, 202]] },
-              { id: "w_g16", from: "rail5.G3",         to: "load_nonprio.NEG",color: "#18181b", layer: "power", via: [[672, 904], [672, 534], [1032, 534], [1032, 380]] },
+              { id: "w_g16", from: "rail5.G3",         to: "load_nonprio.NEG",color: "#18181b", layer: "power", via: [[672, 904], [672, 534], [1032, 534], [1032, 370]] },
               { id: "w_g17", from: "esp32.GND_R",      to: "lcd1.GND",        color: "#18181b", layer: "power", via: [[1338, 858.6], [1338, 114]] },
               { id: "w_g18", from: "esp32.GND_R",      to: "ds1.GND",         color: "#18181b", layer: "power", via: [[1338, 858.6], [1338, 308]] },
               { id: "w_g19", from: "esp32.GND_R",      to: "hcsr1.GND",       color: "#18181b", layer: "power", via: [[1338, 858.6], [1338, 568], [1572, 568]] },
@@ -3408,11 +3447,15 @@
               { id: "w_hc3", from: "r1_10k.A",         to: "esp32.D18",       color: "#15803d", layer: "signal", via: [[1410, 600], [1410, 731.2]] },
               { id: "w_hc4", from: "r1_10k.A",         to: "r2_10k.A",        color: "#15803d", layer: "signal", via: [[1424, 600], [1424, 660]] },
 
-              // J. SIGNALISATION FEU TRICOLORE & BUZZER (GPIO 23, 19, 13, 15)
+              // J. SIGNALISATION FEU TRICOLORE, BUZZER & BOUTONS POUSSOIRS (GPIO 23, 19, 13, 15, 16, 17)
               { id: "w_sg1", from: "feu1.G",           to: "esp32.D23",       color: "#15803d", layer: "signal", via: [[1886, 332], [1748, 332], [1748, 226], [1310, 226], [1310, 622.0]] },
               { id: "w_sg2", from: "feu1.Y",           to: "esp32.D19",       color: "#ca8a04", layer: "signal", via: [[1870, 320], [1736, 320], [1736, 216], [1300, 216], [1300, 713.0]] },
               { id: "w_sg3", from: "feu1.R",           to: "esp32.D13",       color: "#1d4ed8", layer: "signal", via: [[1854, 308], [1660, 308], [1660, 942], [682, 942], [682, 840.4]] },
-              { id: "w_sg4", from: "buz1.POS",         to: "esp32.D15",       color: "#ca8a04", layer: "signal", via: [[1672, 394], [1672, 840.4]] }
+              { id: "w_sg4", from: "buz1.POS",         to: "esp32.D15",       color: "#ca8a04", layer: "signal", via: [[1672, 394], [1672, 840.4]] },
+              { id: "w_bp1", from: "bp_lumiere.SIG",   to: "esp32.RX2",       color: "#0284c7", layer: "signal", via: [[1076, 450], [1076, 801.8]] },
+              { id: "w_bp2", from: "bp_ventilo.SIG",   to: "esp32.TX2",       color: "#0d9488", layer: "signal", via: [[1082, 530], [1082, 783.6]] },
+              { id: "w_bp3", from: "bp_lumiere.GND",   to: "esp32.GND_R",     color: "#18181b", layer: "power",  via: [[1070, 474], [1070, 874.6]] },
+              { id: "w_bp4", from: "bp_ventilo.GND",   to: "esp32.GND_R",     color: "#18181b", layer: "power",  via: [[1070, 554], [1070, 874.6]] }
             ]
           };
         }
@@ -3506,7 +3549,7 @@
         wireColorMode: "auto",
         drawingFrom: null,
         mouseSvg: { x: 0, y: 0 },
-        powered: false,
+        powered: true,
         buzzerSound: false,
         acsScale4x: false,
 
@@ -3515,11 +3558,13 @@
         sim: {
           vSonabel: 12.2, iCharge: 1.8, temp: 32.0, eau: 62,
           vBatt: 12.3, battPct: 86, source: "SONABEL",
+          wantLamp: true, wantFan: true, manualSource: false, manualShed: false,
+          bpLumPressed: false, bpFanPressed: false,
           disj: 1, k2Prio: 1, k3NonPrio: 1, pompe: 0, manualMode: false
         },
         analysis: null,
 
-        mqttEnabled: false,
+        mqttEnabled: true,
         mqttStatus: "disconnected",
         mqttClient: null,
         mqttTimer: null,
@@ -3663,7 +3708,8 @@
           trig: null, echo: null, echoProtected: false,
           vSonabel: null, vBatt: null, iCharge: null, iSolaire: null,
           rel1: null, rel2: null, rel3: null, rel4: null,
-          ledG: null, ledY: null, ledR: null, buzzer: null
+          ledG: null, ledY: null, ledR: null, buzzer: null,
+          bpLumiere: null, bpVentilo: null
         };
         const gpioOwners = new Map();
         function regOwner(gpio, lbl, ep) {
@@ -3804,7 +3850,7 @@
         relays.forEach(rel => {
           checkPowerPins(rel, "Module 4 Relais 5V", 5);
           let n = 0;
-          [["IN1","rel1","K1 ATS",26],["IN2","rel2","K2 Prioritaire",27],["IN3","rel3","K3 Non-Prio",14],["IN4","rel4","K4 Pompe",12]].forEach(([pid,k,lbl,rec]) => {
+          [["IN1","rel1","K1 ATS",26],["IN2","rel2","K2 Lumière",27],["IN3","rel3","K3 Ventilateur",14],["IN4","rel4","K4 Pompe",12]].forEach(([pid,k,lbl,rec]) => {
             const p = getEspGpioOnNet(`${rel.id}.${pid}`);
             if (p) {
               n++; pins[k] = p.gpio; regOwner(p.gpio, lbl, `${rel.id}.${pid}`);
@@ -3844,6 +3890,29 @@
           else { pins.buzzer = p.gpio; regOwner(p.gpio, "Buzzer 5V", `${bz.id}.POS`); if (INPUT_ONLY_GPIOS.has(p.gpio)) { errors.push({ code: `BZI_${bz.id}`, title: `GPIO ${p.gpio} Input-Only (Buzzer)`, detail: "Déplacez (+) sur GPIO 15." }); markWires(`${bz.id}.POS`); } }
         });
 
+        // 6. Push buttons (BP Lumière GPIO 16 & BP Ventilateur GPIO 17)
+        const pushBtns = state.components.filter(c => c.type === "push_button");
+        pushBtns.forEach(bp => {
+          const lbl = bp.tag || "Bouton Poussoir";
+          checkPowerPins(bp, lbl, null);
+          const p = getEspGpioOnNet(`${bp.id}.SIG`);
+          if (!p) {
+            errors.push({ code: `BP_${bp.id}`, title: `Signal SIG non câblé (${lbl})`, detail: "Reliez SIG à une broche GPIO libre de l'ESP32 (ex: GPIO 16 ou GPIO 17 en INPUT_PULLUP)." });
+          } else {
+            const isFan = bp.id === "bp_ventilo" || bp.target === "k3" || (bp.tag && bp.tag.toUpperCase().includes("VENTIL"));
+            if (isFan || (pins.bpLumiere !== null && pins.bpVentilo === null)) pins.bpVentilo = p.gpio;
+            else pins.bpLumiere = p.gpio;
+            regOwner(p.gpio, lbl, `${bp.id}.SIG`);
+            if (INPUT_ONLY_GPIOS.has(p.gpio)) {
+              errors.push({ code: `BPI_${bp.id}`, title: `GPIO ${p.gpio} sans pull-up interne (${lbl})`, detail: "Utilisez GPIO 16 ou GPIO 17 pour bénéficier de INPUT_PULLUP." });
+              markWires(`${bp.id}.SIG`);
+            }
+          }
+        });
+        if (pins.bpLumiere !== null || pins.bpVentilo !== null) {
+          checks.push(`Boutons poussoirs INPUT_PULLUP : Lumière (GPIO ${pins.bpLumiere ?? "--"}) & Ventilateur (GPIO ${pins.bpVentilo ?? "--"})`);
+        }
+
         for (const [gpio, owners] of gpioOwners.entries()) {
           if (owners.length > 1) {
             errors.push({ code: `COL_${gpio}`, title: `Conflit de broche sur GPIO ${gpio}`, detail: `Signaux partagés : ${owners.map(o => o.label).join(", ")}.` });
@@ -3876,17 +3945,24 @@
         const temp = s.temp, eau = Math.round(s.eau);
         const isOverload = iLoad > 3.5, isOverheat = temp > 60.0;
 
-        if (!s.manualMode) {
+        if (!s.manualSource) {
           if (vSon >= 9.5) s.source = "SONABEL";
           else if (a.hasBatt) s.source = "SOLAIRE";
           else s.source = "COUPURE";
+        }
 
-          const isBlackout = s.source === "COUPURE";
-          s.k2Prio = (!isBlackout && !isOverheat) ? 1 : 0;
-          s.k3NonPrio = (!isBlackout && !isOverheat && !isOverload) ? 1 : 0;
-          s.disj = (!isBlackout && !isOverheat && !isOverload) ? 1 : 0;
-          if (isBlackout || isOverheat) s.pompe = 0;
-          else if (eau < 30) s.pompe = 1;
+        const isBlackout = s.source === "COUPURE";
+        // Les charges Lumière (K2) et Ventilateur (K3) ne s'allument JAMAIS à cause d'un défaut :
+        // - K2 (Lumière prioritaire) suit la consigne wantLamp (BP Lumière / SCADA) sauf en cas de coupure totale ou surchauffe > 60 °C.
+        // - K3 (Ventilateur non-prioritaire) est délesté automatiquement si surcharge ACS712 (> 3,5 A), surchauffe ou coupure ; sinon il suit wantFan.
+        s.k2Prio = (s.wantLamp && !isBlackout && !isOverheat) ? 1 : 0;
+        s.k3NonPrio = (s.wantFan && !isBlackout && !isOverheat && !isOverload && !s.manualShed) ? 1 : 0;
+        s.disj = (!isBlackout && !isOverheat && !isOverload && !s.manualShed) ? 1 : 0;
+
+        if (isBlackout || isOverheat) {
+          s.pompe = 0;
+        } else if (!s.manualMode) {
+          if (eau < 30) s.pompe = 1;
           else if (eau >= 85) s.pompe = 0;
         }
 
@@ -3900,7 +3976,7 @@
           iCharge: +iLoad.toFixed(2), iScada, iSolaire: s.source === "SOLAIRE" ? +(Math.max(0.5, iLoad)).toFixed(2) : 0.65,
           temp: +temp.toFixed(1), eau, source: s.source, disj: s.disj,
           k1Solar, k2Prio, k3NonPrio, k4Pump,
-          shedding: isOverload && !isOverheat && s.source !== "COUPURE",
+          shedding: (isOverload || s.manualShed) && !isOverheat && s.source !== "COUPURE",
           ledG: (s.disj === 1 && s.source === "SONABEL") && a.pins.ledG !== null,
           ledY: (s.disj === 1 && s.source === "SOLAIRE") && a.pins.ledY !== null,
           ledR: (s.disj === 0) && a.pins.ledR !== null,
@@ -3917,7 +3993,7 @@
         return [
           pad(`SRC:${pad(s.source, 7)} Q1:${q1}`, 20),
           pad(`U:${s.vActive.toFixed(1).padStart(4," ")}V  I:${s.iCharge.toFixed(1).padStart(4," ")}A`, 20),
-          pad(`T:${s.temp.toFixed(1).padStart(4," ")}C  BATT:${String(s.battPct).padStart(3," ")}%`, 20),
+          pad(`L:${s.k2Prio?"ON ":"OFF"} V:${s.k3NonPrio?"ON ":s.shedding?"DEL":"OFF"} T:${s.temp.toFixed(0).padStart(2," ")}C`, 20),
           pad(`EAU:${String(s.eau).padStart(3," ")}% POMPE:${s.k4Pump?"ON ":"OFF"}`, 20)
         ];
       }
@@ -3930,9 +4006,12 @@
         const p = state.analysis ? state.analysis.pins : {};
         function defLine(name, val, comment, isErr = false) {
           const vs = (val === null || val === undefined) ? "-1" : String(val);
-          const pn = name.padEnd(18, " "), pv = vs.padEnd(4, " ");
+          const pn = name.padEnd(19, " "), pv = vs.padEnd(4, " ");
           const cls = isErr ? "tok-err" : (val === null || val === undefined ? "tok-cm" : "tok-ok");
           return { raw: `#define ${pn}${pv} // ${comment}`, html: `<span class="tok-kw">#define</span> <span class="tok-id">${pn}</span><span class="${isErr?"tok-err":"tok-num"}">${pv}</span> <span class="${cls}">// ${escapeHtml(comment)}</span>` };
+        }
+        function codeLine(raw, html) {
+          return { raw, html: html !== undefined ? html : escapeHtml(raw) };
         }
 
         const sdaErr = p.sda !== null && p.sda !== 21, sclErr = p.scl !== null && p.scl !== 22;
@@ -3944,43 +4023,253 @@
         const dsErr = p.ds18b20 !== null && !p.dsPullupOk;
 
         const lines = [
-          { raw: "// sketch_smartgrid.ino - CGE U-AUBEN Smart Grid & Polytank 12V DC", html: `<span class="tok-cm">// sketch_smartgrid.ino - CGE U-AUBEN Smart Grid &amp; Polytank 12V DC</span>` },
-          { raw: "#include <WiFi.h>", html: `<span class="tok-kw">#include</span> <span class="tok-str">&lt;WiFi.h&gt;</span>` },
-          { raw: "#include <PubSubClient.h>", html: `<span class="tok-kw">#include</span> <span class="tok-str">&lt;PubSubClient.h&gt;</span>` },
-          { raw: "#include <Wire.h>", html: `<span class="tok-kw">#include</span> <span class="tok-str">&lt;Wire.h&gt;</span>` },
-          { raw: "#include <LiquidCrystal_I2C.h>", html: `<span class="tok-kw">#include</span> <span class="tok-str">&lt;LiquidCrystal_I2C.h&gt;</span>` },
-          { raw: "#include <OneWire.h>", html: `<span class="tok-kw">#include</span> <span class="tok-str">&lt;OneWire.h&gt;</span>` },
-          { raw: "#include <DallasTemperature.h>", html: `<span class="tok-kw">#include</span> <span class="tok-str">&lt;DallasTemperature.h&gt;</span>` },
-          { raw: "", html: "" },
-          defLine("PIN_I2C_SDA",     p.sda,      p.sda === 21 ? "Bus I2C LCD 2004" : (sdaErr ? "ERREUR: GPIO 21 requis" : "Non cable"), sdaErr),
-          defLine("PIN_I2C_SCL",     p.scl,      p.scl === 22 ? "Bus I2C LCD 2004" : (sclErr ? "ERREUR: GPIO 22 requis" : "Non cable"), sclErr),
-          defLine("PIN_V_SONABEL",   p.vSonabel, p.vSonabel === null ? "Non cable" : (vSonErr ? "CONFLIT ADC2 / Wi-Fi" : "ADC1 Tension SONABEL"), vSonErr),
-          defLine("PIN_V_BATTERIE",  p.vBatt,    p.vBatt === null ? "Non cable" : (vBatErr ? "CONFLIT ADC2 / Wi-Fi" : "ADC1 Tension Batterie"), vBatErr),
-          defLine("PIN_I_CHARGE",    p.iCharge,  p.iCharge === null ? "Non cable" : (iChErr ? "CONFLIT ADC2 / Wi-Fi" : "ADC1 ACS712 #1 Charge"), iChErr),
-          defLine("PIN_I_SOLAIRE",   p.iSolaire, p.iSolaire === null ? "Non cable" : (iSolErr ? "CONFLIT ADC2 / Wi-Fi" : "ADC1 ACS712 #2 Solaire"), iSolErr),
-          defLine("PIN_TRIG",        p.trig,     p.trig === null ? "Non cable" : "HC-SR04 TRIG"),
-          defLine("PIN_ECHO",        p.echo,     p.echo === null ? "Non cable" : (echoErr ? "DANGER 5V: pont 10k/10k requis" : "Pont 10k/10k -> 2.5V"), echoErr),
-          defLine("PIN_DS18B20",     p.ds18b20,  p.ds18b20 === null ? "Non cable" : (dsErr ? "ERREUR: pull-up 4.7k absente" : "OneWire + pull-up 4.7k"), dsErr),
-          defLine("PIN_REL_ATS",     p.rel1,     p.rel1 === null ? "Non cable" : "K1 ATS SONABEL/Solaire"),
-          defLine("PIN_REL_PRIO",    p.rel2,     p.rel2 === null ? "Non cable" : "K2 Charge Prioritaire"),
-          defLine("PIN_REL_NONPRIO", p.rel3,     p.rel3 === null ? "Non cable" : "K3 Charge Non-Prioritaire"),
-          defLine("PIN_REL_POMPE",   p.rel4,     p.rel4 === null ? "Non cable" : "K4 Pompe Polytank 12V"),
-          defLine("PIN_LED_VERT",    p.ledG,     p.ledG === null ? "Non cable" : "Feu Vert (SONABEL)"),
-          defLine("PIN_LED_JAUNE",   p.ledY,     p.ledY === null ? "Non cable" : "Feu Jaune (SOLAIRE)"),
-          defLine("PIN_LED_ROUGE",   p.ledR,     p.ledR === null ? "Non cable" : "Feu Rouge (DEFAUT)"),
-          defLine("PIN_BUZZER",      p.buzzer,   p.buzzer === null ? "Non cable" : "Buzzer Alarme 5V"),
-          { raw: "", html: "" },
-          { raw: `const char* MQTT_BROKER    = "broker.hivemq.com";`, html: `<span class="tok-kw">const char*</span> <span class="tok-id">MQTT_BROKER</span>    = <span class="tok-str">"broker.hivemq.com"</span>;` },
-          { raw: `const char* MQTT_TOPIC     = "cge/uauben/david/smartgrid";`, html: `<span class="tok-kw">const char*</span> <span class="tok-id">MQTT_TOPIC</span>     = <span class="tok-str">"cge/uauben/david/smartgrid"</span>;` },
-          { raw: `const char* MQTT_CMD_TOPIC = "cge/uauben/david/smartgrid/cmd";`, html: `<span class="tok-kw">const char*</span> <span class="tok-id">MQTT_CMD_TOPIC</span> = <span class="tok-str">"cge/uauben/david/smartgrid/cmd"</span>;` },
-          { raw: "", html: "" },
-          { raw: `void setup() {`, html: `<span class="tok-kw">void</span> <span class="tok-id">setup</span>() {` },
-          { raw: `  Serial.begin(115200);`, html: `  Serial.begin(<span class="tok-num">115200</span>);` },
-          { raw: `  Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);`, html: `  Wire.begin(<span class="tok-id">PIN_I2C_SDA</span>, <span class="tok-id">PIN_I2C_SCL</span>);` },
-          { raw: `  pinMode(PIN_REL_ATS, OUTPUT); pinMode(PIN_REL_PRIO, OUTPUT);`, html: `  pinMode(<span class="tok-id">PIN_REL_ATS</span>, OUTPUT); pinMode(<span class="tok-id">PIN_REL_PRIO</span>, OUTPUT);` },
-          { raw: `  pinMode(PIN_REL_NONPRIO, OUTPUT); pinMode(PIN_REL_POMPE, OUTPUT);`, html: `  pinMode(<span class="tok-id">PIN_REL_NONPRIO</span>, OUTPUT); pinMode(<span class="tok-id">PIN_REL_POMPE</span>, OUTPUT);` },
-          { raw: `  pinMode(PIN_TRIG, OUTPUT); pinMode(PIN_ECHO, INPUT);`, html: `  pinMode(<span class="tok-id">PIN_TRIG</span>, OUTPUT); pinMode(<span class="tok-id">PIN_ECHO</span>, INPUT);` },
-          { raw: `}`, html: `}` }
+          codeLine("// ============================================================================"),
+          codeLine("// sketch_smartgrid.ino - Firmware ESP32 Smart Grid & Polytank 12V DC"),
+          codeLine("// Club du Genie Electrique (CGE) - Universite Aube Nouvelle (U-AUBEN)"),
+          codeLine("// ============================================================================"),
+          codeLine("#include <WiFi.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;WiFi.h&gt;</span>`),
+          codeLine("#include <PubSubClient.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;PubSubClient.h&gt;</span>`),
+          codeLine("#include <Wire.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;Wire.h&gt;</span>`),
+          codeLine("#include <LiquidCrystal_I2C.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;LiquidCrystal_I2C.h&gt;</span>`),
+          codeLine("#include <OneWire.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;OneWire.h&gt;</span>`),
+          codeLine("#include <DallasTemperature.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;DallasTemperature.h&gt;</span>`),
+          codeLine(""),
+          codeLine("// --- 1. BROCHAGE MATERIEL ESP32 (30 BROCHES) ---"),
+          defLine("PIN_I2C_SDA",       p.sda,       p.sda === 21 ? "Bus I2C SDA -> LCD 2004 (0x27)" : (sdaErr ? "ERREUR: GPIO 21 requis" : "Non cable"), sdaErr),
+          defLine("PIN_I2C_SCL",       p.scl,       p.scl === 22 ? "Bus I2C SCL -> LCD 2004 (0x27)" : (sclErr ? "ERREUR: GPIO 22 requis" : "Non cable"), sclErr),
+          defLine("PIN_V_SONABEL",     p.vSonabel,  p.vSonabel === null ? "Non cable" : (vSonErr ? "CONFLIT ADC2 / Wi-Fi" : "ADC1 Capteur tension SONABEL (0-25V)"), vSonErr),
+          defLine("PIN_V_BATTERIE",    p.vBatt,     p.vBatt === null ? "Non cable" : (vBatErr ? "CONFLIT ADC2 / Wi-Fi" : "ADC1 Capteur tension Batterie 3S (0-25V)"), vBatErr),
+          defLine("PIN_I_CHARGE",      p.iCharge,   p.iCharge === null ? "Non cable" : (iChErr ? "CONFLIT ADC2 / Wi-Fi" : "ADC1 ACS712 #1 Courant charges 12V"), iChErr),
+          defLine("PIN_I_SOLAIRE",     p.iSolaire,  p.iSolaire === null ? "Non cable" : (iSolErr ? "CONFLIT ADC2 / Wi-Fi" : "ADC1 ACS712 #2 Courant branche solaire"), iSolErr),
+          defLine("PIN_TRIG",          p.trig,      p.trig === null ? "Non cable" : "HC-SR04 TRIG (impulsion 10 us)"),
+          defLine("PIN_ECHO",          p.echo,      p.echo === null ? "Non cable" : (echoErr ? "DANGER 5V: pont 10k/10k requis" : "HC-SR04 ECHO via pont 10k/10k (2.5V)"), echoErr),
+          defLine("PIN_DS18B20",       p.ds18b20,   p.ds18b20 === null ? "Non cable" : (dsErr ? "ERREUR: pull-up 4.7k absente" : "OneWire DS18B20 + pull-up 4.7k vers 3.3V"), dsErr),
+          defLine("PIN_RELAI_ATS",     p.rel1,      p.rel1 === null ? "Non cable" : "Relais K1 (IN1) ATS SONABEL / Solaire"),
+          defLine("PIN_RELAI_LUMIERE", p.rel2,      p.rel2 === null ? "Non cable" : "Relais K2 (IN2) Charge Prioritaire Lumiere 12V"),
+          defLine("PIN_RELAI_VENTILO", p.rel3,      p.rel3 === null ? "Non cable" : "Relais K3 (IN3) Charge Non-Prio Ventilateur 12V"),
+          defLine("PIN_RELAI_POMPE",   p.rel4,      p.rel4 === null ? "Non cable" : "Relais K4 (IN4) Mini Pompe Polytank 12V"),
+          defLine("PIN_BP_LUMIERE",    p.bpLumiere, p.bpLumiere === null ? "Non cable" : "Bouton Poussoir Lumiere (INPUT_PULLUP -> GND)"),
+          defLine("PIN_BP_VENTILO",    p.bpVentilo, p.bpVentilo === null ? "Non cable" : "Bouton Poussoir Ventilateur (INPUT_PULLUP -> GND)"),
+          defLine("PIN_LED_VERT",      p.ledG,      p.ledG === null ? "Non cable" : "Feu Tricolore Vert (Reseau SONABEL OK)"),
+          defLine("PIN_LED_JAUNE",     p.ledY,      p.ledY === null ? "Non cable" : "Feu Tricolore Jaune (Secours Solaire)"),
+          defLine("PIN_LED_ROUGE",     p.ledR,      p.ledR === null ? "Non cable" : "Feu Tricolore Rouge (Defaut / Delestage)"),
+          defLine("PIN_BUZZER",        p.buzzer,    p.buzzer === null ? "Non cable" : "Buzzer Actif 5V"),
+          codeLine(""),
+          codeLine("// --- 2. SEUILS DE PROTECTION & CONSTANTES TEMPS REEL ---"),
+          codeLine("#define SEUIL_V_SONABEL_MIN  9.5f   // Basculement ATS vers Solaire si V < 9.5 V"),
+          codeLine("#define SEUIL_I_SURCHARGE    3.5f   // Delestage auto Ventilateur (K3) si I > 3.5 A"),
+          codeLine("#define SEUIL_TEMP_MAX       60.0f  // Coupure thermique d'urgence si T > 60.0 C"),
+          codeLine("#define SEUIL_EAU_BAS        30     // Demarrage auto Pompe K4 si niveau < 30 %"),
+          codeLine("#define SEUIL_EAU_HAUT       85     // Arret auto Pompe K4 si niveau >= 85 %"),
+          codeLine("#define DEBOUNCE_MS          45UL   // Anti-rebond logiciel boutons poussoirs"),
+          codeLine(""),
+          codeLine("// --- 3. CONFIGURATION WI-FI & BROKER MQTT HIVEMQ ---"),
+          codeLine(`const char* WIFI_SSID      = "CGE_UAUBEN_SMARTGRID";`),
+          codeLine(`const char* WIFI_PASS      = "SmartGrid2026";`),
+          codeLine(`const char* MQTT_BROKER    = "broker.hivemq.com";`),
+          codeLine(`const int   MQTT_PORT      = 1883;`),
+          codeLine(`const char* MQTT_TOPIC     = "cge/uauben/david/smartgrid";`),
+          codeLine(`const char* MQTT_CMD_TOPIC = "cge/uauben/david/smartgrid/cmd";`),
+          codeLine(""),
+          codeLine("WiFiClient espClient;"),
+          codeLine("PubSubClient mqttClient(espClient);"),
+          codeLine("LiquidCrystal_I2C lcd(0x27, 20, 4);"),
+          codeLine("OneWire oneWire(PIN_DS18B20);"),
+          codeLine("DallasTemperature sensors(&oneWire);"),
+          codeLine(""),
+          codeLine("// --- 4. ETATS DE CONDUITE & ANTI-REBOND MILLIS() ---"),
+          codeLine("bool wantLumiere     = true;   // Consigne utilisateur Lumiere K2 (BP ou SCADA)"),
+          codeLine("bool wantVentilo     = true;   // Consigne utilisateur Ventilateur K3 (BP ou SCADA)"),
+          codeLine("bool manualShed      = false;  // Delestage manuel force depuis le SCADA"),
+          codeLine("bool modeAutoPompe   = true;   // Conduite automatique Polytank (AUTO / MANUAL)"),
+          codeLine("bool manualSource    = false;  // Forcage manuel source ATS"),
+          codeLine("bool forceSolar      = false;"),
+          codeLine("bool k1Solar         = false;"),
+          codeLine("bool k2LumiereActive = true;"),
+          codeLine("bool k3VentiloActive = true;"),
+          codeLine("bool k4PompeActive   = false;"),
+          codeLine(""),
+          codeLine("float vSonabel = 12.2f, vBatterie = 12.3f, iCharge = 1.8f, iSolaire = 0.65f, tempC = 32.0f;"),
+          codeLine("int   niveauEau = 62, battPct = 86, disjQ1 = 1;"),
+          codeLine("String sourceActive = \"SONABEL\";"),
+          codeLine(""),
+          codeLine("int lastBpLumState = HIGH, stableBpLumState = HIGH;"),
+          codeLine("int lastBpFanState = HIGH, stableBpFanState = HIGH;"),
+          codeLine("unsigned long lastDebounceLum = 0, lastDebounceFan = 0, lastTelemetryMs = 0;"),
+          codeLine(""),
+          codeLine("void publierTelemetrieMQTT();"),
+          codeLine("void appliquerLogiqueSmartGrid();"),
+          codeLine(""),
+          codeLine("// --- 5. LECTURE DES CAPTEURS (ADC1, DS18B20, HC-SR04) ---"),
+          codeLine("float lireTensionADC1(int pin) {"),
+          codeLine("  if (pin < 0) return 0.0f;"),
+          codeLine("  long sum = 0;"),
+          codeLine("  for (int k = 0; k < 16; k++) sum += analogRead(pin);"),
+          codeLine("  float vPin = ((sum / 16.0f) / 4095.0f) * 3.3f;"),
+          codeLine("  return vPin * 5.0f; // Pont diviseur 0-25V (rapport 5:1)"),
+          codeLine("}"),
+          codeLine(""),
+          codeLine("float lireCourantACS712(int pin) {"),
+          codeLine("  if (pin < 0) return 0.0f;"),
+          codeLine("  long sum = 0;"),
+          codeLine("  for (int k = 0; k < 32; k++) sum += analogRead(pin);"),
+          codeLine("  float vOut = ((sum / 32.0f) / 4095.0f) * 3.3f * 1.515f;"),
+          codeLine("  float amps = fabs(vOut - 2.5f) / 0.100f; // ACS712-20A : 100 mV/A"),
+          codeLine("  return (amps < 0.08f) ? 0.0f : amps;"),
+          codeLine("}"),
+          codeLine(""),
+          codeLine("int lireNiveauPolytank() {"),
+          codeLine("  if (PIN_TRIG < 0 || PIN_ECHO < 0) return niveauEau;"),
+          codeLine("  digitalWrite(PIN_TRIG, LOW); delayMicroseconds(2);"),
+          codeLine("  digitalWrite(PIN_TRIG, HIGH); delayMicroseconds(10);"),
+          codeLine("  digitalWrite(PIN_TRIG, LOW);"),
+          codeLine("  long dur = pulseIn(PIN_ECHO, HIGH, 25000UL);"),
+          codeLine("  if (dur <= 0) return niveauEau;"),
+          codeLine("  float distCm = dur * 0.0343f * 0.5f;"),
+          codeLine("  int pct = (int)((24.0f - constrain(distCm, 2.0f, 24.0f)) * 100.0f / 22.0f);"),
+          codeLine("  return constrain(pct, 0, 100);"),
+          codeLine("}"),
+          codeLine(""),
+          codeLine("// --- 6. GESTION DES BOUTONS POUSSOIRS AVEC ANTI-REBOND MILLIS() ---"),
+          codeLine("void lireBoutonsPoussoirs() {"),
+          codeLine("  unsigned long now = millis();"),
+          codeLine("  if (PIN_BP_LUMIERE >= 0) {"),
+          codeLine("    int rLum = digitalRead(PIN_BP_LUMIERE);"),
+          codeLine("    if (rLum != lastBpLumState) { lastDebounceLum = now; lastBpLumState = rLum; }"),
+          codeLine("    if ((now - lastDebounceLum) > DEBOUNCE_MS && rLum != stableBpLumState) {"),
+          codeLine("      stableBpLumState = rLum;"),
+          codeLine("      if (stableBpLumState == LOW) { // Front descendant (bouton presse vers GND)"),
+          codeLine("        wantLumiere = !wantLumiere;"),
+          codeLine("        appliquerLogiqueSmartGrid();"),
+          codeLine("        publierTelemetrieMQTT();"),
+          codeLine("      }"),
+          codeLine("    }"),
+          codeLine("  }"),
+          codeLine("  if (PIN_BP_VENTILO >= 0) {"),
+          codeLine("    int rFan = digitalRead(PIN_BP_VENTILO);"),
+          codeLine("    if (rFan != lastBpFanState) { lastDebounceFan = now; lastBpFanState = rFan; }"),
+          codeLine("    if ((now - lastDebounceFan) > DEBOUNCE_MS && rFan != stableBpFanState) {"),
+          codeLine("      stableBpFanState = rFan;"),
+          codeLine("      if (stableBpFanState == LOW) { // Front descendant (bouton presse vers GND)"),
+          codeLine("        wantVentilo = !wantVentilo;"),
+          codeLine("        if (wantVentilo) manualShed = false;"),
+          codeLine("        appliquerLogiqueSmartGrid();"),
+          codeLine("        publierTelemetrieMQTT();"),
+          codeLine("      }"),
+          codeLine("    }"),
+          codeLine("  }"),
+          codeLine("}"),
+          codeLine(""),
+          codeLine("// --- 7. LOGIQUE ATS, DELESTAGE SURCHARGE & HYSTERESIS POLYTANK ---"),
+          codeLine("void appliquerLogiqueSmartGrid() {"),
+          codeLine("  bool surcharge  = (iCharge > SEUIL_I_SURCHARGE);"),
+          codeLine("  bool surchauffe = (tempC > SEUIL_TEMP_MAX);"),
+          codeLine(""),
+          codeLine("  if (!manualSource) {"),
+          codeLine("    if (vSonabel >= SEUIL_V_SONABEL_MIN) { sourceActive = \"SONABEL\"; k1Solar = false; }"),
+          codeLine("    else if (vBatterie >= 10.2f)         { sourceActive = \"SOLAIRE\"; k1Solar = true;  }"),
+          codeLine("    else                                 { sourceActive = \"COUPURE\"; k1Solar = false; }"),
+          codeLine("  } else {"),
+          codeLine("    k1Solar = forceSolar;"),
+          codeLine("    sourceActive = k1Solar ? \"SOLAIRE\" : \"SONABEL\";"),
+          codeLine("  }"),
+          codeLine(""),
+          codeLine("  bool coupureTotale = (sourceActive == \"COUPURE\");"),
+          codeLine("  // En cas de surcharge (> 3.5 A), le Ventilateur (K3) est deleste automatiquement"),
+          codeLine("  // tandis que la Lumiere prioritaire (K2) est maintenue si elle etait allumee."),
+          codeLine("  k2LumiereActive = wantLumiere && !coupureTotale && !surchauffe;"),
+          codeLine("  k3VentiloActive = wantVentilo && !coupureTotale && !surchauffe && !surcharge && !manualShed;"),
+          codeLine("  disjQ1          = (!coupureTotale && !surchauffe && !surcharge && !manualShed) ? 1 : 0;"),
+          codeLine(""),
+          codeLine("  if (coupureTotale || surchauffe) {"),
+          codeLine("    k4PompeActive = false;"),
+          codeLine("  } else if (modeAutoPompe) {"),
+          codeLine("    if (niveauEau < SEUIL_EAU_BAS)       k4PompeActive = true;"),
+          codeLine("    else if (niveauEau >= SEUIL_EAU_HAUT) k4PompeActive = false;"),
+          codeLine("  }"),
+          codeLine(""),
+          codeLine("  if (PIN_RELAI_ATS >= 0)     digitalWrite(PIN_RELAI_ATS,     k1Solar         ? HIGH : LOW);"),
+          codeLine("  if (PIN_RELAI_LUMIERE >= 0) digitalWrite(PIN_RELAI_LUMIERE, k2LumiereActive ? HIGH : LOW);"),
+          codeLine("  if (PIN_RELAI_VENTILO >= 0) digitalWrite(PIN_RELAI_VENTILO, k3VentiloActive ? HIGH : LOW);"),
+          codeLine("  if (PIN_RELAI_POMPE >= 0)   digitalWrite(PIN_RELAI_POMPE,   k4PompeActive   ? HIGH : LOW);"),
+          codeLine(""),
+          codeLine("  if (PIN_LED_VERT >= 0)  digitalWrite(PIN_LED_VERT,  (disjQ1 == 1 && sourceActive == \"SONABEL\") ? HIGH : LOW);"),
+          codeLine("  if (PIN_LED_JAUNE >= 0) digitalWrite(PIN_LED_JAUNE, (disjQ1 == 1 && sourceActive == \"SOLAIRE\") ? HIGH : LOW);"),
+          codeLine("  if (PIN_LED_ROUGE >= 0) digitalWrite(PIN_LED_ROUGE, (disjQ1 == 0) ? HIGH : LOW);"),
+          codeLine("  if (PIN_BUZZER >= 0)    digitalWrite(PIN_BUZZER,    (disjQ1 == 0 || niveauEau < SEUIL_EAU_BAS) ? HIGH : LOW);"),
+          codeLine("}"),
+          codeLine(""),
+          codeLine("// --- 8. CALLBACK MQTT : COMMANDES DISTANTES DEPUIS LE WEB SCADA ---"),
+          codeLine("void mqttCallback(char* topic, byte* payload, unsigned int length) {"),
+          codeLine("  String msg = \"\";"),
+          codeLine("  for (unsigned int i = 0; i < length; i++) msg += (char)payload[i];"),
+          codeLine("  bool cmdOn = (msg.indexOf(\"\\\"cmd\\\":\\\"ON\\\"\") >= 0);"),
+          codeLine(""),
+          codeLine("  if (msg.indexOf(\"\\\"mode\\\":\\\"AUTO\\\"\") >= 0) {"),
+          codeLine("    modeAutoPompe = true; manualSource = false; manualShed = false;"),
+          codeLine("  } else if (msg.indexOf(\"\\\"relay\\\":\\\"IN2\\\"\") >= 0 || msg.indexOf(\"\\\"LUMIERE\\\"\") >= 0) {"),
+          codeLine("    wantLumiere = cmdOn;"),
+          codeLine("  } else if (msg.indexOf(\"\\\"relay\\\":\\\"IN3\\\"\") >= 0 || msg.indexOf(\"\\\"VENTILO\\\"\") >= 0) {"),
+          codeLine("    wantVentilo = cmdOn;"),
+          codeLine("    manualShed  = !cmdOn && (msg.indexOf(\"SHED\") >= 0);"),
+          codeLine("  } else if (msg.indexOf(\"\\\"relay\\\":\\\"IN4\\\"\") >= 0 || msg.indexOf(\"\\\"POMPE\\\"\") >= 0) {"),
+          codeLine("    modeAutoPompe = false;"),
+          codeLine("    k4PompeActive = cmdOn;"),
+          codeLine("  } else if (msg.indexOf(\"\\\"relay\\\":\\\"IN1\\\"\") >= 0) {"),
+          codeLine("    manualSource = true;"),
+          codeLine("    forceSolar   = !cmdOn;"),
+          codeLine("  }"),
+          codeLine("  appliquerLogiqueSmartGrid();"),
+          codeLine("  publierTelemetrieMQTT();"),
+          codeLine("}"),
+          codeLine(""),
+          codeLine("// --- 9. PUBLICATION JSON TEMPS REEL VERS LE WEB SCADA ---"),
+          codeLine("void publierTelemetrieMQTT() {"),
+          codeLine("  if (!mqttClient.connected()) return;"),
+          codeLine("  float vBus = (sourceActive == \"SONABEL\") ? vSonabel : ((sourceActive == \"SOLAIRE\") ? vBatterie : 0.0f);"),
+          codeLine("  char json[320];"),
+          codeLine("  snprintf(json, sizeof(json),"),
+          codeLine("    \"{\\\"v\\\":%.1f,\\\"i\\\":%.2f,\\\"t\\\":%.1f,\\\"batt\\\":%d,\\\"eau\\\":%d,\\\"src\\\":\\\"%s\\\",\\\"disj\\\":%d,\\\"lumiere\\\":%d,\\\"ventilo\\\":%d,\\\"pompe\\\":%d,\\\"v_sonabel\\\":%.1f,\\\"v_batt\\\":%.1f,\\\"i_solaire\\\":%.2f}\","),
+          codeLine("    vBus, iCharge, tempC, battPct, niveauEau, sourceActive.c_str(),"),
+          codeLine("    disjQ1, k2LumiereActive ? 1 : 0, k3VentiloActive ? 1 : 0, k4PompeActive ? 1 : 0,"),
+          codeLine("    vSonabel, vBatterie, iSolaire"),
+          codeLine("  );"),
+          codeLine("  mqttClient.publish(MQTT_TOPIC, json);"),
+          codeLine("}"),
+          codeLine(""),
+          codeLine("void setup() {"),
+          codeLine("  Serial.begin(115200);"),
+          codeLine("  Wire.begin(PIN_I2C_SDA, PIN_I2C_SCL);"),
+          codeLine("  lcd.init(); lcd.backlight();"),
+          codeLine("  sensors.begin();"),
+          codeLine("  pinMode(PIN_RELAI_ATS, OUTPUT);     pinMode(PIN_RELAI_LUMIERE, OUTPUT);"),
+          codeLine("  pinMode(PIN_RELAI_VENTILO, OUTPUT); pinMode(PIN_RELAI_POMPE, OUTPUT);"),
+          codeLine("  pinMode(PIN_BP_LUMIERE, INPUT_PULLUP);"),
+          codeLine("  pinMode(PIN_BP_VENTILO, INPUT_PULLUP);"),
+          codeLine("  pinMode(PIN_TRIG, OUTPUT);          pinMode(PIN_ECHO, INPUT);"),
+          codeLine("  pinMode(PIN_LED_VERT, OUTPUT);      pinMode(PIN_LED_JAUNE, OUTPUT);"),
+          codeLine("  pinMode(PIN_LED_ROUGE, OUTPUT);     pinMode(PIN_BUZZER, OUTPUT);"),
+          codeLine("  WiFi.begin(WIFI_SSID, WIFI_PASS);"),
+          codeLine("  mqttClient.setServer(MQTT_BROKER, MQTT_PORT);"),
+          codeLine("  mqttClient.setCallback(mqttCallback);"),
+          codeLine("}"),
+          codeLine(""),
+          codeLine("void loop() {"),
+          codeLine("  lireBoutonsPoussoirs();"),
+          codeLine("  if (mqttClient.connected()) mqttClient.loop();"),
+          codeLine("  if (millis() - lastTelemetryMs >= 2000UL) {"),
+          codeLine("    lastTelemetryMs = millis();"),
+          codeLine("    vSonabel  = lireTensionADC1(PIN_V_SONABEL);"),
+          codeLine("    vBatterie = lireTensionADC1(PIN_V_BATTERIE);"),
+          codeLine("    iCharge   = lireCourantACS712(PIN_I_CHARGE);"),
+          codeLine("    iSolaire  = lireCourantACS712(PIN_I_SOLAIRE);"),
+          codeLine("    sensors.requestTemperatures();"),
+          codeLine("    tempC     = sensors.getTempCByIndex(0);"),
+          codeLine("    niveauEau = lireNiveauPolytank();"),
+          codeLine("    appliquerLogiqueSmartGrid();"),
+          codeLine("    publierTelemetrieMQTT();"),
+          codeLine("  }"),
+          codeLine("}")
         ];
 
         rawFirmwareText = lines.map(l => l.raw).join("\n");
@@ -3995,8 +4284,9 @@
             ["ACS712 #1 Charge", p.iCharge, iChErr], ["ACS712 #2 Solaire", p.iSolaire, iSolErr],
             ["HC-SR04 TRIG", p.trig, false], ["HC-SR04 ECHO", p.echo, echoErr],
             ["DS18B20 DATA", p.ds18b20, dsErr],
-            ["Relais K1 ATS", p.rel1, false], ["Relais K2 Prio", p.rel2, false],
-            ["Relais K3 Non-Prio", p.rel3, false], ["Relais K4 Pompe", p.rel4, false],
+            ["Relais K1 ATS", p.rel1, false], ["Relais K2 Lumière", p.rel2, false],
+            ["Relais K3 Ventilateur", p.rel3, false], ["Relais K4 Pompe", p.rel4, false],
+            ["BP Lumière (Pull-up)", p.bpLumiere, false], ["BP Ventilateur (Pull-up)", p.bpVentilo, false],
             ["Feu Vert", p.ledG, false], ["Feu Jaune", p.ledY, false],
             ["Feu Rouge", p.ledR, false], ["Buzzer 5V", p.buzzer, false]
           ];
@@ -4008,11 +4298,86 @@
       }
 
       // =====================================================================
-      // 8. BIDIRECTIONAL MQTT BRIDGE (broker.hivemq.com)
+      // 8. BIDIRECTIONAL MQTT BRIDGE (broker.hivemq.com + BroadcastChannel)
       // =====================================================================
       const MQTT_BROKER_URL = "wss://broker.hivemq.com:8884/mqtt";
       const TELEMETRY_TOPIC = "cge/uauben/david/smartgrid";
       const COMMAND_TOPIC   = "cge/uauben/david/smartgrid/cmd";
+      const scadaBus = (typeof BroadcastChannel !== "undefined") ? new BroadcastChannel("cge_uauben_smartgrid_bus") : null;
+
+      function applyRemoteCommand(cmd) {
+        if (!cmd || typeof cmd !== "object") return;
+        if (!state.powered && state.analysis && state.analysis.valid) {
+          state.powered = true;
+          updatePlayButtonUI();
+          restartMqttInterval();
+        }
+        if (!state.analysis || !state.analysis.valid) return;
+
+        if (cmd.mode === "AUTO") {
+          state.sim.manualMode = false;
+          state.sim.manualSource = false;
+          state.sim.manualShed = false;
+        } else {
+          const on = cmd.cmd === "ON" || cmd.state === 1 || cmd.state === true;
+          const target = String(cmd.relay || cmd.target || "").toUpperCase();
+          if (target === "IN1" || target === "K1" || target === "ATS") {
+            state.sim.manualSource = true;
+            state.sim.source = on ? "SONABEL" : "SOLAIRE";
+          } else if (target === "IN2" || target === "K2" || target === "LUMIERE" || target === "LAMP") {
+            state.sim.wantLamp = on;
+          } else if (target === "IN3" || target === "K3" || target === "VENTILO" || target === "FAN") {
+            state.sim.wantFan = on;
+            state.sim.manualShed = !on && (cmd.action === "SHED" || cmd.label === "Délestage Q1");
+          } else if (target === "DELESTAGE" || target === "SHED") {
+            state.sim.wantFan = false;
+            state.sim.manualShed = true;
+          } else if (target === "IN4" || target === "K4" || target === "POMPE" || target === "PUMP") {
+            state.sim.manualMode = true;
+            state.sim.pompe = on ? 1 : 0;
+          }
+        }
+        updateLiveVisuals();
+        publishMqttNow(false);
+      }
+
+      if (scadaBus) {
+        scadaBus.addEventListener("message", ev => {
+          if (ev.data && ev.data.topic === COMMAND_TOPIC && ev.data.payload) {
+            applyRemoteCommand(ev.data.payload);
+          }
+        });
+      }
+
+      function handlePushButtonPress(compId) {
+        const comp = state.components.find(c => c.id === compId);
+        if (!comp || comp.type !== "push_button") return;
+        if (!state.powered && state.analysis && state.analysis.valid) {
+          state.powered = true;
+          updatePlayButtonUI();
+          restartMqttInterval();
+        }
+        const isFan = comp.id === "bp_ventilo" || comp.target === "k3" || (comp.tag && comp.tag.toUpperCase().includes("VENTIL"));
+        if (isFan) {
+          state.sim.wantFan = !state.sim.wantFan;
+          if (state.sim.wantFan) state.sim.manualShed = false;
+          state.sim.bpFanPressed = true;
+          setTimeout(() => { state.sim.bpFanPressed = false; updateLiveVisuals(); }, 220);
+          const s = computeSim();
+          showToast(s.k3NonPrio ? "BP Ventilateur (GPIO 17) : Relais K3 ON — Ventilateur 12V en marche" : (s.shedding ? "Surcharge > 3,5 A active : Ventilateur délesté (K3 OFF)" : "BP Ventilateur (GPIO 17) : Relais K3 OFF — Ventilateur 12V arrêté"));
+        } else {
+          state.sim.wantLamp = !state.sim.wantLamp;
+          state.sim.bpLumPressed = true;
+          setTimeout(() => { state.sim.bpLumPressed = false; updateLiveVisuals(); }, 220);
+          const s = computeSim();
+          showToast(s.k2Prio ? "BP Lumière (GPIO 16) : Relais K2 ON — Lumière 12V allumée" : "BP Lumière (GPIO 16) : Relais K2 OFF — Lumière 12V éteinte");
+        }
+        updateLiveVisuals();
+        publishMqttNow(false);
+      }
+
+      window.handlePushButtonPress = handlePushButtonPress;
+      window.applyRemoteCommand = applyRemoteCommand;
 
       function setMqttUi(st) {
         state.mqttStatus = st;
@@ -4041,20 +4406,10 @@
           client.on("offline", () => { if (state.mqttClient === client && state.mqttEnabled) setMqttUi("disconnected"); });
           client.on("error", () => { if (state.mqttClient === client && state.mqttEnabled) setMqttUi("error"); });
           client.on("message", (topic, msg) => {
-            if (topic !== COMMAND_TOPIC || !state.powered || !state.analysis || !state.analysis.valid) return;
+            if (topic !== COMMAND_TOPIC) return;
             try {
               const cmd = JSON.parse(msg.toString());
-              if (cmd.mode === "AUTO") state.sim.manualMode = false;
-              else if (cmd.mode === "MANUAL") {
-                state.sim.manualMode = true;
-                const on = cmd.cmd === "ON";
-                if (cmd.relay === "IN1") state.sim.source = on ? "SONABEL" : "SOLAIRE";
-                if (cmd.relay === "IN2") state.sim.k2Prio = on ? 1 : 0;
-                if (cmd.relay === "IN3") { state.sim.k3NonPrio = on ? 1 : 0; state.sim.disj = on ? 1 : 0; }
-                if (cmd.relay === "IN4") state.sim.pompe = on ? 1 : 0;
-              }
-              updateLiveVisuals();
-              publishMqttNow(false);
+              applyRemoteCommand(cmd);
             } catch (e) {}
           });
         } catch (e) { setMqttUi("error"); }
@@ -4073,21 +4428,24 @@
         }
       }
       function publishMqttNow(isWireFault = false) {
+        let payload;
+        if (isWireFault) {
+          payload = { v: 0.0, i: 0.00, t: +state.sim.temp.toFixed(1), batt: state.analysis && state.analysis.hasBatt ? state.sim.battPct : 0, eau: Math.round(state.sim.eau), src: "COUPURE", disj: 0, lumiere: 0, ventilo: 0, pompe: 0, v_sonabel: 0.0, v_batt: state.analysis && state.analysis.hasBatt ? state.sim.vBatt : 0.0, i_solaire: 0.00 };
+        } else {
+          const s = computeSim();
+          payload = { v: +s.vActive.toFixed(1), i: +s.iScada.toFixed(2), t: +s.temp.toFixed(1), batt: s.battPct, eau: s.eau, src: s.source, disj: s.disj, lumiere: s.k2Prio ? 1 : 0, ventilo: s.k3NonPrio ? 1 : 0, pompe: s.k4Pump ? 1 : 0, v_sonabel: +s.vSonabel.toFixed(1), v_batt: +s.vBatt.toFixed(1), i_solaire: +s.iSolaire.toFixed(2) };
+        }
+        const json = JSON.stringify(payload);
+        const txJsonEl = document.getElementById("mqtt-tx-json");
+        if (txJsonEl) txJsonEl.textContent = json;
+        if (scadaBus && state.powered && state.analysis && state.analysis.valid) {
+          try { scadaBus.postMessage({ topic: TELEMETRY_TOPIC, payload }); } catch (_) {}
+        }
         const canNorm = state.mqttEnabled && state.mqttClient && state.mqttStatus === "connected" && state.powered && state.analysis && state.analysis.valid;
         const canFlt = isWireFault && state.mqttEnabled && state.mqttClient && state.mqttStatus === "connected";
         if (!canNorm && !canFlt) return;
-        let payload;
-        if (isWireFault) {
-          payload = { v: 0.0, i: 0.00, t: +state.sim.temp.toFixed(1), batt: state.analysis && state.analysis.hasBatt ? state.sim.battPct : 0, eau: Math.round(state.sim.eau), src: "COUPURE", disj: 0, pompe: 0, v_sonabel: 0.0, v_batt: state.analysis && state.analysis.hasBatt ? state.sim.vBatt : 0.0, i_solaire: 0.00 };
-        } else {
-          const s = computeSim();
-          payload = { v: +s.vActive.toFixed(1), i: +s.iScada.toFixed(2), t: +s.temp.toFixed(1), batt: s.battPct, eau: s.eau, src: s.source, disj: s.disj, pompe: s.k4Pump ? 1 : 0, v_sonabel: +s.vSonabel.toFixed(1), v_batt: +s.vBatt.toFixed(1), i_solaire: +s.iSolaire.toFixed(2) };
-        }
-        const json = JSON.stringify(payload);
         state.mqttTxCount += 1;
         try { state.mqttClient.publish(TELEMETRY_TOPIC, json, { qos: 0 }); } catch (e) {}
-        const txJsonEl = document.getElementById("mqtt-tx-json");
-        if (txJsonEl) txJsonEl.textContent = json;
       }
 
       // =====================================================================
@@ -4434,6 +4792,19 @@
             if (hg) hg.setAttribute("opacity", (s.active && s.temp > 60) ? "0.85" : "0");
           }
           if (c.type === "buzzer") { const wv = document.getElementById(`${c.id}-waves`); if (wv) wv.setAttribute("opacity", s.buzzer ? "1" : "0"); }
+          if (c.type === "push_button") {
+            const isFan = c.id === "bp_ventilo" || c.target === "k3" || (c.tag && c.tag.toUpperCase().includes("VENTIL"));
+            const isOn = s.active && (isFan ? s.k3NonPrio : s.k2Prio);
+            const isPressed = isFan ? state.sim.bpFanPressed : state.sim.bpLumPressed;
+            setLed(`${c.id}-led`, isOn, "#22c55e", "#14532d");
+            const st = document.getElementById(`${c.id}-st`);
+            if (st) {
+              st.textContent = !s.active ? "HORS TENSION" : (isOn ? (isFan ? "K3 : MARCHE" : "K2 : ALLUME") : (isFan && s.shedding ? "K3 : DELESTE" : (isFan ? "K3 : ARRET" : "K2 : ETEINT")));
+              st.setAttribute("fill", isOn ? "#15803d" : (isFan && s.shedding ? "#b91c1c" : "#64748b"));
+            }
+            const cap = document.getElementById(`${c.id}-cap`);
+            if (cap) cap.setAttribute("r", isPressed ? "8.8" : "10.5");
+          }
         });
         updateBuzzerAudio(s.buzzer);
         updateSimUI(s);
@@ -4806,7 +5177,17 @@
         hideTooltip();
       });
 
-      svgEl.addEventListener("pointerup", () => { if (draggingComp && draggingComp.moved) updateSimUI(computeSim()); draggingComp = null; panning = null; });
+      svgEl.addEventListener("pointerup", () => {
+        if (draggingComp) {
+          if (draggingComp.moved) {
+            updateSimUI(computeSim());
+          } else if (draggingComp.comp && draggingComp.comp.type === "push_button") {
+            handlePushButtonPress(draggingComp.comp.id);
+          }
+        }
+        draggingComp = null;
+        panning = null;
+      });
       svgEl.addEventListener("pointerleave", hideTooltip);
       svgEl.addEventListener("wheel", ev => { ev.preventDefault(); const pt = clientToSvg(ev.clientX, ev.clientY); zoomBy(ev.deltaY > 0 ? 1.12 : 0.89, pt.x, pt.y); }, { passive: false });
 
@@ -5533,15 +5914,21 @@
       window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitView, 140); });
 
       // Init
-      if (document.documentElement.classList.contains("embed-mode")) {
+      const isEmbedInit = document.documentElement.classList.contains("embed-mode");
+      if (isEmbedInit) {
         state.leftOpen = false;
         state.rightOpen = false;
+        state.mqttEnabled = false;
       }
       renderPalette();
       syncDrawers();
       loadPreset("smartgrid");
+      if (!isEmbedInit && state.mqttEnabled) {
+        connectMqtt();
+      }
+      publishMqttNow(false);
       window.fitEmbeddedView = fitView;
-      if (document.documentElement.classList.contains("embed-mode")) {
+      if (isEmbedInit) {
         requestAnimationFrame(() => {
           fitView();
           setTimeout(fitView, 120);
