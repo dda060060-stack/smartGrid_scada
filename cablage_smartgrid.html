@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <title>Smart Grid U-AUBEN | Documentation Technique 12V DC</title>
   <meta name="description" content="Documentation technique Docusaurus du projet Smart Grid &amp; Supervision Polytank 12V DC sur ESP32 (CGE U-AUBEN) : architecture 12V/5V, planche de câblage interactive, galerie matériel (20 photos réelles), code ESP32, maquette 3D et supervision SCADA." />
   <meta name="theme-color" content="#FFFFFF" />
@@ -73,8 +75,14 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      -webkit-text-size-adjust: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
     html, body {
       min-height: 100%;
+      max-width: 100%;
       background: var(--doc-bg);
       color: var(--doc-ink);
       font-family: var(--font-ui);
@@ -85,10 +93,17 @@
     }
 
     body {
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    #page-root {
+      width: 100%;
+      max-width: 100%;
       overflow-x: clip;
     }
 
-    button, input { font-family: inherit; }
+    button, input, a { font-family: inherit; touch-action: manipulation; }
     .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
     a { color: var(--doc-green); }
 
@@ -1600,40 +1615,86 @@
     }
 
     @media (max-width: 960px) {
-      .doc-hero-inner { grid-template-columns: 1fr; padding: 26px 18px; gap: 22px; }
-      .doc-hero-title { font-size: 26px; }
-      .doc-hero-sub { font-size: 17px; }
-      .mobile-menu-btn { display: inline-flex; }
-      .docs-shell { grid-template-columns: 1fr; }
+      .doc-navbar {
+        height: auto;
+        min-height: var(--navbar-h);
+        flex-wrap: wrap;
+        padding: 8px 14px;
+        gap: 6px 12px;
+      }
+      .doc-nav-left { flex: 1 1 auto; min-width: 0; }
+      .doc-nav-right {
+        width: 100%;
+        max-width: 100%;
+        flex-wrap: wrap;
+        flex-shrink: 1;
+        gap: 4px 14px;
+        justify-content: flex-start;
+        border-top: 1px solid var(--doc-border-soft);
+        padding-top: 4px;
+      }
+      .doc-nav-link {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 2px;
+      }
+      .btn-install-pwa { min-height: 40px; }
+      .doc-hero-inner { grid-template-columns: 1fr; padding: 24px 16px; gap: 20px; }
+      .doc-hero-title { font-size: 25px; }
+      .doc-hero-sub { font-size: 16.5px; }
+      .doc-hero-cta, .doc-hero-link-alt { min-height: 44px; display: inline-flex; align-items: center; }
+      .mobile-menu-btn { display: inline-flex; width: 44px; height: 44px; }
+      .docs-shell { grid-template-columns: minmax(0, 1fr); }
+      .sidebar-backdrop { inset: 0; z-index: 75; }
       .doc-sidebar {
         position: fixed;
-        top: var(--navbar-h);
+        top: 0;
         left: 0;
         bottom: 0;
         width: 270px;
-        z-index: 65;
+        max-width: 85vw;
+        padding-top: 16px;
+        z-index: 80;
         transform: translateX(-100%);
         transition: transform 0.2s ease;
         box-shadow: 4px 0 20px rgba(0, 0, 0, 0.14);
       }
       .doc-sidebar.mobile-open { transform: translateX(0); }
-      .doc-main { padding: 24px 18px 38px; }
-      .doc-prose h1 { font-size: 26px; }
-      .doc-prose h2 { font-size: 20px; }
+      .doc-main { padding: 20px 14px 36px; max-width: 100%; min-width: 0; }
+      .doc-prose, .el-card, .pinout-netlist-grid, .pinout-bus-bar, .netlist-table-wrap, .data-table-wrap { max-width: 100%; min-width: 0; }
+      .doc-prose h1 { font-size: 24px; }
+      .doc-prose h2 { font-size: 19px; }
       .doc-pagination { grid-template-columns: 1fr; }
       .doc-page-card.is-next { grid-column: auto; }
       .doc-footer-cols { grid-template-columns: 1fr; gap: 22px; }
     }
 
     @media (max-width: 640px) {
-      .doc-navbar { padding: 0 12px; gap: 10px; }
+      .doc-navbar { padding: 8px 12px; gap: 6px 10px; }
       .doc-brand-sep, .doc-brand-doc { display: none; }
-      .doc-nav-right { gap: 12px; }
-      .doc-nav-link { font-size: 13px; }
+      .doc-nav-right { gap: 2px 12px; }
+      .doc-nav-link { font-size: 13.5px; min-height: 44px; }
       .cirkit-viewport { height: 390px; }
-      .viewport-3d-wrap { height: 340px; }
-      .wiring-cards-grid, .scenario-grid { grid-template-columns: 1fr; }
+      .viewport-3d-wrap { height: 320px; }
+      .wiring-cards-grid, .scenario-grid, .prod-grid { grid-template-columns: minmax(0, 1fr); }
       .scenario-step-row { grid-template-columns: 1fr; gap: 3px; }
+      .conn-search-box { min-width: 0; width: 100%; }
+      .conn-search-input { font-size: 16px; min-height: 44px; }
+      .pinout-bus-btn, .btn-3d, .prod-go-btn, .zoom-btn {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .pinout-diagram-body { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+      .esp32-pinout-board { grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr); min-width: 310px; }
+      .esp32-mcu-shield { width: 54px; }
+      .pin-func-tag { font-size: 8px; padding: 1.5px 3px; }
+      .pin-gpio-box { font-size: 8.2px; padding: 1.5px 3px; }
+      .el-card-head { flex-wrap: wrap; gap: 8px; }
+      .doc-prose pre { max-width: 100%; overflow-x: auto; }
+      .hero-preview-svg { width: 100%; height: auto; }
     }
 
     @media print {

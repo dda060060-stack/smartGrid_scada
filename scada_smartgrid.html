@@ -2,9 +2,13 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Smart Grid U-AUBEN · Supervision SCADA HMI</title>
-  <meta name="description" content="Pupitre HMI et supervision SCADA temps réel du projet Smart Grid &amp; Polytank 12V DC (CGE U-AUBEN) : télémétrie MQTT HiveMQ, commande manuelle pompe et relais, jauge DS18B20, niveau Polytank, synoptique P&amp;ID, courbes temps réel et alertes Agent WhatsApp/Telegram." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Supervision Smart Grid" />
+  <title>Supervision Smart Grid · U-AUBEN</title>
+  <meta name="description" content="Application de supervision industrielle temps réel Smart Grid 12V DC &amp; Polytank (U-AUBEN) : mesures réseau et batterie, température, niveau d'eau, commandes directes et alertes WhatsApp/Telegram." />
   <meta name="theme-color" content="#FFFFFF" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
@@ -13,15 +17,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg: #F5F7FA;
       --surface: #FFFFFF;
-      --surface-alt: #F8F9FB;
-      --pill-track: #ECEFF4;
-      --ink: #111827;
-      --ink-secondary: #334155;
+      --surface-alt: #F8FAFC;
+      --track: #ECEFF4;
+      --ink: #0F172A;
+      --ink-2: #334155;
       --muted: #64748B;
       --border: #E2E6EC;
       --border-strong: #CBD5E1;
@@ -52,431 +55,559 @@
       --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
+      --radius: 12px;
       --radius-sm: 8px;
-      --radius-md: 12px;
-      --radius-lg: 14px;
-      --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
+      --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    html, body {
+    html {
+      -webkit-text-size-adjust: 100%;
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+    body {
       min-height: 100%;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
       background: var(--bg);
       color: var(--ink);
       font-family: var(--font-ui);
       font-size: 13.5px;
-      line-height: 1.5;
+      line-height: 1.45;
       -webkit-font-smoothing: antialiased;
-      overflow-x: hidden;
+      touch-action: manipulation;
     }
 
-    button, input { font-family: inherit; }
+    button, input { font-family: inherit; touch-action: manipulation; }
     .mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
     /* =========================================================
-       1. BARRE SUPÉRIEURE BLANCHE UNIFIÉE (SMART GRID U-AUBEN)
+       1. EN-TÊTE APPLICATION SCADA AUTONOME
        ========================================================= */
-    .unified-topbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      min-height: 56px;
-      padding: 8px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px 16px;
-      flex-wrap: wrap;
+    .app-header {
       position: sticky;
       top: 0;
       z-index: 60;
+      width: 100%;
+      min-height: 54px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
     }
 
-    .utb-brand {
+    .app-brand {
       display: flex;
       align-items: center;
       gap: 10px;
-      text-decoration: none;
-      color: var(--ink);
       min-width: 0;
+      flex: 1 1 auto;
     }
 
-    .utb-logo {
+    .app-logo {
       width: 34px;
       height: 34px;
       border-radius: 8px;
       border: 1px solid var(--border);
       background: var(--surface);
+      padding: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
       flex-shrink: 0;
-      padding: 2px;
+      overflow: hidden;
     }
 
-    .utb-logo img {
+    .app-logo img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
     }
 
-    .utb-title-stack {
+    .app-title-wrap {
       display: flex;
       flex-direction: column;
       min-width: 0;
     }
 
-    .utb-title {
-      font-size: 14px;
+    .app-title {
+      font-size: 15px;
       font-weight: 700;
       color: var(--ink);
-      letter-spacing: -0.015em;
-      white-space: nowrap;
+      letter-spacing: -0.02em;
       line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .utb-sub {
+    .app-subtitle {
       font-size: 11px;
       color: var(--muted);
+      line-height: 1.2;
       white-space: nowrap;
-      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .utb-nav {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      background: var(--pill-track);
-      padding: 3px;
-      border-radius: 10px;
-      flex-wrap: wrap;
-    }
-
-    .utb-link {
-      text-decoration: none;
-      color: var(--ink-secondary);
-      font-size: 12.5px;
-      font-weight: 600;
-      padding: 6px 13px;
-      border-radius: 7px;
-      transition: background 0.15s ease, color 0.15s ease;
-      white-space: nowrap;
-    }
-
-    .utb-link:hover {
-      background: rgba(255, 255, 255, 0.75);
-      color: var(--ink);
-    }
-
-    .utb-link.active {
-      background: var(--indigo);
-      color: #FFFFFF;
-    }
-
-    .utb-right {
+    .header-right {
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
+      flex-shrink: 0;
     }
 
-    .broker-pill {
+    .status-pill {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 5px 11px;
+      padding: 6px 12px;
       border-radius: 999px;
       background: var(--surface-alt);
       border: 1px solid var(--border);
-      font-size: 11.5px;
+      font-size: 12px;
       font-weight: 600;
-      color: var(--ink-secondary);
+      color: var(--ink-2);
       white-space: nowrap;
     }
 
-    .broker-pill.online {
+    .status-pill.online {
       background: var(--green-soft);
       border-color: var(--green-border);
       color: var(--green);
     }
 
-    .broker-pill.offline {
+    .status-pill.offline {
       background: var(--red-soft);
       border-color: var(--red-border);
       color: var(--red);
     }
 
-    .dot {
+    .status-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
       background: var(--amber);
       flex-shrink: 0;
     }
-
-    .dot.online { background: var(--green-toggle); }
-    .dot.offline { background: var(--red-bright); }
-
-    .btn-header {
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--ink);
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s ease, border-color 0.15s ease;
-    }
-
-    .btn-header:hover {
-      background: var(--surface-alt);
-      border-color: var(--ink-secondary);
-    }
+    .status-dot.online { background: var(--green-toggle); }
+    .status-dot.offline { background: var(--red-bright); }
 
     .btn-install-pwa {
       display: none;
-      background: var(--blue);
-      border-color: var(--blue);
-      color: #FFFFFF;
-    }
-
-    .btn-install-pwa:hover {
-      background: var(--blue-hover);
-      border-color: var(--blue-hover);
-      color: #FFFFFF;
-    }
-
-    .btn-install-pwa.visible { display: inline-flex; }
-
-    /* =========================================================
-       2. SOUS-BARRE SCADA (VUES INTERNES + MÉTADONNÉES MQTT)
-       ========================================================= */
-    .scada-subbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 8px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px 16px;
-      flex-wrap: wrap;
-    }
-
-    .scada-tabs {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .el-tab {
-      border: 1px solid transparent;
-      background: transparent;
-      color: var(--muted);
-      font-size: 12.5px;
-      font-weight: 600;
-      padding: 6px 12px;
+      min-height: 36px;
+      padding: 0 12px;
       border-radius: 8px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-    }
-
-    .el-tab:hover {
-      background: var(--surface-alt);
-      color: var(--ink);
-    }
-
-    .el-tab.active {
-      background: var(--blue-soft);
-      border-color: var(--blue-border);
-      color: var(--blue);
-    }
-
-    .nav-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 20px;
-      height: 18px;
-      padding: 0 6px;
-      border-radius: 999px;
-      background: var(--pill-track);
-      color: var(--ink-secondary);
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 700;
-    }
-
-    .nav-badge.has-alarm {
-      background: var(--red-bright);
+      border: 1px solid var(--blue);
+      background: var(--blue);
       color: #FFFFFF;
-    }
-
-    .telemetry-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .meta-chip {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted);
-      background: var(--surface-alt);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
       white-space: nowrap;
     }
-
-    .meta-chip strong { color: var(--ink); font-weight: 600; }
+    .btn-install-pwa.visible { display: inline-flex; align-items: center; }
 
     #alert-banner {
       display: none;
+      width: 100%;
       background: var(--red);
       color: #FFFFFF;
       text-align: center;
       font-weight: 700;
       font-size: 12.5px;
-      padding: 10px 18px;
-      letter-spacing: 0.02em;
+      padding: 9px 14px;
+      letter-spacing: 0.015em;
     }
 
     /* =========================================================
-       3. CONTENEUR PRINCIPAL & CARTES INDUSTRIELLES
+       2. CONTENEUR COMPACT & GRILLES 3 LIGNES
        ========================================================= */
-    .main-shell {
-      max-width: 1380px;
+    .dashboard {
+      width: 100%;
+      max-width: 1440px;
       margin: 0 auto;
-      padding: 20px 20px 36px;
+      padding: 14px 16px 24px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 12px;
     }
-
-    .view-container { display: none; flex-direction: column; gap: 18px; }
-    .view-container.active { display: flex; }
 
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      min-width: 0;
       overflow: hidden;
     }
 
-    .card-header {
-      padding: 13px 18px;
-      border-bottom: 1px solid var(--border);
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.015em;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .bg-gray   { background: var(--track); color: var(--ink-2); border-color: var(--border); }
+    .bg-green  { background: var(--green-soft); color: var(--green); border-color: var(--green-border); }
+    .bg-blue   { background: var(--blue-soft);  color: var(--blue); border-color: var(--blue-border); }
+    .bg-yellow { background: var(--amber-soft); color: var(--amber); border-color: var(--amber-border); }
+    .bg-red    { background: var(--red-soft);   color: var(--red); border-color: var(--red-border); }
+
+    /* LIGNE 1 : 4 CARTES KPI (4 COL PC / 2x2 MOBILE) */
+    .row-kpi {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .kpi-ico {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .kpi-ico svg { width: 20px; height: 20px; }
+    .kpi-ico.ic-blue   { background: var(--blue-soft); color: var(--blue); }
+    .kpi-ico.ic-green  { background: var(--green-soft); color: var(--green); }
+    .kpi-ico.ic-indigo { background: var(--indigo-soft); color: var(--indigo); }
+    .kpi-ico.ic-amber  { background: var(--amber-soft); color: var(--amber); }
+
+    .kpi-body {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .kpi-lbl {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .kpi-val-line {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .kpi-num {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi-unit {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .kpi-foot {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 6px;
       flex-wrap: wrap;
-      background: var(--surface);
+      font-size: 11px;
+      color: var(--muted);
     }
 
-    .card-title {
+    .mini-bar {
+      width: 100%;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--track);
+      overflow: hidden;
+    }
+    .mini-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: var(--green);
+      transition: width 0.35s ease, background 0.35s ease;
+    }
+
+    /* LIGNE 2 : 2 COLONNES PC (GAUCHE: TEMP + POLYTANK | DROITE: CONDUITE + COMMANDES) */
+    .row-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .sub-pair-left {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .sub-pair-right {
+      display: grid;
+      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .panel-title {
       font-size: 13.5px;
       font-weight: 700;
       color: var(--ink);
       letter-spacing: -0.01em;
     }
 
-    /* Badges sobres */
-    .badge {
+    /* Température jauge compacte */
+    .gauge-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .temp-gauge-svg {
+      width: 100%;
+      max-width: 210px;
+      height: auto;
+      display: block;
+    }
+
+    .reading-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+    .reading-row strong {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      color: var(--ink);
+    }
+
+    /* Cuve Polytank compacte */
+    .tank-compact {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .hmi-tank-svg {
+      width: 78px;
+      height: 142px;
+      flex-shrink: 0;
+      display: block;
+    }
+
+    .tank-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .tank-pct-big {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+    }
+
+    .tank-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    /* Champs seuils tactiles */
+    .setpoint-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-top: auto;
+    }
+
+    .setpoint-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .sp-lbl {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--muted);
+      min-width: 62px;
+      flex-shrink: 0;
+    }
+
+    .sp-input {
+      flex: 1;
+      min-width: 0;
+      width: 68px;
+      min-height: 44px;
+      padding: 0 10px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      outline: none;
+    }
+    .sp-input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.14);
+    }
+
+    .btn-primary, .btn-secondary, .btn-outline, .btn-danger-soft {
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
+      gap: 6px;
+      transition: background 0.14s ease, border-color 0.14s ease, opacity 0.14s ease;
       white-space: nowrap;
       border: 1px solid transparent;
     }
 
-    .bg-gray   { background: var(--pill-track); color: var(--ink-secondary); border-color: var(--border); }
-    .bg-green  { background: var(--green-soft); color: var(--green); border-color: var(--green-border); }
-    .bg-blue   { background: var(--blue-soft);  color: var(--blue); border-color: var(--blue-border); }
-    .bg-yellow { background: var(--amber-soft); color: var(--amber); border-color: var(--amber-border); }
-    .bg-red    { background: var(--red-soft);   color: var(--red); border-color: var(--red-border); }
-
-    /* =========================================================
-       4. PUPITRE HMI INDUSTRIEL 2x2 (STYLE CAPTURE 646463 / 646461)
-       ========================================================= */
-    .hmi-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      align-items: stretch;
+    .btn-primary {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #FFFFFF;
     }
+    .btn-primary:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
 
-    .hmi-card {
+    .btn-secondary {
+      background: var(--indigo);
+      border-color: var(--indigo);
+      color: #FFFFFF;
+    }
+    .btn-secondary:hover { background: var(--indigo-hover); border-color: var(--indigo-hover); }
+
+    .btn-outline {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-card);
-      padding: 20px 22px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .hmi-card-title {
-      font-size: 17px;
-      font-weight: 700;
+      border-color: var(--border-strong);
       color: var(--ink);
-      letter-spacing: -0.02em;
-      line-height: 1.25;
     }
+    .btn-outline:hover { background: var(--surface-alt); border-color: var(--ink-2); }
 
-    .hmi-row {
+    .btn-danger-soft {
+      background: var(--red-soft);
+      border-color: var(--red-border);
+      color: var(--red);
+    }
+    .btn-danger-soft:hover { background: #FECACA; }
+
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .warning-box {
+      display: none;
+      background: var(--red-soft);
+      border: 1px solid var(--red-border);
+      color: #991B1B;
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.35;
+    }
+    .warning-box.visible { display: block; }
+
+    /* Mode de conduite */
+    .switch-box {
       display: flex;
       align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
     }
 
-    .hmi-label {
-      font-size: 13.5px;
-      color: var(--ink-secondary);
-      font-weight: 500;
-    }
-
-    .hmi-helper {
-      font-size: 12.5px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    /* Interrupteur vert Manuel / Auto */
     .hmi-switch-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
       user-select: none;
+      min-height: 44px;
     }
 
     .hmi-switch-text {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
-      color: var(--ink-secondary);
+      color: var(--ink-2);
     }
 
     .hmi-switch-input {
@@ -488,8 +619,8 @@
 
     .hmi-switch-track {
       position: relative;
-      width: 62px;
-      height: 32px;
+      width: 56px;
+      height: 30px;
       border-radius: 999px;
       background: #CBD5E1;
       transition: background 0.2s ease;
@@ -502,596 +633,213 @@
       position: absolute;
       top: 3px;
       left: 3px;
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       background: #FFFFFF;
-      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.22);
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.22);
       transition: transform 0.2s ease;
     }
 
-    .hmi-switch-input:checked + .hmi-switch-track {
-      background: var(--green-toggle);
-    }
-
-    .hmi-switch-input:checked + .hmi-switch-track::after {
-      transform: translateX(30px);
-    }
-
-    .hmi-switch-input:focus-visible + .hmi-switch-track {
-      outline: 2px solid var(--blue);
-      outline-offset: 2px;
-    }
+    .hmi-switch-input:checked + .hmi-switch-track { background: var(--green-toggle); }
+    .hmi-switch-input:checked + .hmi-switch-track::after { transform: translateX(26px); }
 
     .hmi-status-pill {
       display: inline-flex;
       align-items: center;
-      padding: 5px 12px;
+      padding: 4px 10px;
       border-radius: 999px;
-      background: var(--pill-track);
+      background: var(--track);
       color: var(--ink);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
-      letter-spacing: 0.02em;
-    }
-
-    .hmi-status-pill.is-auto {
-      background: var(--green-soft);
-      color: var(--green);
-      border: 1px solid var(--green-border);
-    }
-
-    .hmi-status-pill.is-manual {
-      background: var(--amber-soft);
-      color: var(--amber);
-      border: 1px solid var(--amber-border);
-    }
-
-    .hmi-status-pill.is-running {
-      background: var(--blue-soft);
-      color: var(--blue);
-      border: 1px solid var(--blue-border);
-    }
-
-    .hmi-status-pill.is-fault {
-      background: var(--red-soft);
-      color: var(--red);
-      border: 1px solid var(--red-border);
-    }
-
-    /* Boutons solides bleu industriel #1976D2 */
-    .hmi-btn-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .hmi-btn {
-      border: 1px solid var(--blue);
-      background: var(--blue);
-      color: #FFFFFF;
-      font-size: 13.5px;
-      font-weight: 600;
-      padding: 10px 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.15s ease, border-color 0.15s ease, transform 0.08s ease;
       white-space: nowrap;
     }
+    .hmi-status-pill.is-auto    { background: var(--green-soft); color: var(--green); border: 1px solid var(--green-border); }
+    .hmi-status-pill.is-manual  { background: var(--amber-soft); color: var(--amber); border: 1px solid var(--amber-border); }
+    .hmi-status-pill.is-running { background: var(--blue-soft);  color: var(--blue);  border: 1px solid var(--blue-border); }
 
-    .hmi-btn:hover {
-      background: var(--blue-hover);
-      border-color: var(--blue-hover);
+    .mode-actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      margin-top: auto;
     }
 
-    .hmi-btn:active { transform: translateY(1px); }
-
-    .hmi-btn.secondary {
-      background: var(--indigo);
-      border-color: var(--indigo);
-    }
-
-    .hmi-btn.secondary:hover {
-      background: var(--indigo-hover);
-      border-color: var(--indigo-hover);
-    }
-
-    .hmi-btn.outline {
-      background: var(--surface);
-      color: var(--ink);
-      border-color: var(--border-strong);
-    }
-
-    .hmi-btn.outline:hover {
-      background: var(--surface-alt);
-      border-color: var(--ink-secondary);
-    }
-
-    /* Jauge semi-circulaire Température Transformateur */
-    .gauge-stage {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 6px 0 2px;
-    }
-
-    .temp-gauge-svg {
-      width: 100%;
-      max-width: 290px;
-      height: auto;
-      display: block;
-    }
-
-    .hmi-reading-line {
-      font-size: 14.5px;
-      color: var(--ink-secondary);
-    }
-
-    .hmi-reading-line strong {
-      color: var(--ink);
-      font-family: var(--font-mono);
-      font-size: 15.5px;
-      font-weight: 700;
-    }
-
-    .hmi-setpoint-form {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .hmi-num-input {
-      width: 130px;
-      height: 40px;
-      padding: 0 12px;
-      border: 1px solid var(--border-strong);
-      border-radius: 8px;
-      background: var(--surface);
-      color: var(--ink);
-      font-family: var(--font-mono);
-      font-size: 14px;
-      font-weight: 600;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .hmi-num-input:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.14);
-    }
-
-    .hmi-setpoint-meta {
-      font-size: 13px;
-      color: var(--ink-secondary);
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .hmi-setpoint-meta strong {
-      color: var(--ink);
-      font-family: var(--font-mono);
-    }
-
-    .hmi-warning-box {
-      display: none;
-      background: var(--red-soft);
-      border: 1px solid var(--red-border);
-      color: #991B1B;
-      border-radius: 8px;
-      padding: 11px 14px;
-      font-size: 13px;
-      font-weight: 600;
+    .helper-note {
+      font-size: 11.5px;
+      color: var(--muted);
       line-height: 1.4;
     }
 
-    .hmi-warning-box.visible { display: block; }
-
-    /* Réservoir vertical SVG Polytank */
-    .tank-layout {
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      flex-wrap: wrap;
-    }
-
-    .hmi-tank-svg {
-      width: 112px;
-      height: 210px;
-      flex-shrink: 0;
-      display: block;
-    }
-
-    .tank-readout {
+    /* Commandes directes (Lumière, Ventilateur, Pompe) */
+    .cmd-stack {
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      min-width: 150px;
-    }
-
-    .tank-big-pct {
-      font-family: var(--font-mono);
-      font-size: 36px;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-    }
-
-    .tank-sub-lbl {
-      font-size: 13px;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .tank-setpoints-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .tank-setpoint-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .tank-setpoint-lbl {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
-      min-width: 94px;
-    }
-
-    /* =========================================================
-       5. CARTES MESURES ÉLECTRIQUES (STYLE ÉPURÉ MOBILE / PC)
-       ========================================================= */
-    .sensor-cards-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .sensor-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-card);
-      padding: 16px 18px;
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      transition: border-color 0.15s ease;
-    }
-
-    .sensor-card:hover { border-color: var(--border-strong); }
-
-    .sensor-card.clickable { cursor: pointer; }
-
-    .sensor-icon-box {
-      width: 44px;
-      height: 44px;
-      border-radius: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .sensor-icon-box svg { width: 22px; height: 22px; }
-    .sensor-icon-box.ic-blue   { background: var(--blue-soft);  color: var(--blue); }
-    .sensor-icon-box.ic-green  { background: var(--green-soft); color: var(--green); }
-    .sensor-icon-box.ic-indigo { background: var(--indigo-soft); color: var(--indigo); }
-    .sensor-icon-box.ic-amber  { background: var(--amber-soft); color: var(--amber); }
-
-    .sensor-body {
+      gap: 8px;
       flex: 1;
-      min-width: 0;
+      justify-content: space-between;
+    }
+
+    .cmd-group {
+      padding: 9px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-alt);
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 7px;
     }
 
-    .sensor-lbl {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-    }
-
-    .sensor-val-row {
-      display: flex;
-      align-items: baseline;
-      gap: 5px;
-    }
-
-    .kpi-val {
-      font-family: var(--font-mono);
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--ink);
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
-
-    .kpi-val.ok    { color: var(--green); }
-    .kpi-val.warn  { color: var(--amber); }
-    .kpi-val.alert { color: var(--red-bright); }
-
-    .kpi-unit {
-      font-family: var(--font-mono);
-      font-size: 12.5px;
-      font-weight: 600;
-      color: var(--muted);
-    }
-
-    .sensor-foot {
+    .cmd-group-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      flex-wrap: wrap;
-      font-size: 11.5px;
-      color: var(--muted);
-      margin-top: 2px;
     }
 
-    .mini-bar {
-      width: 100%;
-      height: 5px;
-      background: var(--pill-track);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-top: 3px;
-    }
-
-    .mini-bar-fill {
-      height: 100%;
-      width: 0%;
-      background: var(--green-toggle);
-      border-radius: 999px;
-      transition: width 0.35s ease, background 0.25s ease;
-    }
-
-    /* =========================================================
-       6. SYNOPTIQUE P&ID ANIMÉ
-       ========================================================= */
-    .synoptic-body {
-      padding: 16px;
-      background: #FFFFFF;
-      overflow-x: auto;
-    }
-
-    .pid-svg {
-      width: 100%;
-      min-width: 760px;
-      height: auto;
-      display: block;
-    }
-
-    .pipe-base {
-      fill: none;
-      stroke: #CBD5E1;
-      stroke-width: 5.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .water-pipe-outer {
-      fill: none;
-      stroke: #94A3B8;
-      stroke-width: 10;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .water-pipe-inner {
-      fill: none;
-      stroke: #E2E8F0;
-      stroke-width: 6;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .flow-line {
-      fill: none;
-      stroke: transparent;
-      stroke-width: 3.4;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .flow-active-green {
-      stroke: #2E7D32;
-      stroke-dasharray: 10 8;
-      animation: flowDash 0.85s linear infinite;
-    }
-
-    .flow-active-yellow {
-      stroke: #D97706;
-      stroke-dasharray: 10 8;
-      animation: flowDash 0.85s linear infinite;
-    }
-
-    .flow-active-cyan {
-      stroke: #1976D2;
-      stroke-dasharray: 10 8;
-      animation: flowDash 0.75s linear infinite;
-    }
-
-    .flow-fault {
-      stroke: #DC2626;
-      stroke-dasharray: 6 6;
-    }
-
-    @keyframes flowDash {
-      to { stroke-dashoffset: -36; }
-    }
-
-    #ats-arm, #cb-blade {
-      transition: transform 0.35s ease, stroke 0.25s ease;
-      transform-box: fill-box;
-    }
-
-    #ats-arm { transform-origin: right center; }
-    #cb-blade { transform-origin: right center; }
-
-    .wave-anim {
-      animation: tankWaveMove 2.8s linear infinite;
-    }
-
-    @keyframes tankWaveMove {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-62px); }
-    }
-
-    /* =========================================================
-       7. GRILLE OPÉRATIONNELLE (4 RELAIS + JOURNAL D'ALARMES)
-       ========================================================= */
-    .ops-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 18px;
-    }
-
-    .relay-list { display: flex; flex-direction: column; }
-
-    .relay-row {
-      padding: 12px 18px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .relay-row:last-child { border-bottom: none; }
-
-    .relay-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 180px;
-    }
-
-    .relay-meta strong {
-      font-size: 13px;
-      font-weight: 600;
+    .cmd-group-name {
+      font-size: 12.5px;
+      font-weight: 700;
       color: var(--ink);
     }
 
-    .relay-meta span {
-      font-size: 11.5px;
-      color: var(--muted);
-      font-family: var(--font-mono);
-    }
-
-    .relay-controls {
-      display: flex;
-      align-items: center;
+    .cmd-btn-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 7px;
-      flex-wrap: wrap;
+    }
+    .cmd-btn-row.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .cmd-btn {
-      border: 1px solid var(--blue);
-      background: var(--blue);
-      color: #FFFFFF;
-      border-radius: 7px;
-      padding: 6px 11px;
-      font-size: 11.5px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    /* =========================================================
+       3. LIGNE 3 : JOURNAL D'ALARMES + PARAMÈTRES D'ALERTES REPLIABLES
+       ========================================================= */
+    .row-bottom {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 12px;
+      align-items: start;
     }
 
-    .cmd-btn:hover:not(:disabled) {
-      background: var(--blue-hover);
-      border-color: var(--blue-hover);
-    }
-
-    .cmd-btn.cmd-off {
-      background: var(--surface);
-      color: var(--ink-secondary);
-      border-color: var(--border-strong);
-    }
-
-    .cmd-btn.cmd-off:hover:not(:disabled) {
-      background: var(--red-soft);
-      border-color: var(--red-border);
-      color: var(--red);
-    }
-
-    .cmd-btn:disabled {
-      opacity: 0.48;
-      cursor: not-allowed;
-    }
-
-    .cmd-foot {
-      padding: 10px 18px;
-      background: var(--surface-alt);
-      border-top: 1px solid var(--border);
+    .alarm-strip {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
       flex-wrap: wrap;
-      font-size: 11.5px;
-      color: var(--muted);
+      gap: 6px;
+    }
+
+    .alarm-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      font-size: 11px;
+      color: var(--ink-2);
+    }
+    .alarm-chip strong {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink);
     }
 
     .log-list {
-      max-height: 310px;
+      height: 158px;
       overflow-y: auto;
-      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-alt);
+      padding: 8px;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 5px;
     }
 
     .log-item {
       font-family: var(--font-mono);
       font-size: 11.5px;
-      line-height: 1.45;
-      padding: 8px 10px;
-      border-radius: 7px;
-      background: var(--surface-alt);
+      line-height: 1.4;
+      color: var(--ink-2);
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: var(--surface);
       border-left: 3px solid var(--border-strong);
-      color: var(--ink-secondary);
+      word-break: break-word;
+    }
+    .log-item.ok   { border-left-color: var(--green-toggle); color: #166534; }
+    .log-item.warn { border-left-color: #D97706; color: #92400E; }
+    .log-item.err  { border-left-color: var(--red-bright); color: #991B1B; background: #FEF2F2; }
+
+    /* Panneau repliable Paramètres d'alertes (WhatsApp & Telegram) */
+    .collapse-trigger {
+      width: 100%;
+      min-height: 50px;
+      padding: 10px 14px;
+      border: none;
+      background: var(--surface);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .collapse-trigger:hover { background: var(--surface-alt); }
+
+    .collapse-title-group {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+    .collapse-title-group svg { flex-shrink: 0; color: var(--blue); }
+
+    .collapse-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
 
-    .log-item.ok   { background: var(--green-soft); border-left-color: var(--green); color: #14532D; }
-    .log-item.warn { background: var(--amber-soft); border-left-color: var(--amber); color: #78350F; }
-    .log-item.err  { background: var(--red-soft);   border-left-color: var(--red);   color: #7F1D1D; }
+    .chevron-ico {
+      transition: transform 0.2s ease;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+    .collapse-trigger[aria-expanded="true"] .chevron-ico {
+      transform: rotate(180deg);
+    }
 
-    /* =========================================================
-       8. PANNEAU ALERTES AGENT (WHATSAPP TEXTMEBOT + TELEGRAM)
-       ========================================================= */
-    .agent-grid {
+    .collapse-body {
+      display: none;
+      border-top: 1px solid var(--border);
+      padding: 12px 14px 14px;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .collapse-body.open { display: flex; }
+
+    .channels-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
-      padding: 16px 18px;
+      gap: 10px;
     }
 
     .channel-panel {
       border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-sm);
       background: var(--surface-alt);
-      padding: 15px 16px;
+      padding: 11px;
       display: flex;
       flex-direction: column;
-      gap: 13px;
-      transition: border-color 0.15s ease, background 0.15s ease;
+      gap: 9px;
+      min-width: 0;
     }
-
     .channel-panel.enabled {
       background: var(--surface);
       border-color: var(--blue-border);
@@ -1101,460 +849,457 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .channel-id {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .channel-ico {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .channel-ico svg { width: 18px; height: 18px; }
-    .channel-ico.wa { background: var(--green-soft); color: var(--green); }
-    .channel-ico.tg { background: var(--blue-soft); color: var(--blue); }
-
-    .channel-title-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .channel-title {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
+    .channel-name {
+      font-size: 12.5px;
       font-weight: 700;
       color: var(--ink);
-    }
-
-    .channel-sub {
-      font-size: 11.5px;
-      color: var(--muted);
     }
 
     .toggle-wrap {
       display: inline-flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       cursor: pointer;
-      user-select: none;
+      min-height: 36px;
     }
-
     .toggle-lbl {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 700;
       color: var(--muted);
     }
-
     .toggle-wrap.on .toggle-lbl { color: var(--green); }
-
-    .toggle-input {
-      position: absolute;
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
+    .toggle-input { position: absolute; opacity: 0; width: 0; height: 0; }
     .toggle-track {
       position: relative;
-      width: 40px;
-      height: 22px;
+      width: 42px;
+      height: 24px;
       border-radius: 999px;
       background: #CBD5E1;
       transition: background 0.18s ease;
     }
-
     .toggle-track::after {
       content: "";
       position: absolute;
-      top: 2px;
-      left: 2px;
+      top: 3px;
+      left: 3px;
       width: 18px;
       height: 18px;
       border-radius: 50%;
       background: #FFFFFF;
-      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
       transition: transform 0.18s ease;
     }
-
     .toggle-input:checked + .toggle-track { background: var(--green-toggle); }
     .toggle-input:checked + .toggle-track::after { transform: translateX(18px); }
 
-    .field-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+    .field-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
     }
 
     .field-group {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
+      min-width: 0;
     }
 
     .field-label {
-      font-size: 11.5px;
+      font-size: 11px;
       font-weight: 600;
-      color: var(--ink-secondary);
+      color: var(--muted);
     }
 
     .field-input {
       width: 100%;
-      height: 36px;
+      min-height: 44px;
       padding: 0 10px;
       border: 1px solid var(--border-strong);
-      border-radius: 7px;
+      border-radius: var(--radius-sm);
       background: var(--surface);
       color: var(--ink);
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 13px;
       outline: none;
     }
-
     .field-input:focus {
       border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.14);
     }
 
     .secret-wrap {
       display: flex;
-      align-items: center;
       gap: 6px;
+      min-width: 0;
     }
+    .secret-wrap .field-input { flex: 1; min-width: 0; }
 
     .secret-btn {
-      height: 36px;
+      min-height: 44px;
       padding: 0 10px;
+      border-radius: var(--radius-sm);
       border: 1px solid var(--border-strong);
       background: var(--surface);
-      color: var(--ink-secondary);
-      border-radius: 7px;
+      color: var(--ink-2);
       font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
       flex-shrink: 0;
     }
 
-    .secret-btn:hover { background: var(--surface-alt); color: var(--ink); }
-
     .channel-foot {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .channel-status {
+      font-size: 11px;
+      color: var(--muted);
+      min-width: 0;
+      word-break: break-word;
+    }
+    .channel-status.ok   { color: var(--green); font-weight: 600; }
+    .channel-status.warn { color: var(--amber); font-weight: 600; }
+    .channel-status.err  { color: var(--red); font-weight: 600; }
+
+    .latch-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
       flex-wrap: wrap;
       padding-top: 8px;
       border-top: 1px solid var(--border);
     }
 
-    .channel-status {
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      color: var(--muted);
-    }
-
-    .channel-status.ok   { color: var(--green); font-weight: 600; }
-    .channel-status.warn { color: var(--amber); font-weight: 600; }
-    .channel-status.err  { color: var(--red); font-weight: 600; }
-
-    .btn-test-alert {
-      border: 1px solid var(--blue);
-      background: var(--blue);
-      color: #FFFFFF;
-      border-radius: 7px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-test-alert:hover:not(:disabled) { background: var(--blue-hover); border-color: var(--blue-hover); }
-    .btn-test-alert:disabled { opacity: 0.55; cursor: not-allowed; }
-
-    .latch-bar {
-      padding: 11px 18px;
-      background: var(--surface-alt);
-      border-top: 1px solid var(--border);
+    .latch-pills {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
       flex-wrap: wrap;
-      font-size: 11.5px;
-    }
-
-    .latch-list {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 5px;
     }
 
     .latch-pill {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 3px 9px;
+      gap: 5px;
+      padding: 3px 8px;
       border-radius: 999px;
-      background: var(--surface);
       border: 1px solid var(--border);
+      background: var(--surface-alt);
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
-      color: var(--ink-secondary);
+      color: var(--ink-2);
     }
-
+    .latch-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green-toggle);
+    }
     .latch-pill.locked {
-      border-color: var(--red-border);
       background: var(--red-soft);
+      border-color: var(--red-border);
       color: var(--red);
     }
-
-    .latch-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-toggle); }
     .latch-pill.locked .latch-dot { background: var(--red-bright); }
 
-    .btn-reset-latch {
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--ink);
-      border-radius: 7px;
-      padding: 5px 11px;
-      font-size: 11.5px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .btn-reset-latch:hover {
-      background: var(--blue-soft);
-      border-color: var(--blue-border);
-      color: var(--blue);
-    }
-
     /* =========================================================
-       9. COURBES CHART.JS & TABLEAUX ALARMES / ÉQUIPEMENTS
+       4. RESPONSIVE MOBILE (CHROME ANDROID & SAFARI iOS 360px/390px)
        ========================================================= */
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
+    @media (max-width: 1160px) {
+      .row-main { grid-template-columns: 1fr; }
+      .row-bottom { grid-template-columns: 1fr; }
     }
 
-    .chart-body { padding: 16px 18px; }
-    .chart-box { position: relative; height: 320px; width: 100%; }
-
-    .table-wrap { overflow-x: auto; }
-
-    .scada-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12.5px;
-    }
-
-    .scada-table th {
-      text-align: left;
-      padding: 11px 16px;
-      background: var(--surface-alt);
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .scada-table td {
-      padding: 11px 16px;
-      border-bottom: 1px solid var(--border);
-      color: var(--ink-secondary);
-      vertical-align: middle;
-    }
-
-    .scada-table tr:last-child td { border-bottom: none; }
-    .scada-table td strong { color: var(--ink); }
-
-    .el-btn-outline {
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--ink);
-      border-radius: 8px;
-      padding: 6px 12px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .el-btn-outline:hover {
-      background: var(--surface-alt);
-      border-color: var(--ink-secondary);
-    }
-
-    /* =========================================================
-       10. PIED DE PAGE SOBRE
-       ========================================================= */
-    .site-footer {
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      margin-top: 12px;
-    }
-
-    .footer-inner {
-      max-width: 1380px;
-      margin: 0 auto;
-      padding: 18px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .footer-brand h3 {
-      font-size: 13.5px;
-      font-weight: 700;
-      color: var(--ink);
-      margin-bottom: 2px;
-    }
-
-    .footer-brand p {
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .footer-links {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .footer-link {
-      border: 1px solid var(--border);
-      background: var(--surface-alt);
-      color: var(--ink-secondary);
-      text-decoration: none;
-      border-radius: 7px;
-      padding: 5px 10px;
-      font-size: 11.5px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .footer-link:hover {
-      background: var(--blue-soft);
-      border-color: var(--blue-border);
-      color: var(--blue);
-    }
-
-    /* =========================================================
-       11. RESPONSIVE (TABLETTE & MOBILE 390px)
-       ========================================================= */
-    @media (max-width: 1180px) {
-      .sensor-cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .ops-grid, .charts-grid, .agent-grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 860px) {
-      .hmi-grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 640px) {
-      .unified-topbar, .scada-subbar, .main-shell, .footer-inner {
-        padding-left: 14px;
-        padding-right: 14px;
+    @media (max-width: 760px) {
+      .app-header { padding: 8px 12px; gap: 8px; }
+      .app-brand { gap: 8px; }
+      .app-logo { width: 30px; height: 30px; }
+      .app-title {
+        font-size: 13px;
+        line-height: 1.2;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
       }
-      .utb-sub { display: none; }
-      .utb-nav { width: 100%; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
-      .sensor-cards-grid { grid-template-columns: 1fr; }
-      .hmi-card { padding: 16px; }
-      .hmi-num-input { width: 108px; }
-      .field-grid { grid-template-columns: 1fr; }
-      .chart-box { height: 250px; }
-      .tank-layout { gap: 16px; }
-      .tank-big-pct { font-size: 30px; }
+      .app-subtitle { display: none; }
+      .status-pill { padding: 5px 9px; font-size: 11.5px; gap: 5px; }
+      .btn-install-pwa { padding: 0 9px; font-size: 11.5px; min-height: 34px; }
+      .dashboard { padding: 10px 10px 20px; gap: 10px; }
+
+      /* Ligne 1 : grille 2x2 compacte sur mobile */
+      .row-kpi {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .kpi-card {
+        padding: 10px;
+        gap: 8px;
+      }
+      .kpi-ico {
+        width: 28px;
+        height: 28px;
+      }
+      .kpi-ico svg { width: 15px; height: 15px; }
+      .kpi-num { font-size: 18px; }
+      .kpi-lbl {
+        font-size: 11px;
+        line-height: 1.25;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+      }
+
+      /* Ligne 2 : empilé compact sur mobile */
+      .sub-pair-left,
+      .sub-pair-right,
+      .channels-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .panel-card { padding: 12px; }
+
+      /* Police >= 16px sur inputs mobile pour bloquer le zoom automatique Safari iOS */
+      .sp-input,
+      .field-input {
+        font-size: 16px;
+        min-height: 44px;
+      }
+
+      .btn-primary, .btn-secondary, .btn-outline, .btn-danger-soft {
+        min-height: 44px;
+        padding: 0 10px;
+        font-size: 12.5px;
+      }
+
+      .log-list { height: 150px; }
+    }
+
+    @media (max-width: 420px) {
+      .kpi-ico { display: none; }
+      .kpi-card { padding: 10px 9px; gap: 6px; }
+    }
+
+    @media (max-width: 380px) {
+      .app-title { font-size: 12px; }
+      .status-pill { padding: 4px 8px; font-size: 11px; }
+      .btn-install-pwa { padding: 0 8px; font-size: 11px; }
+      .kpi-num { font-size: 17px; }
+      .cmd-btn-row.cols-3 { gap: 5px; }
+      .btn-primary, .btn-secondary, .btn-outline { padding: 0 7px; font-size: 11.5px; }
     }
   </style>
 </head>
 <body>
-  <!-- BARRE SUPÉRIEURE BLANCHE UNIFIÉE -->
-  <header class="unified-topbar">
-    <a class="utb-brand" href="./index.html">
-      <div class="utb-logo">
-        <img src="./logo_club.png" alt="Logo CGE U-AUBEN" />
+  <!-- EN-TÊTE APPLICATION SCADA 100 % AUTONOME -->
+  <header class="app-header">
+    <div class="app-brand">
+      <div class="app-logo">
+        <img src="./logo_club.png" alt="Logo U-AUBEN" />
       </div>
-      <div class="utb-title-stack">
-        <span class="utb-title">Smart Grid U-AUBEN · CGE</span>
-        <span class="utb-sub">Supervision SCADA 12V DC &amp; Polytank</span>
+      <div class="app-title-wrap">
+        <span class="app-title">Supervision Smart Grid · U-AUBEN</span>
+        <span class="app-subtitle">Pupitre de conduite 12V DC &amp; Polytank</span>
       </div>
-    </a>
+    </div>
 
-    <nav class="utb-nav" aria-label="Navigation principale">
-      <a class="utb-link" href="./index.html">Accueil</a>
-      <a class="utb-link" href="./simulateur_cablage.html">Simulateur</a>
-      <a class="utb-link active" href="./scada_smartgrid.html" aria-current="page">SCADA</a>
-      <a class="utb-link" href="./demo_3d_smartgrid.html">Maquette 3D</a>
-      <a class="utb-link" href="./motion_9_16.html">Motion 9:16</a>
-    </nav>
-
-    <div class="utb-right">
-      <div id="broker-pill" class="broker-pill">
-        <span id="mqtt-dot" class="dot"></span>
-        <span id="mqtt-status">Connexion au broker...</span>
+    <div class="header-right">
+      <div id="conn-pill" class="status-pill">
+        <span id="conn-dot" class="status-dot"></span>
+        <span id="conn-status">Connexion...</span>
       </div>
-      <button id="btn-install-pwa" class="btn-header btn-install-pwa" type="button" onclick="installPWA()">Installer PWA</button>
+      <button id="btn-install-pwa" class="btn-install-pwa" type="button" onclick="installPWA()">Installer</button>
     </div>
   </header>
 
-  <!-- SOUS-BARRE VUES SCADA + MÉTADONNÉES MQTT -->
-  <div class="scada-subbar">
-    <nav class="scada-tabs" role="tablist" aria-label="Vues SCADA">
-      <button class="el-tab active" data-view="supervision" type="button" onclick="switchView('supervision')">Pupitre HMI</button>
-      <button class="el-tab" data-view="tendances" type="button" onclick="switchView('tendances')">Tendances</button>
-      <button class="el-tab" data-view="alarmes" type="button" onclick="switchView('alarmes')">
-        <span>Alarmes</span>
-        <span id="nav-alarm-badge" class="nav-badge">0</span>
-      </button>
-      <button class="el-tab" data-view="equipements" type="button" onclick="switchView('equipements')">Équipements</button>
-    </nav>
+  <div id="alert-banner" role="alert">ALERTE CRITIQUE : DÉFAUT DÉTECTÉ SUR L'INSTALLATION</div>
 
-    <div class="telemetry-group">
-      <span class="meta-chip">Broker : <strong>broker.hivemq.com</strong></span>
-      <span class="meta-chip">Topic : <strong>cge/uauben/david/smartgrid</strong></span>
-      <span class="meta-chip">Trames : <strong id="rx-count">0</strong></span>
-      <span class="meta-chip">MAJ : <strong id="last-update">--:--:--</strong></span>
-      <span class="meta-chip" id="live-clock">--:--:--</span>
-    </div>
-  </div>
+  <main class="dashboard">
+    <!-- =========================================================
+         LIGNE 1 : 4 CARTES MESURES & ÉTAT (4 COL PC / 2x2 MOBILE)
+         ========================================================= -->
+    <section class="row-kpi" aria-label="Mesures électriques principales">
+      <!-- 1. Tension Réseau SONABEL -->
+      <article class="kpi-card">
+        <div class="kpi-ico ic-blue" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-lbl">Tension Réseau SONABEL</span>
+          <div class="kpi-val-line">
+            <span id="val-v" class="kpi-num">--.-</span>
+            <span class="kpi-unit">V</span>
+          </div>
+          <div class="kpi-foot">
+            <span id="val-v-detail">En attente</span>
+          </div>
+        </div>
+      </article>
 
-  <div id="alert-banner">ALERTE CRITIQUE : DISJONCTEUR Q1 OUVERT — SURCHARGE (&gt;3.5 A) OU SURCHAUFFE TRANSFORMATEUR</div>
+      <!-- 2. Tension Batterie -->
+      <article class="kpi-card">
+        <div class="kpi-ico ic-green" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="18" height="10" rx="2" /><line x1="22" y1="11" x2="22" y2="13" /><line x1="6" y1="11" x2="6" y2="13" /><line x1="10" y1="11" x2="10" y2="13" /></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-lbl">Tension Batterie</span>
+          <div class="kpi-val-line">
+            <span id="val-batt-v" class="kpi-num">--.-</span>
+            <span class="kpi-unit">V</span>
+            <span class="kpi-unit" style="margin-left:auto;"><strong id="val-batt" style="color:var(--ink);">--</strong>%</span>
+          </div>
+          <div class="mini-bar"><div id="bar-batt" class="mini-bar-fill"></div></div>
+        </div>
+      </article>
 
-  <main class="main-shell">
-    <!-- =======================================================
-         VUE 1 : PUPITRE HMI INDUSTRIEL + MESURES + P&ID + ALERTES
-         ======================================================= -->
-    <section id="view-supervision" class="view-container active" aria-label="Pupitre HMI SCADA temps réel">
+      <!-- 3. Courant Charge -->
+      <article class="kpi-card">
+        <div class="kpi-ico ic-indigo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-lbl">Courant Charge</span>
+          <div class="kpi-val-line">
+            <span id="val-i" class="kpi-num">--.--</span>
+            <span class="kpi-unit">A</span>
+          </div>
+          <div class="kpi-foot">
+            <span>Puissance</span>
+            <span class="badge bg-blue"><span id="kpi-power">0</span> W</span>
+          </div>
+        </div>
+      </article>
 
-      <!-- 1. PUPITRE HMI 2x2 (CONDUITE, COMMANDE POMPE/RELAIS, TEMPÉRATURE DS18B20, POLYTANK HC-SR04) -->
-      <div class="hmi-grid">
-        <!-- CARTE 1 : MODE DE CONDUITE -->
-        <article class="hmi-card" aria-label="Mode de conduite">
-          <h2 class="hmi-card-title">Mode de conduite</h2>
-          <div class="hmi-row">
+      <!-- 4. État Source Active -->
+      <article class="kpi-card">
+        <div class="kpi-ico ic-amber" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" /></svg>
+        </div>
+        <div class="kpi-body">
+          <span class="kpi-lbl">État Source Active</span>
+          <div class="kpi-val-line" style="gap:6px; margin-top:2px;">
+            <span id="val-src" class="badge bg-gray">ATTENTE</span>
+            <span id="val-disj" class="badge bg-gray">Q1 --</span>
+          </div>
+          <div class="kpi-foot" style="margin-top:2px;">
+            <span>Alarmes : <strong id="kpi-alarm-count" class="mono">0</strong></span>
+            <span id="kpi-alarm-detail" style="line-height:1.2; text-align:right;">Nominal</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- =========================================================
+         LIGNE 2 : GAUCHE (TEMPÉRATURE + POLYTANK) | DROITE (MODE + COMMANDES)
+         ========================================================= -->
+    <section class="row-main" aria-label="Supervision et conduite">
+      <!-- COLONNE GAUCHE : TEMPÉRATURE & POLYTANK CÔTE À CÔTE -->
+      <div class="sub-pair-left">
+        <!-- Température (jauge + seuil) -->
+        <article class="panel-card" aria-label="Température Transformateur">
+          <div class="panel-head">
+            <h2 class="panel-title">Température</h2>
+            <span id="val-t-state" class="badge bg-gray">ATTENTE</span>
+          </div>
+          <div class="gauge-wrap">
+            <svg class="temp-gauge-svg" viewBox="0 0 280 158" role="img" aria-label="Jauge température 0 à 80 degrés Celsius">
+              <path d="M 44 134 A 96 96 0 0 1 236 134" fill="none" stroke="#E5E7EB" stroke-width="22" stroke-linecap="butt" />
+              <path id="temp-gauge-arc" d="M 44 134 A 96 96 0 0 1 236 134" fill="none" stroke="#1976D2" stroke-width="22" stroke-linecap="butt" stroke-dasharray="301.6" stroke-dashoffset="301.6" />
+              <line id="temp-gauge-limit-tick" x1="208" y1="66" x2="218" y2="56" stroke="#C62828" stroke-width="2.5" stroke-linecap="round" />
+              <text x="34" y="152" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" text-anchor="middle">0 °C</text>
+              <text x="140" y="20" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" text-anchor="middle">40 °C</text>
+              <text x="246" y="152" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" text-anchor="middle">80 °C</text>
+              <g id="temp-gauge-needle" transform="rotate(0 140 134)">
+                <line x1="140" y1="134" x2="50" y2="134" stroke="#DC2626" stroke-width="3.6" stroke-linecap="round" />
+              </g>
+              <circle cx="140" cy="134" r="6.5" fill="#0F172A" />
+            </svg>
+          </div>
+          <div class="reading-row">
+            <span>Mesure : <strong id="val-t">--.-</strong> <strong>°C</strong></span>
+            <span class="mono" style="font-size:11.5px; color:var(--muted);">Seuil : <strong id="hmi-temp-limit-lbl" style="font-size:12px;">60 °C</strong></span>
+          </div>
+          <div class="setpoint-stack">
+            <div class="setpoint-row">
+              <label class="sp-lbl" for="input-temp-high">Seuil (°C)</label>
+              <input id="input-temp-high" class="sp-input" type="number" min="20" max="80" step="1" value="60" />
+              <button id="btn-save-temp-high" class="btn-primary" type="button" onclick="saveTempHighLimit()">Valider</button>
+            </div>
+          </div>
+          <div id="hmi-temp-warning" class="warning-box" role="alert">
+            Surchauffe détectée au-delà du seuil configuré.
+          </div>
+        </article>
+
+        <!-- Niveau Polytank (cuve + seuils) -->
+        <article class="panel-card" aria-label="Niveau Polytank">
+          <div class="panel-head">
+            <h2 class="panel-title">Niveau Polytank</h2>
+            <span id="val-pompe" class="badge bg-gray">POMPE OFF</span>
+          </div>
+          <div class="tank-compact">
+            <svg class="hmi-tank-svg" viewBox="0 0 116 216" role="img" aria-label="Cuve Polytank niveau d'eau">
+              <defs>
+                <clipPath id="hmi-tank-clip">
+                  <rect x="9" y="9" width="98" height="198" rx="11" />
+                </clipPath>
+              </defs>
+              <rect x="6" y="6" width="104" height="204" rx="14" fill="#FFFFFF" stroke="#334155" stroke-width="3.2" />
+              <g clip-path="url(#hmi-tank-clip)">
+                <rect id="hmi-tank-water" x="9" y="207" width="98" height="0" fill="#1976D2" style="transition: y 0.45s ease, height 0.45s ease;" />
+                <rect id="hmi-tank-surface" x="9" y="207" width="98" height="5" fill="#64B5F6" opacity="0.85" style="transition: y 0.45s ease;" />
+              </g>
+              <line id="hmi-tank-line-high" x1="10" y1="38.7" x2="106" y2="38.7" stroke="#2E7D32" stroke-width="1.6" stroke-dasharray="4 3" />
+              <line id="hmi-tank-line-low" x1="10" y1="147.6" x2="106" y2="147.6" stroke="#DC2626" stroke-width="1.6" stroke-dasharray="4 3" />
+            </svg>
+
+            <div class="tank-info">
+              <div class="tank-pct-big"><span id="kpi-eau">--</span>%</div>
+              <div class="tank-badges">
+                <span id="hmi-tank-status" class="badge bg-gray">ATTENTE</span>
+              </div>
+              <div class="mini-bar"><div id="bar-eau" class="mini-bar-fill" style="background:var(--blue);"></div></div>
+              <span class="mono" style="font-size:11px; color:var(--muted);">Bas <strong id="hmi-tank-low-lbl" style="color:var(--ink);">30%</strong> · Haut <strong id="hmi-tank-high-lbl" style="color:var(--ink);">85%</strong></span>
+            </div>
+          </div>
+
+          <div class="setpoint-stack">
+            <div class="setpoint-row">
+              <label class="sp-lbl" for="input-tank-low">Bas (%)</label>
+              <input id="input-tank-low" class="sp-input" type="number" min="5" max="90" step="1" value="30" />
+              <button id="btn-save-tank-low" class="btn-primary" type="button" onclick="saveTankLowLimit()">Valider</button>
+            </div>
+            <div class="setpoint-row">
+              <label class="sp-lbl" for="input-tank-high">Haut (%)</label>
+              <input id="input-tank-high" class="sp-input" type="number" min="15" max="100" step="1" value="85" />
+              <button id="btn-save-tank-high" class="btn-primary" type="button" onclick="saveTankHighLimit()">Valider</button>
+            </div>
+          </div>
+          <div id="hmi-tank-warning" class="warning-box" role="alert">
+            Niveau d'eau inférieur au seuil bas configuré.
+          </div>
+        </article>
+      </div>
+
+      <!-- COLONNE DROITE : MODE DE CONDUITE & COMMANDES DIRECTES CÔTE À CÔTE -->
+      <div class="sub-pair-right">
+        <!-- Mode de conduite (Auto / Manuel) -->
+        <article class="panel-card" aria-label="Mode de conduite">
+          <div class="panel-head">
+            <h2 class="panel-title">Mode de conduite</h2>
+            <span id="hmi-mode-badge" class="hmi-status-pill is-auto">AUTO ACTIF</span>
+          </div>
+
+          <div class="switch-box">
             <label class="hmi-switch-wrap" for="hmi-mode-switch">
               <span class="hmi-switch-text">Manuel</span>
               <input id="hmi-mode-switch" class="hmi-switch-input" type="checkbox" checked onchange="onDriveModeToggle(this.checked)" />
@@ -1562,780 +1307,188 @@
               <span class="hmi-switch-text">Auto</span>
             </label>
           </div>
-          <div class="hmi-row">
-            <span class="hmi-label">État du mode :</span>
-            <span id="hmi-mode-badge" class="hmi-status-pill is-auto">AUTO ACTIF</span>
-          </div>
-          <p class="hmi-helper">
-            Ce sélecteur publie la consigne de régulation (<span class="mono">AUTO</span> / <span class="mono">MANUAL</span>) vers l'ESP32 sur <span class="mono">cge/uauben/david/smartgrid/cmd</span>.
+
+          <p class="helper-note">
+            En mode Automatique, l'automate pilote la source, la pompe et le délestage selon les seuils enregistrés.
           </p>
-        </article>
 
-        <!-- CARTE 2 : COMMANDE MANUELLE CHARGES & POMPE -->
-        <article class="hmi-card" aria-label="Commande manuelle Lumière, Ventilateur et Pompe">
-          <h2 class="hmi-card-title">Commande manuelle Pompe &amp; Relais (K2 / K3 / K4)</h2>
-          <div class="hmi-btn-row" style="margin-bottom:8px;">
-            <button id="btn-hmi-lumiere-on" class="hmi-btn" type="button" onclick="sendHmiCommand('IN2', 27, 'ON', 'Lumière ON')">Lumière ON</button>
-            <button id="btn-hmi-lumiere-off" class="hmi-btn secondary" type="button" onclick="sendHmiCommand('IN2', 27, 'OFF', 'Lumière OFF')">Lumière OFF</button>
-            <span id="hmi-lumiere-badge" class="hmi-status-pill is-running" style="margin-left:auto;">K2 : ALLUMÉE</span>
-          </div>
-          <div class="hmi-btn-row" style="margin-bottom:8px;">
-            <button id="btn-hmi-ventilo-on" class="hmi-btn" type="button" onclick="sendHmiCommand('IN3', 14, 'ON', 'Ventilateur ON')">Ventilateur ON</button>
-            <button id="btn-hmi-ventilo-off" class="hmi-btn secondary" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Ventilateur OFF')">Ventilateur OFF</button>
-            <button id="btn-hmi-delestage" class="hmi-btn secondary" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Délestage Q1')">Délestage</button>
-            <span id="hmi-ventilo-badge" class="hmi-status-pill is-running" style="margin-left:auto;">K3 : EN MARCHE</span>
-          </div>
-          <div class="hmi-btn-row">
-            <button id="btn-hmi-pompe-on" class="hmi-btn" type="button" onclick="sendHmiCommand('IN4', 12, 'ON', 'Pompe ON')">Pompe ON</button>
-            <button id="btn-hmi-pompe-off" class="hmi-btn secondary" type="button" onclick="sendHmiCommand('IN4', 12, 'OFF', 'Pompe OFF')">Pompe OFF</button>
-            <span id="hmi-pompe-badge" class="hmi-status-pill" style="margin-left:auto;">K4 : ARRÊTÉE</span>
-          </div>
-          <p class="hmi-helper">
-            Pilote en temps réel la Lumière <span class="mono">K2 (IN2 / GPIO 27)</span>, le Ventilateur <span class="mono">K3 (IN3 / GPIO 14)</span> et la Pompe <span class="mono">K4 (IN4 / GPIO 12)</span> sur <span class="mono">cge/uauben/david/smartgrid/cmd</span>.
-          </p>
-        </article>
-
-        <!-- CARTE 3 : TEMPÉRATURE TRANSFORMATEUR (DS18B20) -->
-        <article class="hmi-card" aria-label="Température Transformateur DS18B20">
-          <h2 class="hmi-card-title">Température Transformateur (DS18B20)</h2>
-          <div class="gauge-stage">
-            <svg class="temp-gauge-svg" viewBox="0 0 280 158" role="img" aria-label="Jauge semi-circulaire température transformateur 0 à 80 degrés Celsius">
-              <!-- Piste semi-circulaire grise -->
-              <path d="M 44 134 A 96 96 0 0 1 236 134" fill="none" stroke="#E5E7EB" stroke-width="22" stroke-linecap="butt" />
-              <!-- Arc de progression bleu / rouge -->
-              <path id="temp-gauge-arc" d="M 44 134 A 96 96 0 0 1 236 134" fill="none" stroke="#1976D2" stroke-width="22" stroke-linecap="butt" stroke-dasharray="301.6" stroke-dashoffset="301.6" />
-              <!-- Repère seuil haut -->
-              <line id="temp-gauge-limit-tick" x1="208" y1="66" x2="218" y2="56" stroke="#C62828" stroke-width="2.5" stroke-linecap="round" />
-              <!-- Repères numériques 0 / 40 / 80 °C -->
-              <text x="34" y="152" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" text-anchor="middle">0 °C</text>
-              <text x="140" y="20" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" text-anchor="middle">40 °C</text>
-              <text x="246" y="152" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="600" text-anchor="middle">80 °C</text>
-              <!-- Aiguille rouge pivotante -->
-              <g id="temp-gauge-needle" transform="rotate(0 140 134)">
-                <line x1="140" y1="134" x2="50" y2="134" stroke="#DC2626" stroke-width="3.6" stroke-linecap="round" />
-              </g>
-              <circle cx="140" cy="134" r="6.5" fill="#111827" />
-            </svg>
-          </div>
-          <div class="hmi-reading-line">
-            Température : <strong id="val-t">--.-</strong> <strong>°C</strong>
-            <span id="val-t-state" class="badge bg-gray" style="margin-left:8px;">ATTENTE</span>
-          </div>
-          <div class="hmi-setpoint-form">
-            <input id="input-temp-high" class="hmi-num-input" type="number" min="20" max="80" step="1" value="60" aria-label="Seuil Haut en degrés Celsius" />
-            <button id="btn-save-temp-high" class="hmi-btn" type="button" onclick="saveTempHighLimit()">Enregistrer seuil</button>
-          </div>
-          <div class="hmi-setpoint-meta">
-            <span>Seuil Haut (°C) : <strong id="hmi-temp-limit-lbl">60 °C</strong> (GPIO 4 · OneWire)</span>
-          </div>
-          <div id="hmi-temp-warning" class="hmi-warning-box" role="alert">
-            Alerte : la température du transformateur dépasse le seuil haut enregistré.
+          <div class="cmd-group" style="margin-top:auto;">
+            <div class="cmd-group-top">
+              <span class="cmd-group-name">Source ATS (K1)</span>
+              <span id="rel-st-1" class="badge bg-gray">ATTENTE</span>
+            </div>
+            <div class="mode-actions">
+              <button class="btn-primary" type="button" onclick="sendHmiCommand('IN1', 26, 'ON', 'Source SONABEL')">SONABEL</button>
+              <button class="btn-secondary" type="button" onclick="sendHmiCommand('IN1', 26, 'OFF', 'Source Solaire')">Solaire</button>
+            </div>
+            <button id="btn-cmd-auto" class="btn-outline" type="button" onclick="sendAutoModeCommand()" style="width:100%;">Retour Auto</button>
           </div>
         </article>
 
-        <!-- CARTE 4 : NIVEAU POLYTANK (HC-SR04) -->
-        <article class="hmi-card" aria-label="Niveau Polytank HC-SR04">
-          <h2 class="hmi-card-title">Niveau Polytank (HC-SR04)</h2>
-          <div class="tank-layout">
-            <svg class="hmi-tank-svg" viewBox="0 0 116 216" role="img" aria-label="Réservoir vertical Polytank niveau d'eau">
-              <defs>
-                <clipPath id="hmi-tank-clip">
-                  <rect x="9" y="9" width="98" height="198" rx="11" />
-                </clipPath>
-              </defs>
-              <!-- Corps du réservoir -->
-              <rect x="6" y="6" width="104" height="204" rx="14" fill="#FFFFFF" stroke="#334155" stroke-width="3.2" />
-              <!-- Remplissage eau bleu animé -->
-              <g clip-path="url(#hmi-tank-clip)">
-                <rect id="hmi-tank-water" x="9" y="207" width="98" height="0" fill="#1976D2" style="transition: y 0.45s ease, height 0.45s ease;" />
-                <rect id="hmi-tank-surface" x="9" y="207" width="98" height="5" fill="#64B5F6" opacity="0.85" style="transition: y 0.45s ease;" />
-              </g>
-              <!-- Repères Seuil Haut / Seuil Bas -->
-              <line id="hmi-tank-line-high" x1="10" y1="38.7" x2="106" y2="38.7" stroke="#2E7D32" stroke-width="1.4" stroke-dasharray="4 3" />
-              <line id="hmi-tank-line-low" x1="10" y1="147.6" x2="106" y2="147.6" stroke="#DC2626" stroke-width="1.4" stroke-dasharray="4 3" />
-            </svg>
+        <!-- Commandes directes (Lumière, Ventilateur, Pompe) -->
+        <article class="panel-card" aria-label="Commandes directes">
+          <div class="panel-head">
+            <h2 class="panel-title">Commandes directes</h2>
+            <span class="badge bg-blue">K2 · K3 · K4</span>
+          </div>
 
-            <div class="tank-readout">
-              <div class="tank-big-pct"><span id="kpi-eau">--</span>%</div>
-              <div class="tank-sub-lbl">Niveau Polytank (GPIO 5 / 18)</div>
-              <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                <span id="hmi-tank-status" class="badge bg-gray">EN ATTENTE</span>
-                <span id="val-pompe" class="badge bg-gray">POMPE OFF</span>
+          <div class="cmd-stack">
+            <!-- Lumière (K2) -->
+            <div class="cmd-group">
+              <div class="cmd-group-top">
+                <span class="cmd-group-name">Lumière (K2)</span>
+                <span id="hmi-lumiere-badge" class="hmi-status-pill">K2 : ATTENTE</span>
               </div>
-              <div class="mini-bar" style="max-width:170px;"><div id="bar-eau" class="mini-bar-fill" style="background:var(--blue);"></div></div>
+              <div class="cmd-btn-row">
+                <button id="btn-hmi-lumiere-on" class="btn-primary" type="button" onclick="sendHmiCommand('IN2', 27, 'ON', 'Lumière ON')">Allumer</button>
+                <button id="btn-hmi-lumiere-off" class="btn-outline" type="button" onclick="sendHmiCommand('IN2', 27, 'OFF', 'Lumière OFF')">Éteindre</button>
+              </div>
             </div>
-          </div>
 
-          <div class="tank-setpoints-stack">
-            <div class="tank-setpoint-row">
-              <label class="tank-setpoint-lbl" for="input-tank-low">Seuil Bas (%)</label>
-              <input id="input-tank-low" class="hmi-num-input" type="number" min="5" max="90" step="1" value="30" aria-label="Seuil Bas en pourcentage" />
-              <button id="btn-save-tank-low" class="hmi-btn" type="button" onclick="saveTankLowLimit()">Enregistrer</button>
+            <!-- Ventilateur (K3) -->
+            <div class="cmd-group">
+              <div class="cmd-group-top">
+                <span class="cmd-group-name">Ventilateur (K3)</span>
+                <span id="hmi-ventilo-badge" class="hmi-status-pill">K3 : ATTENTE</span>
+              </div>
+              <div class="cmd-btn-row cols-3">
+                <button id="btn-hmi-ventilo-on" class="btn-primary" type="button" onclick="sendHmiCommand('IN3', 14, 'ON', 'Ventilateur ON')">Marche</button>
+                <button id="btn-hmi-ventilo-off" class="btn-outline" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Ventilateur OFF')">Arrêt</button>
+                <button id="btn-hmi-delestage" class="btn-danger-soft" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Délestage Q1')">Délestage</button>
+              </div>
             </div>
-            <div class="tank-setpoint-row">
-              <label class="tank-setpoint-lbl" for="input-tank-high">Seuil Haut (%)</label>
-              <input id="input-tank-high" class="hmi-num-input" type="number" min="15" max="100" step="1" value="85" aria-label="Seuil Haut en pourcentage" />
-              <button id="btn-save-tank-high" class="hmi-btn" type="button" onclick="saveTankHighLimit()">Enregistrer</button>
-            </div>
-          </div>
 
-          <div class="hmi-setpoint-meta">
-            <span>Seuil Bas (démarrage pompe) : <strong id="hmi-tank-low-lbl">30%</strong></span>
-            <span>Seuil Haut (arrêt pompe) : <strong id="hmi-tank-high-lbl">85%</strong></span>
-          </div>
-          <div id="hmi-tank-warning" class="hmi-warning-box" role="alert">
-            Alerte : le niveau Polytank est inférieur au seuil bas enregistré.
-          </div>
-        </article>
-      </div>
-
-      <!-- 2. CARTES MESURES ÉLECTRIQUES ÉPURÉES (TENSION SONABEL, BATTERIE, ACS712, ÉTAT SYSTÈME) -->
-      <div class="sensor-cards-grid" aria-label="Mesures électriques et état de liaison">
-        <article class="sensor-card">
-          <div class="sensor-icon-box ic-blue" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
-          </div>
-          <div class="sensor-body">
-            <span class="sensor-lbl">Tension SONABEL</span>
-            <div class="sensor-val-row">
-              <span id="val-v" class="kpi-val">--.-</span>
-              <span class="kpi-unit">V</span>
-            </div>
-            <div class="sensor-foot">
-              <span id="val-src" class="badge bg-gray">ATTENTE</span>
-              <span id="val-v-detail" class="mono">GPIO 34 / 32</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="sensor-card">
-          <div class="sensor-icon-box ic-green" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="18" height="10" rx="2" /><line x1="22" y1="11" x2="22" y2="13" /><line x1="6" y1="11" x2="6" y2="13" /><line x1="10" y1="11" x2="10" y2="13" /></svg>
-          </div>
-          <div class="sensor-body">
-            <span class="sensor-lbl">Batterie 3S 18650</span>
-            <div class="sensor-val-row">
-              <span id="val-batt" class="kpi-val">--</span>
-              <span class="kpi-unit">%</span>
-            </div>
-            <div class="mini-bar"><div id="bar-batt" class="mini-bar-fill"></div></div>
-            <div class="sensor-foot">
-              <span>Pack BMS 40A</span>
-              <span id="val-batt-v" class="mono">--.- V</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="sensor-card">
-          <div class="sensor-icon-box ic-indigo" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
-          </div>
-          <div class="sensor-body">
-            <span class="sensor-lbl">Courant ACS712</span>
-            <div class="sensor-val-row">
-              <span id="val-i" class="kpi-val">--.-</span>
-              <span class="kpi-unit">A</span>
-            </div>
-            <div class="sensor-foot">
-              <span>Puissance active</span>
-              <span class="badge bg-blue"><span id="kpi-power">0</span> W</span>
-            </div>
-          </div>
-        </article>
-
-        <article class="sensor-card clickable" onclick="switchView('alarmes')" title="Ouvrir la vue des alarmes">
-          <div class="sensor-icon-box ic-amber" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><line x1="12" y1="20" x2="12.01" y2="20" /></svg>
-          </div>
-          <div class="sensor-body">
-            <span class="sensor-lbl">État En ligne · Protection</span>
-            <div class="sensor-val-row">
-              <span id="card-device-status" class="kpi-val" style="font-size:19px;">Connexion...</span>
-            </div>
-            <div class="sensor-foot">
-              <span id="val-disj" class="badge bg-gray">ATTENTE</span>
-              <span class="mono">MAJ <strong id="card-last-update">--:--:--</strong></span>
-            </div>
-            <div class="sensor-foot">
-              <span>Alarmes actives : <strong id="kpi-alarm-count" class="mono">0</strong></span>
-              <span id="kpi-alarm-detail" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px;">En attente</span>
+            <!-- Pompe (K4) -->
+            <div class="cmd-group">
+              <div class="cmd-group-top">
+                <span class="cmd-group-name">Pompe Polytank (K4)</span>
+                <span id="hmi-pompe-badge" class="hmi-status-pill">K4 : ATTENTE</span>
+              </div>
+              <div class="cmd-btn-row">
+                <button id="btn-hmi-pompe-on" class="btn-primary" type="button" onclick="sendHmiCommand('IN4', 12, 'ON', 'Pompe ON')">Pompe ON</button>
+                <button id="btn-hmi-pompe-off" class="btn-outline" type="button" onclick="sendHmiCommand('IN4', 12, 'OFF', 'Pompe OFF')">Pompe OFF</button>
+              </div>
             </div>
           </div>
         </article>
       </div>
+    </section>
 
-      <!-- 3. SYNOPTIQUE ANIMÉ P&ID (ÉLECTRIQUE + HYDRAULIQUE) -->
-      <section class="card">
-        <div class="card-header">
-          <span class="card-title">Synoptique d'exploitation — Flux Smart Grid 12V DC &amp; Hydraulique Polytank</span>
-          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <span id="syn-state" class="badge bg-gray">EN ATTENTE ESP32</span>
-            <button class="badge bg-blue" style="cursor:pointer;" type="button" onclick="switchView('tendances')">Courbes temps réel</button>
-          </div>
-        </div>
-        <div class="synoptic-body">
-          <svg class="pid-svg" viewBox="0 0 1120 395" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Synoptique P&amp;ID Smart Grid 12V DC et Polytank">
-            <defs>
-              <linearGradient id="metalTankGrad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#CBD5E1" />
-                <stop offset="28%" stop-color="#F1F5F9" />
-                <stop offset="55%" stop-color="#E2E8F0" />
-                <stop offset="100%" stop-color="#94A3B8" />
-              </linearGradient>
-              <linearGradient id="metalMotorGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#E2E8F0" />
-                <stop offset="50%" stop-color="#CBD5E1" />
-                <stop offset="100%" stop-color="#94A3B8" />
-              </linearGradient>
-              <linearGradient id="cabinetGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#FFFFFF" />
-                <stop offset="100%" stop-color="#E2E8F0" />
-              </linearGradient>
-              <linearGradient id="pidWaterGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#42A5F5" />
-                <stop offset="100%" stop-color="#1976D2" />
-              </linearGradient>
-              <clipPath id="polytank-clip">
-                <rect x="920" y="138" width="122" height="176" rx="8" />
-              </clipPath>
-            </defs>
-
-            <text x="20" y="20" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" letter-spacing="0.6">DISTRIBUTION ÉLECTRIQUE — BUS 12V DC &amp; ATS</text>
-            <line x1="712" y1="16" x2="712" y2="378" stroke="#E2E6EC" stroke-width="1.2" stroke-dasharray="5 4" />
-            <text x="734" y="20" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" letter-spacing="0.6">CIRCUIT HYDRAULIQUE — POLYTANK &amp; POMPE 12V</text>
-
-            <rect x="292" y="152" width="100" height="108" rx="6" fill="#F8F9FB" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="5 3" />
-            <rect id="box-disj" x="428" y="152" width="108" height="108" rx="6" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.8" />
-
-            <!-- Conducteurs de base -->
-            <path class="pipe-base" d="M 108 130 L 154 130 M 204 130 L 266 130 L 266 184 L 312 184" />
-            <path class="pipe-base" d="M 108 292 L 156 292 M 202 292 L 266 292 L 266 228 L 312 228" />
-            <path class="pipe-base" d="M 374 206 L 446 206" />
-            <path class="pipe-base" d="M 518 206 L 574 206" />
-
-            <!-- Flux animés -->
-            <path id="line-sonabel" class="flow-line" d="M 108 130 L 154 130 M 204 130 L 266 130 L 266 184 L 312 184" />
-            <path id="line-solaire" class="flow-line" d="M 108 292 L 156 292 M 202 292 L 266 292 L 266 228 L 312 228" />
-            <path id="line-ats-disj" class="flow-line" d="M 374 206 L 446 206" />
-            <path id="line-disj-load" class="flow-line" d="M 518 206 L 574 206" />
-
-            <!-- V-101 SONABEL 12V -->
-            <g>
-              <rect x="16" y="34" width="104" height="40" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
-              <line x1="68" y1="74" x2="68" y2="96" stroke="#CBD5E1" stroke-width="1.2" />
-              <text x="68" y="50" fill="#64748B" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">V-101 · SONABEL</text>
-              <text id="svg-v" x="68" y="66" fill="#111827" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" text-anchor="middle">--.- V</text>
-            </g>
-            <g>
-              <rect x="28" y="96" width="80" height="68" rx="6" fill="url(#cabinetGrad)" stroke="#94A3B8" stroke-width="1.5" />
-              <circle cx="68" cy="126" r="16" fill="#FFFFFF" stroke="#111827" stroke-width="1.8" />
-              <path d="M 58 126 Q 63 118 68 126 T 78 126" fill="none" stroke="#111827" stroke-width="2" stroke-linecap="round" />
-              <text x="68" y="156" fill="#334155" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">SONABEL 12V</text>
-            </g>
-
-            <!-- TT-101 TRANSFO DS18B20 -->
-            <g>
-              <rect x="132" y="34" width="94" height="40" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
-              <line x1="179" y1="74" x2="179" y2="112" stroke="#CBD5E1" stroke-width="1.2" />
-              <text x="179" y="50" fill="#64748B" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">TT-101 · DS18B20</text>
-              <text id="svg-t" x="179" y="66" fill="#111827" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" text-anchor="middle">--.- °C</text>
-            </g>
-            <g>
-              <circle cx="169" cy="130" r="15" fill="#FFFFFF" stroke="#111827" stroke-width="2" />
-              <circle cx="189" cy="130" r="15" fill="none" stroke="#111827" stroke-width="2" />
-              <text x="179" y="160" fill="#64748B" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">TRANSFO TR1</text>
-            </g>
-
-            <!-- BT-101 SOLAIRE + BATTERIE 3S -->
-            <g>
-              <rect x="16" y="198" width="104" height="40" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
-              <line x1="68" y1="238" x2="68" y2="258" stroke="#CBD5E1" stroke-width="1.2" />
-              <text x="68" y="214" fill="#64748B" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">BT-101 · BATT 3S</text>
-              <text id="svg-batt" x="68" y="230" fill="#111827" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" text-anchor="middle">-- %</text>
-            </g>
-            <g>
-              <rect x="28" y="258" width="80" height="68" rx="6" fill="url(#cabinetGrad)" stroke="#94A3B8" stroke-width="1.5" />
-              <line x1="48" y1="288" x2="57" y2="288" stroke="#111827" stroke-width="1.8" />
-              <line x1="57" y1="276" x2="57" y2="300" stroke="#111827" stroke-width="1.8" />
-              <line x1="63" y1="281" x2="63" y2="295" stroke="#111827" stroke-width="3.2" />
-              <line x1="69" y1="276" x2="69" y2="300" stroke="#111827" stroke-width="1.8" />
-              <line x1="75" y1="281" x2="75" y2="295" stroke="#111827" stroke-width="3.2" />
-              <line x1="75" y1="288" x2="86" y2="288" stroke="#111827" stroke-width="1.8" />
-              <text x="68" y="318" fill="#334155" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">PV + 3S 18650</text>
-            </g>
-
-            <!-- BMS 3S 40A -->
-            <g>
-              <rect x="156" y="270" width="46" height="44" rx="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.8" />
-              <text x="179" y="296" fill="#111827" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" text-anchor="middle">BMS</text>
-              <text x="179" y="328" fill="#64748B" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">BMS 3S 40A</text>
-            </g>
-
-            <!-- ATS-101 -->
-            <g>
-              <rect x="292" y="92" width="100" height="40" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
-              <line x1="342" y1="132" x2="342" y2="152" stroke="#CBD5E1" stroke-width="1.2" />
-              <text x="342" y="108" fill="#64748B" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">ATS-101 · IN1/IN2</text>
-              <text id="svg-src" x="342" y="124" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">ATTENTE</text>
-            </g>
-            <g>
-              <circle cx="312" cy="184" r="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.8" />
-              <text x="301" y="177" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="600">IN1</text>
-              <circle cx="312" cy="228" r="4" fill="#FFFFFF" stroke="#111827" stroke-width="1.8" />
-              <text x="301" y="242" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="600">IN2</text>
-              <line id="ats-arm" x1="374" y1="206" x2="315" y2="206" stroke="#64748B" stroke-width="3.4" stroke-linecap="round" />
-              <circle cx="374" cy="206" r="4.5" fill="#111827" />
-              <text x="342" y="252" fill="#64748B" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">COMMUTATION ATS</text>
-            </g>
-
-            <!-- Q1 DISJONCTEUR IN3 -->
-            <g>
-              <rect x="432" y="92" width="100" height="40" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
-              <line x1="482" y1="132" x2="482" y2="152" stroke="#CBD5E1" stroke-width="1.2" />
-              <text x="482" y="108" fill="#64748B" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">Q1 · RELAIS IN3</text>
-              <text id="svg-disj" x="482" y="124" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">ATTENTE</text>
-            </g>
-            <g>
-              <line x1="442" y1="202" x2="450" y2="210" stroke="#111827" stroke-width="2" />
-              <line x1="450" y1="202" x2="442" y2="210" stroke="#111827" stroke-width="2" />
-              <line id="cb-blade" x1="518" y1="206" x2="447" y2="206" stroke="#64748B" stroke-width="3.6" stroke-linecap="round" />
-              <circle cx="518" cy="206" r="4.5" fill="#FFFFFF" stroke="#111827" stroke-width="2" />
-              <text x="482" y="252" fill="#64748B" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">BUS DC · PROT. 3.5A</text>
-            </g>
-
-            <!-- IT-101 CHARGES 12V -->
-            <g>
-              <rect x="572" y="92" width="120" height="46" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
-              <line x1="632" y1="138" x2="632" y2="160" stroke="#CBD5E1" stroke-width="1.2" />
-              <text x="632" y="107" fill="#64748B" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">IT-101 · ACS712</text>
-              <text id="svg-i" x="632" y="122" fill="#111827" font-family="IBM Plex Mono, monospace" font-size="11.5" font-weight="700" text-anchor="middle">--.- A</text>
-              <text id="svg-p" x="632" y="134" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="9.5" font-weight="600" text-anchor="middle">0 W</text>
-            </g>
-            <g>
-              <rect x="576" y="160" width="112" height="92" rx="6" fill="url(#metalMotorGrad)" stroke="#64748B" stroke-width="1.6" />
-              <rect x="584" y="168" width="60" height="76" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1" />
-              <circle cx="614" cy="206" r="24" fill="#0F172A" stroke="#94A3B8" stroke-width="1.5" />
-              <circle cx="614" cy="206" r="14" fill="none" stroke="#64748B" stroke-width="1.2" stroke-dasharray="5 3" />
-              <circle cx="614" cy="206" r="4" fill="#CBD5E1" />
-              <line x1="654" y1="176" x2="678" y2="176" stroke="#475569" stroke-width="2" />
-              <line x1="654" y1="184" x2="678" y2="184" stroke="#475569" stroke-width="2" />
-              <line x1="654" y1="192" x2="678" y2="192" stroke="#475569" stroke-width="2" />
-              <line x1="654" y1="200" x2="678" y2="200" stroke="#475569" stroke-width="2" />
-              <line x1="654" y1="208" x2="678" y2="208" stroke="#475569" stroke-width="2" />
-              <rect x="588" y="252" width="14" height="8" rx="1" fill="#64748B" />
-              <rect x="662" y="252" width="14" height="8" rx="1" fill="#64748B" />
-              <text x="632" y="274" fill="#334155" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle">CHARGES 12V</text>
-            </g>
-
-            <!-- CIRCUIT HYDRAULIQUE POLYTANK + POMPE -->
-            <line x1="734" y1="342" x2="1095" y2="342" stroke="#CBD5E1" stroke-width="1.5" />
-            <path class="water-pipe-outer" d="M 804 286 L 804 150 L 916 150" />
-            <path class="water-pipe-inner" d="M 804 286 L 804 150 L 916 150" />
-            <path id="pipe-pump" class="flow-line" d="M 804 286 L 804 150 L 916 150" />
-            <path class="water-pipe-outer" d="M 1046 300 L 1084 300" />
-            <path class="water-pipe-inner" d="M 1046 300 L 1084 300" />
-
-            <g>
-              <polygon points="852,143 866,150 852,157" fill="#FFFFFF" stroke="#334155" stroke-width="1.5" />
-              <polygon points="880,143 866,150 880,157" fill="#FFFFFF" stroke="#334155" stroke-width="1.5" />
-              <line x1="866" y1="150" x2="866" y2="132" stroke="#334155" stroke-width="1.6" />
-              <rect id="valve-actuator" x="857" y="122" width="18" height="10" rx="2" fill="#94A3B8" stroke="#334155" stroke-width="1.2" />
-            </g>
-
-            <g>
-              <rect x="740" y="196" width="114" height="44" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
-              <line x1="797" y1="240" x2="797" y2="282" stroke="#CBD5E1" stroke-width="1.2" />
-              <text x="797" y="213" fill="#334155" font-family="Inter, sans-serif" font-size="9.5" font-weight="700" text-anchor="middle">P-101 · POMPE IN4</text>
-              <text id="svg-pompe-lbl" x="797" y="230" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">Arrêtée</text>
-            </g>
-
-            <g>
-              <rect x="748" y="332" width="90" height="10" rx="2" fill="#64748B" />
-              <rect x="752" y="294" width="44" height="36" rx="4" fill="url(#metalMotorGrad)" stroke="#475569" stroke-width="1.5" />
-              <line x1="758" y1="302" x2="790" y2="302" stroke="#64748B" stroke-width="1.3" />
-              <line x1="758" y1="310" x2="790" y2="310" stroke="#64748B" stroke-width="1.3" />
-              <line x1="758" y1="318" x2="790" y2="318" stroke="#64748B" stroke-width="1.3" />
-              <line x1="758" y1="324" x2="790" y2="324" stroke="#64748B" stroke-width="1.3" />
-              <circle id="pump-circle" cx="812" cy="310" r="20" fill="#E2E8F0" stroke="#475569" stroke-width="2" />
-              <polygon id="pump-impeller" points="812,298 802,318 822,318" fill="none" stroke="#475569" stroke-width="2" stroke-linejoin="round" />
-              <circle id="pump-led" cx="760" cy="299" r="3.5" fill="#94A3B8" stroke="#FFFFFF" stroke-width="1" />
-            </g>
-
-            <g>
-              <rect x="924" y="34" width="114" height="44" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.2" />
-              <line x1="981" y1="78" x2="981" y2="104" stroke="#CBD5E1" stroke-width="1.2" />
-              <text x="981" y="51" fill="#64748B" font-family="Inter, sans-serif" font-size="9" font-weight="700" text-anchor="middle">LT-101 · HC-SR04</text>
-              <text id="tank-pct-text" x="981" y="69" fill="#111827" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" text-anchor="middle">--%</text>
-            </g>
-
-            <g>
-              <rect x="930" y="314" width="12" height="28" rx="2" fill="#94A3B8" stroke="#64748B" stroke-width="1.2" />
-              <rect x="1020" y="314" width="12" height="28" rx="2" fill="#94A3B8" stroke="#64748B" stroke-width="1.2" />
-              <rect x="962" y="102" width="38" height="12" rx="2" fill="#1976D2" stroke="#1565C0" stroke-width="1.2" />
-              <path d="M 916 136 Q 916 114 950 114 L 1012 114 Q 1046 114 1046 136 Z" fill="url(#metalTankGrad)" stroke="#64748B" stroke-width="1.6" />
-              <rect x="916" y="134" width="130" height="184" rx="10" fill="url(#metalTankGrad)" stroke="#64748B" stroke-width="1.8" />
-              <rect x="920" y="138" width="122" height="176" rx="8" fill="#F8F9FB" stroke="#CBD5E1" stroke-width="1" />
-
-              <g clip-path="url(#polytank-clip)">
-                <rect id="tank-water-rect" x="920" y="314" width="122" height="0" fill="url(#pidWaterGrad)" style="transition: y 0.55s ease, height 0.55s ease;" />
-                <g id="tank-wave" transform="translate(0, 314)" style="transition: transform 0.55s ease;">
-                  <path class="wave-anim" d="M 920 0 Q 951 -5 982 0 T 1044 0 T 1106 0 T 1168 0 L 1168 12 L 920 12 Z" fill="#64B5F6" opacity="0.65" />
-                </g>
-              </g>
-
-              <line id="pid-line-high" x1="920" y1="164.4" x2="1042" y2="164.4" stroke="#2E7D32" stroke-width="1.1" stroke-dasharray="4 3" opacity="0.85" />
-              <line id="pid-line-low" x1="920" y1="261.2" x2="1042" y2="261.2" stroke="#DC2626" stroke-width="1.1" stroke-dasharray="4 3" opacity="0.85" />
-
-              <g font-family="IBM Plex Mono, monospace" font-size="9.5" font-weight="600">
-                <line x1="1052" y1="138" x2="1052" y2="314" stroke="#CBD5E1" stroke-width="1" />
-                <line x1="1052" y1="138" x2="1060" y2="138" stroke="#64748B" stroke-width="1.4" />
-                <text x="1064" y="141" fill="#64748B">100%</text>
-                <line id="pid-tick-high" x1="1052" y1="164.4" x2="1061" y2="164.4" stroke="#2E7D32" stroke-width="1.8" />
-                <text id="pid-lbl-high" x="1064" y="167.4" fill="#2E7D32" font-weight="700">85%</text>
-                <line x1="1052" y1="226" x2="1058" y2="226" stroke="#94A3B8" stroke-width="1.2" />
-                <line id="pid-tick-low" x1="1052" y1="261.2" x2="1061" y2="261.2" stroke="#DC2626" stroke-width="1.8" />
-                <text id="pid-lbl-low" x="1064" y="264.2" fill="#DC2626" font-weight="700">30%</text>
-                <line x1="1052" y1="314" x2="1060" y2="314" stroke="#64748B" stroke-width="1.4" />
-                <text x="1064" y="317" fill="#64748B">0%</text>
-              </g>
-
-              <rect x="934" y="206" width="94" height="24" rx="4" fill="#FFFFFF" fill-opacity="0.94" stroke="#CBD5E1" stroke-width="1" />
-              <text id="tank-status-text" x="981" y="222" fill="#64748B" font-family="Inter, sans-serif" font-size="8.5" font-weight="700" text-anchor="middle" letter-spacing="0.4">ATTENTE</text>
-            </g>
-          </svg>
-        </div>
-      </section>
-
-      <!-- 4. COMMANDE DÉTAILLÉE DES 4 RELAIS + JOURNAL D'ALARMES -->
-      <div class="ops-grid">
-        <section class="card">
-          <div class="card-header">
-            <span class="card-title">État &amp; Commande Réelle des 4 Relais (MQTT)</span>
-            <button id="btn-cmd-auto" class="cmd-btn" type="button" onclick="sendAutoModeCommand()" disabled>Mode Auto ESP32</button>
-          </div>
-          <div class="relay-list">
-            <div class="relay-row">
-              <div class="relay-meta">
-                <strong>Relais K1 (IN1) — ATS Source SONABEL / Solaire</strong>
-                <span>GPIO 26 · Commutation arrivée 12V SONABEL (NC) / Batterie 3S (NO)</span>
-              </div>
-              <div class="relay-controls">
-                <span id="rel-st-1" class="badge bg-gray">ATTENTE</span>
-                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN1', 26, 'ON')">SONABEL</button>
-                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN1', 26, 'OFF')">Solaire</button>
-              </div>
-            </div>
-
-            <div class="relay-row">
-              <div class="relay-meta">
-                <strong>Relais K2 (IN2) — Charge Prioritaire : Lumière 12V</strong>
-                <span>GPIO 27 · Éclairage LED 12V + BP Lumière (GPIO 16)</span>
-              </div>
-              <div class="relay-controls">
-                <span id="rel-st-2" class="badge bg-gray">ATTENTE</span>
-                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN2', 27, 'ON')">Allumer</button>
-                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN2', 27, 'OFF')">Éteindre</button>
-              </div>
-            </div>
-
-            <div class="relay-row">
-              <div class="relay-meta">
-                <strong>Relais K3 (IN3) — Charge Non-Prioritaire : Ventilateur 12V</strong>
-                <span>GPIO 14 · Ventilateur 12V délestable + BP Ventilateur (GPIO 17)</span>
-              </div>
-              <div class="relay-controls">
-                <span id="rel-st-3" class="badge bg-gray">ATTENTE</span>
-                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN3', 14, 'ON')">Allumer</button>
-                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN3', 14, 'OFF')">Éteindre</button>
-              </div>
-            </div>
-
-            <div class="relay-row">
-              <div class="relay-meta">
-                <strong>Relais K4 (IN4) — Mini-pompe Polytank 12V</strong>
-                <span>GPIO 12 · Pompe submersible AD20P-1230C</span>
-              </div>
-              <div class="relay-controls">
-                <span id="rel-st-4" class="badge bg-gray">ATTENTE</span>
-                <button class="cmd-btn mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN4', 12, 'ON')">Démarrer</button>
-                <button class="cmd-btn cmd-off mqtt-cmd-btn" type="button" onclick="sendRelayCommand('IN4', 12, 'OFF')">Arrêter</button>
-              </div>
-            </div>
-          </div>
-          <div class="cmd-foot">
-            <span>Publication JSON directe vers l'ESP32 sur <strong class="mono">cge/uauben/david/smartgrid/cmd</strong></span>
-            <span id="cmd-status-txt" class="mono">Broker hors ligne</span>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <span class="card-title">Journal d'alarmes &amp; d'événements horodaté</span>
-            <span class="mono" style="font-size:11px; color:var(--muted);">30 derniers événements</span>
-          </div>
-          <div id="event-log" class="log-list">
-            <div class="log-item">Initialisation SCADA. Connexion au broker MQTT HiveMQ en cours...</div>
-          </div>
-        </section>
-      </div>
-
-      <!-- 5. PANNEAU ALERTES AGENT DE MAINTENANCE (WHATSAPP TEXTMEBOT + TELEGRAM) -->
-      <section id="agent-alerts-panel" class="card" aria-label="Configuration des alertes agent de maintenance">
-        <div class="card-header">
-          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-            <span class="card-title">Alertes Agent (WhatsApp TextMeBot &amp; Telegram)</span>
-            <span id="agent-channels-badge" class="badge bg-gray">CANAUX INACTIFS</span>
-          </div>
-          <span class="mono" style="font-size:11px; color:var(--muted);">Sauvegarde auto · localStorage · Anti-spam actif</span>
+    <!-- =========================================================
+         LIGNE 3 : JOURNAL D'ALARMES + ALERTES AGENT REPLIABLES
+         ========================================================= -->
+    <section class="row-bottom" aria-label="Alarmes et notifications">
+      <!-- Journal d'alarmes (compact avec scroll interne) -->
+      <article class="panel-card" aria-label="Journal d'alarmes">
+        <div class="panel-head">
+          <h2 class="panel-title">Journal d'alarmes</h2>
+          <span id="alarm-view-badge" class="badge bg-green">0 ALARME ACTIVE</span>
         </div>
 
-        <div class="agent-grid">
-          <!-- BLOC 1 : WHATSAPP (TEXTMEBOT NO-CORS) -->
-          <div id="panel-wa" class="channel-panel">
-            <div class="channel-head">
-              <div class="channel-id">
-                <div class="channel-ico wa" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" /></svg>
+        <div class="alarm-strip" aria-label="État des protections">
+          <span class="alarm-chip">Q1 <strong id="al-val-disj">--</strong> <span id="al-st-disj" class="badge bg-gray">ATTENTE</span></span>
+          <span class="alarm-chip">Courant <strong id="al-val-i">-- A</strong> <span id="al-st-i" class="badge bg-gray">ATTENTE</span></span>
+          <span class="alarm-chip">Temp. <strong id="al-val-t">-- °C</strong> <span id="al-st-t" class="badge bg-gray">ATTENTE</span></span>
+          <span class="alarm-chip">Cuve <strong id="al-val-eau">-- %</strong> <span id="al-st-eau" class="badge bg-gray">ATTENTE</span></span>
+          <span class="alarm-chip">Réseau <strong id="al-val-src">--</strong> <span id="al-st-src" class="badge bg-gray">ATTENTE</span></span>
+        </div>
+
+        <div id="event-log" class="log-list" aria-live="polite">
+          <div class="log-item">Initialisation de la supervision en cours...</div>
+        </div>
+      </article>
+
+      <!-- Alertes Agent (WhatsApp & Telegram) dans un panneau repliable -->
+      <section class="card" id="agent-alerts-panel" aria-label="Paramètres d'alertes WhatsApp et Telegram">
+        <button id="btn-toggle-alerts" class="collapse-trigger" type="button" aria-expanded="false" aria-controls="alerts-collapse-body" onclick="toggleAlertsPanel()">
+          <span class="collapse-title-group">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>
+            <span class="panel-title">Paramètres d'alertes (WhatsApp &amp; Telegram)</span>
+          </span>
+          <span class="collapse-right">
+            <span id="agent-channels-badge" class="badge bg-gray">INACTIF</span>
+            <svg class="chevron-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+          </span>
+        </button>
+
+        <div id="alerts-collapse-body" class="collapse-body">
+          <div class="channels-grid">
+            <!-- WhatsApp (TextMeBot) -->
+            <div id="panel-wa" class="channel-panel">
+              <div class="channel-head">
+                <span class="channel-name">WhatsApp (TextMeBot)</span>
+                <label id="wa-toggle-wrap" class="toggle-wrap">
+                  <span id="wa-toggle-lbl" class="toggle-lbl">OFF</span>
+                  <input id="alert-wa-enabled" class="toggle-input" type="checkbox" onchange="saveAlertConfig()" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="field-stack">
+                <div class="field-group">
+                  <label class="field-label" for="alert-wa-phone">Numéro WhatsApp</label>
+                  <input id="alert-wa-phone" class="field-input" type="tel" inputmode="tel" placeholder="+22670000000" autocomplete="off" oninput="saveAlertConfig()" />
                 </div>
-                <div class="channel-title-wrap">
-                  <div class="channel-title">
-                    <span>WhatsApp (TextMeBot)</span>
-                    <span class="badge bg-gray">API HTTP</span>
+                <div class="field-group">
+                  <label class="field-label" for="alert-wa-apikey">Clé API TextMeBot</label>
+                  <div class="secret-wrap">
+                    <input id="alert-wa-apikey" class="field-input" type="password" placeholder="Clé API" autocomplete="off" oninput="saveAlertConfig()" />
+                    <button class="secret-btn" type="button" onclick="toggleSecretField('alert-wa-apikey', this)">Voir</button>
                   </div>
-                  <span class="channel-sub">Envoi direct sur numéro mobile (+226...)</span>
                 </div>
               </div>
-              <label id="wa-toggle-wrap" class="toggle-wrap" title="Activer ou désactiver les alertes WhatsApp">
-                <span id="wa-toggle-lbl" class="toggle-lbl">OFF</span>
-                <input id="alert-wa-enabled" class="toggle-input" type="checkbox" onchange="saveAlertConfig()" />
-                <span class="toggle-track"></span>
-              </label>
-            </div>
-
-            <div class="field-grid">
-              <div class="field-group">
-                <label class="field-label" for="alert-wa-phone">Numéro WhatsApp</label>
-                <input id="alert-wa-phone" class="field-input" type="tel" inputmode="tel" placeholder="+22670000000" autocomplete="off" oninput="saveAlertConfig()" />
-              </div>
-              <div class="field-group">
-                <label class="field-label" for="alert-wa-apikey">Clé API TextMeBot</label>
-                <div class="secret-wrap">
-                  <input id="alert-wa-apikey" class="field-input" type="password" placeholder="Votre clé API" autocomplete="off" oninput="saveAlertConfig()" />
-                  <button class="secret-btn" type="button" onclick="toggleSecretField('alert-wa-apikey', this)">Voir</button>
-                </div>
+              <div class="channel-foot">
+                <span id="alert-wa-status" class="channel-status">Canal désactivé</span>
+                <button id="btn-test-wa" class="btn-outline" type="button" onclick="testWhatsAppAlert()">Tester WhatsApp</button>
               </div>
             </div>
 
-            <div class="channel-foot">
-              <span id="alert-wa-status" class="channel-status">Canal désactivé</span>
-              <button id="btn-test-wa" class="btn-test-alert" type="button" onclick="testWhatsAppAlert()">Tester WhatsApp</button>
-            </div>
-          </div>
-
-          <!-- BLOC 2 : TELEGRAM -->
-          <div id="panel-tg" class="channel-panel">
-            <div class="channel-head">
-              <div class="channel-id">
-                <div class="channel-ico tg" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
-                </div>
-                <div class="channel-title-wrap">
-                  <div class="channel-title">
-                    <span>Telegram</span>
-                    <span class="badge bg-blue">Illimité</span>
+            <!-- Telegram -->
+            <div id="panel-tg" class="channel-panel">
+              <div class="channel-head">
+                <span class="channel-name">Telegram</span>
+                <label id="tg-toggle-wrap" class="toggle-wrap">
+                  <span id="tg-toggle-lbl" class="toggle-lbl">OFF</span>
+                  <input id="alert-tg-enabled" class="toggle-input" type="checkbox" onchange="saveAlertConfig()" />
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="field-stack">
+                <div class="field-group">
+                  <label class="field-label" for="alert-tg-token">Bot Token</label>
+                  <div class="secret-wrap">
+                    <input id="alert-tg-token" class="field-input" type="password" placeholder="123456:ABC..." autocomplete="off" oninput="saveAlertConfig()" />
+                    <button class="secret-btn" type="button" onclick="toggleSecretField('alert-tg-token', this)">Voir</button>
                   </div>
-                  <span class="channel-sub">Bot API officielle · Notifications instantanées</span>
+                </div>
+                <div class="field-group">
+                  <label class="field-label" for="alert-tg-chatid">Chat ID</label>
+                  <input id="alert-tg-chatid" class="field-input" type="text" placeholder="Ex. 123456789" autocomplete="off" oninput="saveAlertConfig()" />
                 </div>
               </div>
-              <label id="tg-toggle-wrap" class="toggle-wrap" title="Activer ou désactiver les alertes Telegram">
-                <span id="tg-toggle-lbl" class="toggle-lbl">OFF</span>
-                <input id="alert-tg-enabled" class="toggle-input" type="checkbox" onchange="saveAlertConfig()" />
-                <span class="toggle-track"></span>
-              </label>
-            </div>
-
-            <div class="field-grid">
-              <div class="field-group">
-                <label class="field-label" for="alert-tg-token">Bot Token</label>
-                <div class="secret-wrap">
-                  <input id="alert-tg-token" class="field-input" type="password" placeholder="123456:AAH..." autocomplete="off" oninput="saveAlertConfig()" />
-                  <button class="secret-btn" type="button" onclick="toggleSecretField('alert-tg-token', this)">Voir</button>
-                </div>
-              </div>
-              <div class="field-group">
-                <label class="field-label" for="alert-tg-chatid">Chat ID</label>
-                <input id="alert-tg-chatid" class="field-input" type="text" placeholder="Ex. 987654321 ou -100..." autocomplete="off" oninput="saveAlertConfig()" />
+              <div class="channel-foot">
+                <span id="alert-tg-status" class="channel-status">Canal désactivé</span>
+                <button id="btn-test-tg" class="btn-outline" type="button" onclick="testTelegramAlert()">Tester Telegram</button>
               </div>
             </div>
+          </div>
 
-            <div class="channel-foot">
-              <span id="alert-tg-status" class="channel-status">Canal désactivé</span>
-              <button id="btn-test-tg" class="btn-test-alert" type="button" onclick="testTelegramAlert()">Tester Telegram</button>
+          <div class="latch-bar">
+            <div class="latch-pills">
+              <span id="latch-sonabel" class="latch-pill"><span class="latch-dot"></span>SONABEL : PRÊT</span>
+              <span id="latch-acs" class="latch-pill"><span class="latch-dot"></span>COURANT : PRÊT</span>
+              <span id="latch-temp" class="latch-pill"><span class="latch-dot"></span>TEMP : PRÊT</span>
+              <span id="latch-eau" class="latch-pill"><span class="latch-dot"></span>CUVE : PRÊT</span>
             </div>
+            <button class="btn-outline" type="button" onclick="resetAlertLatches()">Réarmer verrous</button>
           </div>
-        </div>
-
-        <div class="latch-bar">
-          <div class="latch-list">
-            <strong style="color:var(--ink);">Verrous anti-spam :</strong>
-            <span id="latch-sonabel" class="latch-pill"><span class="latch-dot"></span>SONABEL : PRÊT</span>
-            <span id="latch-acs" class="latch-pill"><span class="latch-dot"></span>ACS712 : PRÊT</span>
-            <span id="latch-temp" class="latch-pill"><span class="latch-dot"></span>DS18B20 : PRÊT</span>
-            <span id="latch-eau" class="latch-pill"><span class="latch-dot"></span>POLYTANK : PRÊT</span>
-          </div>
-          <button class="btn-reset-latch" type="button" onclick="resetAlertLatches()">Réarmer verrous</button>
-        </div>
-      </section>
-    </section>
-
-    <!-- =======================================================
-         VUE 2 : TENDANCES TEMPS RÉEL (2 GRAPHIQUES CHART.JS)
-         ======================================================= -->
-    <section id="view-tendances" class="view-container" aria-label="Courbes temps réel">
-      <div class="charts-grid">
-        <section class="card">
-          <div class="card-header">
-            <span class="card-title">Tension (V), Courant (A) &amp; Température (°C)</span>
-            <span class="mono" style="font-size:11px; color:var(--muted);">30 derniers points MQTT</span>
-          </div>
-          <div class="chart-body">
-            <div class="chart-box"><canvas id="scadaChart"></canvas></div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <span class="card-title">Puissance Active (W) &amp; Niveau Polytank (%)</span>
-            <span class="mono" style="font-size:11px; color:var(--muted);">30 derniers points MQTT</span>
-          </div>
-          <div class="chart-body">
-            <div class="chart-box"><canvas id="powerWaterChart"></canvas></div>
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <!-- =======================================================
-         VUE 3 : ALARMES & SEUILS DE PROTECTION
-         ======================================================= -->
-    <section id="view-alarmes" class="view-container" aria-label="Surveillance des alarmes">
-      <section class="card">
-        <div class="card-header">
-          <span class="card-title">Surveillance des alarmes &amp; seuils de protection</span>
-          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <span id="alarm-view-badge" class="badge bg-green">0 ALARME ACTIVE</span>
-            <button class="el-btn-outline" type="button" onclick="openAgentAlertsPanel()">Alertes Agent (WA / TG)</button>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table class="scada-table">
-            <thead>
-              <tr>
-                <th>Code Tag</th>
-                <th>Condition surveillée</th>
-                <th>Seuil / Consigne</th>
-                <th>Valeur courante</th>
-                <th>État</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="mono"><strong>Q1_TRIP</strong></td>
-                <td>Déclenchement Disjoncteur Q1 (IN3 / GPIO 14)</td>
-                <td class="mono">disj == 0</td>
-                <td class="mono" id="al-val-disj">--</td>
-                <td><span id="al-st-disj" class="badge bg-gray">ATTENTE</span></td>
-              </tr>
-              <tr>
-                <td class="mono"><strong>IT-101_HI</strong></td>
-                <td>Surcharge Courant Charge (ACS712 #1 / GPIO 35)</td>
-                <td class="mono">&gt; 3.5 A</td>
-                <td class="mono" id="al-val-i">--.- A</td>
-                <td><span id="al-st-i" class="badge bg-gray">ATTENTE</span></td>
-              </tr>
-              <tr>
-                <td class="mono"><strong>TT-101_HI</strong></td>
-                <td>Surchauffe Transformateur (DS18B20 / GPIO 4)</td>
-                <td class="mono" id="al-th-t">&gt; 60.0 °C</td>
-                <td class="mono" id="al-val-t">--.- °C</td>
-                <td><span id="al-st-t" class="badge bg-gray">ATTENTE</span></td>
-              </tr>
-              <tr>
-                <td class="mono"><strong>LT-101_LO</strong></td>
-                <td>Niveau Polytank Critique (HC-SR04 / GPIO 5-18)</td>
-                <td class="mono" id="al-th-eau">&lt; 30 %</td>
-                <td class="mono" id="al-val-eau">-- %</td>
-                <td><span id="al-st-eau" class="badge bg-gray">ATTENTE</span></td>
-              </tr>
-              <tr>
-                <td class="mono"><strong>ATS-101_SRC</strong></td>
-                <td>Bascule / Perte Source Principale SONABEL</td>
-                <td class="mono">SONABEL nominal</td>
-                <td class="mono" id="al-val-src">ATTENTE</td>
-                <td><span id="al-st-src" class="badge bg-gray">ATTENTE</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </section>
-
-    <!-- =======================================================
-         VUE 4 : ÉQUIPEMENTS & TAGS INDUSTRIELS
-         ======================================================= -->
-    <section id="view-equipements" class="view-container" aria-label="Inventaire équipements SCADA">
-      <section class="card">
-        <div class="card-header">
-          <span class="card-title">Inventaire des équipements, broches ESP32 &amp; tags SCADA</span>
-          <span class="mono" style="font-size:11px; color:var(--muted);">Flux MQTT : cge/uauben/david/smartgrid</span>
-        </div>
-        <div class="table-wrap">
-          <table class="scada-table">
-            <thead>
-              <tr>
-                <th>Tag</th>
-                <th>Équipement / Broche ESP32</th>
-                <th>Clé JSON</th>
-                <th>Mesure / État temps réel</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td class="mono"><strong>V-101</strong></td><td>Tension Active Bus DC — SONABEL / Batterie (GPIO 34 / 32)</td><td class="mono">v</td><td class="mono" id="eq-v">--.- V</td></tr>
-              <tr><td class="mono"><strong>TT-101</strong></td><td>Sonde thermique étanche DS18B20 (GPIO 4)</td><td class="mono">t</td><td class="mono" id="eq-t">--.- °C</td></tr>
-              <tr><td class="mono"><strong>BT-101</strong></td><td>Pack Batterie 3S 18650 + BMS 3S 40A (GPIO 32)</td><td class="mono">batt</td><td class="mono" id="eq-batt">-- %</td></tr>
-              <tr><td class="mono"><strong>ATS-101</strong></td><td>Inverseur Automatique — Relais IN1/IN2 (GPIO 26 / 27)</td><td class="mono">src</td><td class="mono" id="eq-src">ATTENTE</td></tr>
-              <tr><td class="mono"><strong>Q1</strong></td><td>Disjoncteur Principal — Relais IN3 (GPIO 14)</td><td class="mono">disj</td><td class="mono" id="eq-disj">--</td></tr>
-              <tr><td class="mono"><strong>IT-101</strong></td><td>Départ Charges 12V — ACS712 #1 (GPIO 35)</td><td class="mono">i</td><td class="mono" id="eq-i">--.- A (0 W)</td></tr>
-              <tr><td class="mono"><strong>LT-101</strong></td><td>Niveau Polytank — Ultrason HC-SR04 (GPIO 5 / 18)</td><td class="mono">eau</td><td class="mono" id="eq-eau">-- %</td></tr>
-              <tr><td class="mono"><strong>P-101</strong></td><td>Mini-pompe 12V AD20P-1230C — Relais IN4 (GPIO 12)</td><td class="mono">pompe</td><td class="mono" id="eq-pompe">ATTENTE</td></tr>
-            </tbody>
-          </table>
         </div>
       </section>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <h3>Smart Grid U-AUBEN · CGE</h3>
-        <p>Supervision industrielle temps réel sur broker MQTT HiveMQ — Architecture 12V DC &amp; Polytank sur ESP32.</p>
-      </div>
-      <div class="footer-links">
-        <a class="footer-link" href="./index.html">Accueil</a>
-        <a class="footer-link" href="./simulateur_cablage.html">Simulateur</a>
-        <a class="footer-link" href="./demo_3d_smartgrid.html">Maquette 3D</a>
-        <button class="footer-link" type="button" onclick="switchView('supervision')">Pupitre HMI</button>
-        <button class="footer-link" type="button" onclick="switchView('tendances')">Tendances</button>
-        <button class="footer-link" type="button" onclick="switchView('alarmes')">Alarmes</button>
-        <button class="footer-link" type="button" onclick="switchView('equipements')">Équipements</button>
-      </div>
-    </div>
-  </footer>
-
   <script>
     // =========================================================
-    // 1. PWA — SERVICE WORKER & BOUTON D'INSTALLATION
+    // 1. PWA — SERVICE WORKER & INSTALLATION MOBILE
     // =========================================================
     let deferredInstallPrompt = null;
 
@@ -2367,29 +1520,18 @@
       if (btn) btn.classList.remove("visible");
     }
 
-    // =========================================================
-    // 2. NAVIGATION, HORLOGE & SEUILS HMI CONFIGURABLES
-    // =========================================================
-    function switchView(viewName) {
-      document.querySelectorAll(".view-container").forEach(v => v.classList.remove("active"));
-      document.querySelectorAll(".el-tab").forEach(btn => btn.classList.toggle("active", btn.dataset.view === viewName));
-      const target = document.getElementById("view-" + viewName);
-      if (target) target.classList.add("active");
-      if (viewName === "tendances") {
-        setTimeout(() => {
-          if (typeof scadaChart !== "undefined") scadaChart.resize();
-          if (typeof powerWaterChart !== "undefined") powerWaterChart.resize();
-        }, 30);
-      }
+    function toggleAlertsPanel(forceOpen) {
+      const btn = document.getElementById("btn-toggle-alerts");
+      const body = document.getElementById("alerts-collapse-body");
+      if (!btn || !body) return;
+      const open = typeof forceOpen === "boolean" ? forceOpen : !body.classList.contains("open");
+      body.classList.toggle("open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
     }
 
-    function majHorloge() {
-      const el = document.getElementById("live-clock");
-      if (el) el.textContent = new Date().toLocaleTimeString();
-    }
-    majHorloge();
-    setInterval(majHorloge, 1000);
-
+    // =========================================================
+    // 2. SEUILS CONFIGURABLES & COMPOSANTS VISUELS
+    // =========================================================
     const SCADA_LIMITS_KEY = "uauben_scada_limits_v1";
     const scadaLimits = {
       tempHigh: 60,
@@ -2418,9 +1560,7 @@
     }
 
     function persistScadaLimits() {
-      try {
-        localStorage.setItem(SCADA_LIMITS_KEY, JSON.stringify(scadaLimits));
-      } catch (e) {}
+      try { localStorage.setItem(SCADA_LIMITS_KEY, JSON.stringify(scadaLimits)); } catch (e) {}
     }
 
     function updateTempGauge(tempValue) {
@@ -2430,19 +1570,14 @@
       const warnBox = document.getElementById("hmi-temp-warning");
       const arcLen = 301.6;
 
-      // Position du repère de seuil haut sur le demi-cercle (0-80 °C)
       if (limitTick) {
         const limRatio = Math.max(0, Math.min(1, scadaLimits.tempHigh / 80));
         const rad = Math.PI * (1 - limRatio);
         const cx = 140, cy = 134;
-        const x1 = cx + 82 * Math.cos(rad);
-        const y1 = cy - 82 * Math.sin(rad);
-        const x2 = cx + 111 * Math.cos(rad);
-        const y2 = cy - 111 * Math.sin(rad);
-        limitTick.setAttribute("x1", x1.toFixed(1));
-        limitTick.setAttribute("y1", y1.toFixed(1));
-        limitTick.setAttribute("x2", x2.toFixed(1));
-        limitTick.setAttribute("y2", y2.toFixed(1));
+        limitTick.setAttribute("x1", (cx + 82 * Math.cos(rad)).toFixed(1));
+        limitTick.setAttribute("y1", (cy - 82 * Math.sin(rad)).toFixed(1));
+        limitTick.setAttribute("x2", (cx + 111 * Math.cos(rad)).toFixed(1));
+        limitTick.setAttribute("y2", (cy - 111 * Math.sin(rad)).toFixed(1));
       }
 
       if (tempValue === null || Number.isNaN(tempValue)) {
@@ -2466,7 +1601,7 @@
       }
       if (needle) needle.setAttribute("transform", `rotate(${deg.toFixed(1)} 140 134)`);
       if (warnBox) {
-        warnBox.textContent = `Alerte : la température du transformateur (${tempValue.toFixed(1)} °C) dépasse le seuil haut configuré (${scadaLimits.tempHigh} °C).`;
+        warnBox.textContent = `Alerte surchauffe : ${tempValue.toFixed(1)} °C (seuil ${scadaLimits.tempHigh} °C).`;
         warnBox.classList.toggle("visible", isOver);
       }
     }
@@ -2479,35 +1614,10 @@
       const statusEl = document.getElementById("hmi-tank-status");
       const warnBox = document.getElementById("hmi-tank-warning");
 
-      // Repères seuil bas / haut dans la cuve HMI (hauteur utile 198px, y: 9..207)
       const yLow = 207 - (scadaLimits.tankLow / 100) * 198;
       const yHigh = 207 - (scadaLimits.tankHigh / 100) * 198;
-      if (lineLow) {
-        lineLow.setAttribute("y1", yLow.toFixed(1));
-        lineLow.setAttribute("y2", yLow.toFixed(1));
-      }
-      if (lineHigh) {
-        lineHigh.setAttribute("y1", yHigh.toFixed(1));
-        lineHigh.setAttribute("y2", yHigh.toFixed(1));
-      }
-
-      // Repères identiques sur le synoptique P&ID (hauteur utile 176px, y: 138..314)
-      const pidLowY = 314 - (scadaLimits.tankLow / 100) * 176;
-      const pidHighY = 314 - (scadaLimits.tankHigh / 100) * 176;
-      const pidLineLow = document.getElementById("pid-line-low");
-      const pidTickLow = document.getElementById("pid-tick-low");
-      const pidLblLow = document.getElementById("pid-lbl-low");
-      const pidLineHigh = document.getElementById("pid-line-high");
-      const pidTickHigh = document.getElementById("pid-tick-high");
-      const pidLblHigh = document.getElementById("pid-lbl-high");
-
-      if (pidLineLow) { pidLineLow.setAttribute("y1", pidLowY.toFixed(1)); pidLineLow.setAttribute("y2", pidLowY.toFixed(1)); }
-      if (pidTickLow) { pidTickLow.setAttribute("y1", pidLowY.toFixed(1)); pidTickLow.setAttribute("y2", pidLowY.toFixed(1)); }
-      if (pidLblLow)  { pidLblLow.setAttribute("y", (pidLowY + 3).toFixed(1)); pidLblLow.textContent = scadaLimits.tankLow + "%"; }
-
-      if (pidLineHigh) { pidLineHigh.setAttribute("y1", pidHighY.toFixed(1)); pidLineHigh.setAttribute("y2", pidHighY.toFixed(1)); }
-      if (pidTickHigh) { pidTickHigh.setAttribute("y1", pidHighY.toFixed(1)); pidTickHigh.setAttribute("y2", pidHighY.toFixed(1)); }
-      if (pidLblHigh)  { pidLblHigh.setAttribute("y", (pidHighY + 3).toFixed(1)); pidLblHigh.textContent = scadaLimits.tankHigh + "%"; }
+      if (lineLow)  { lineLow.setAttribute("y1", yLow.toFixed(1)); lineLow.setAttribute("y2", yLow.toFixed(1)); }
+      if (lineHigh) { lineHigh.setAttribute("y1", yHigh.toFixed(1)); lineHigh.setAttribute("y2", yHigh.toFixed(1)); }
 
       if (eauValue === null || Number.isNaN(eauValue)) {
         if (waterEl) { waterEl.setAttribute("y", "207"); waterEl.setAttribute("height", "0"); }
@@ -2536,7 +1646,7 @@
           statusEl.textContent = "NIVEAU CRITIQUE";
           statusEl.className = "badge bg-red";
         } else if (clamped >= scadaLimits.tankHigh) {
-          statusEl.textContent = "POLYTANK PLEIN";
+          statusEl.textContent = "CUVE PLEINE";
           statusEl.className = "badge bg-green";
         } else {
           statusEl.textContent = "NIVEAU NORMAL";
@@ -2545,7 +1655,7 @@
       }
 
       if (warnBox) {
-        warnBox.textContent = `Alerte : le niveau Polytank (${clamped}%) est inférieur au seuil bas configuré (${scadaLimits.tankLow}%).`;
+        warnBox.textContent = `Alerte niveau bas : ${clamped}% (seuil bas ${scadaLimits.tankLow}%).`;
         warnBox.classList.toggle("visible", isLowConfirmed);
       }
     }
@@ -2557,8 +1667,6 @@
       const lblTemp = document.getElementById("hmi-temp-limit-lbl");
       const lblLow = document.getElementById("hmi-tank-low-lbl");
       const lblHigh = document.getElementById("hmi-tank-high-lbl");
-      const alThT = document.getElementById("al-th-t");
-      const alThEau = document.getElementById("al-th-eau");
 
       if (inpTemp) inpTemp.value = scadaLimits.tempHigh;
       if (inpLow) inpLow.value = scadaLimits.tankLow;
@@ -2566,15 +1674,13 @@
       if (lblTemp) lblTemp.textContent = scadaLimits.tempHigh + " °C";
       if (lblLow) lblLow.textContent = scadaLimits.tankLow + "%";
       if (lblHigh) lblHigh.textContent = scadaLimits.tankHigh + "%";
-      if (alThT) alThT.textContent = `> ${scadaLimits.tempHigh.toFixed(1)} °C`;
-      if (alThEau) alThEau.textContent = `< ${scadaLimits.tankLow} %`;
 
       updateTempGauge(lastTelemetry ? lastTelemetry.t : null);
       updateHmiTank(lastTelemetry ? lastTelemetry.eau : null);
     }
 
     function publishLimitsConfig() {
-      if (client && brokerOnline) {
+      if (client && linkOnline) {
         const payload = JSON.stringify({
           mode: "CONFIG",
           temp_high: scadaLimits.tempHigh,
@@ -2590,14 +1696,14 @@
       const inp = document.getElementById("input-temp-high");
       const val = Number(inp ? inp.value : 60);
       if (Number.isNaN(val) || val < 20 || val > 80) {
-        ajouterLog("Consigne Seuil Haut Température invalide (plage autorisée : 20 à 80 °C).", "warn");
+        ajouterLog("Consigne température invalide (20 à 80 °C).", "warn");
         return;
       }
       scadaLimits.tempHigh = Math.round(val * 10) / 10;
       persistScadaLimits();
       syncLimitsUI();
       publishLimitsConfig();
-      ajouterLog(`Seuil Haut Température (DS18B20) enregistré : ${scadaLimits.tempHigh} °C.`, "ok");
+      ajouterLog(`Seuil température enregistré : ${scadaLimits.tempHigh} °C.`, "ok");
       if (lastTelemetry) refreshThresholdDrivenStates(lastTelemetry);
     }
 
@@ -2605,14 +1711,14 @@
       const inp = document.getElementById("input-tank-low");
       const val = Math.round(Number(inp ? inp.value : 30));
       if (Number.isNaN(val) || val < 5 || val >= scadaLimits.tankHigh) {
-        ajouterLog(`Seuil Bas Polytank invalide (doit être compris entre 5% et ${scadaLimits.tankHigh - 1}%).`, "warn");
+        ajouterLog(`Seuil bas invalide (entre 5% et ${scadaLimits.tankHigh - 1}%).`, "warn");
         return;
       }
       scadaLimits.tankLow = val;
       persistScadaLimits();
       syncLimitsUI();
       publishLimitsConfig();
-      ajouterLog(`Seuil Bas Polytank enregistré : ${scadaLimits.tankLow}%.`, "ok");
+      ajouterLog(`Seuil bas Polytank enregistré : ${scadaLimits.tankLow}%.`, "ok");
       if (lastTelemetry) refreshThresholdDrivenStates(lastTelemetry);
     }
 
@@ -2620,14 +1726,14 @@
       const inp = document.getElementById("input-tank-high");
       const val = Math.round(Number(inp ? inp.value : 85));
       if (Number.isNaN(val) || val <= scadaLimits.tankLow || val > 100) {
-        ajouterLog(`Seuil Haut Polytank invalide (doit être compris entre ${scadaLimits.tankLow + 1}% et 100%).`, "warn");
+        ajouterLog(`Seuil haut invalide (entre ${scadaLimits.tankLow + 1}% et 100%).`, "warn");
         return;
       }
       scadaLimits.tankHigh = val;
       persistScadaLimits();
       syncLimitsUI();
       publishLimitsConfig();
-      ajouterLog(`Seuil Haut Polytank enregistré : ${scadaLimits.tankHigh}%.`, "ok");
+      ajouterLog(`Seuil haut Polytank enregistré : ${scadaLimits.tankHigh}%.`, "ok");
       if (lastTelemetry) refreshThresholdDrivenStates(lastTelemetry);
     }
 
@@ -2648,41 +1754,37 @@
         sendAutoModeCommand();
       } else {
         const cmdObj = { mode: "MANUAL", ts: Date.now() };
-        if (client && brokerOnline) {
+        if (client && linkOnline) {
           client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
-          ajouterLog("Commande MQTT envoyée : passage en mode MANUEL opérateur.", "warn");
-        } else {
-          if (typeof scadaBus !== "undefined" && scadaBus) {
-            try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
-          }
-          ajouterLog("Mode de conduite basculé sur MANUEL.", "warn");
+        } else if (typeof scadaBus !== "undefined" && scadaBus) {
+          try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
         }
+        ajouterLog("Mode de conduite basculé en MANUEL.", "warn");
       }
     }
 
     function updateLocalChargeBadges(relayId, isOn, label) {
-      if (relayId === "IN2") {
+      if (relayId === "IN1") {
+        majBadgeRelais("rel-st-1", isOn, "SONABEL", "SOLAIRE", "bg-green", "bg-yellow");
+      } else if (relayId === "IN2") {
         const b = document.getElementById("hmi-lumiere-badge");
         if (b) {
           b.textContent = isOn ? "K2 : ALLUMÉE" : "K2 : ÉTEINTE";
           b.className = "hmi-status-pill " + (isOn ? "is-running" : "");
         }
-        majBadgeRelais("rel-st-2", isOn, "ALLUMÉE (ON)", "ÉTEINTE (OFF)", "bg-green", "bg-gray");
       } else if (relayId === "IN3") {
         const isShed = !isOn && label === "Délestage Q1";
         const b = document.getElementById("hmi-ventilo-badge");
         if (b) {
-          b.textContent = isOn ? "K3 : EN MARCHE" : (isShed ? "K3 : DÉLESTÉ" : "K3 : ARRÊTÉ");
+          b.textContent = isOn ? "K3 : MARCHE" : (isShed ? "K3 : DÉLESTÉ" : "K3 : ARRÊT");
           b.className = "hmi-status-pill " + (isOn ? "is-running" : (isShed ? "is-manual" : ""));
         }
-        majBadgeRelais("rel-st-3", isOn, "EN MARCHE (ON)", isShed ? "DÉLESTÉ" : "ARRÊTÉ (OFF)", "bg-green", isShed ? "bg-red" : "bg-gray");
       } else if (relayId === "IN4") {
         const b = document.getElementById("hmi-pompe-badge");
         if (b) {
-          b.textContent = isOn ? "K4 : EN MARCHE" : "K4 : ARRÊTÉE";
+          b.textContent = isOn ? "K4 : MARCHE" : "K4 : ARRÊT";
           b.className = "hmi-status-pill " + (isOn ? "is-running" : "");
         }
-        majBadgeRelais("rel-st-4", isOn, "EN MARCHE", "ARRÊTÉE", "bg-blue");
       }
     }
 
@@ -2692,7 +1794,7 @@
     }
 
     // =========================================================
-    // 3. JOURNAL D'ALARMES & D'ÉVÉNEMENTS HORODATÉ
+    // 3. JOURNAL D'ALARMES HORODATÉ
     // =========================================================
     function ajouterLog(msg, type = "") {
       const list = document.getElementById("event-log");
@@ -2706,167 +1808,27 @@
     }
 
     // =========================================================
-    // 4. COURBES TEMPS RÉEL (CHART.JS)
-    // =========================================================
-    const scadaChart = new Chart(document.getElementById("scadaChart").getContext("2d"), {
-      type: "line",
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: "Tension (V)",
-            data: [],
-            borderColor: "#1976D2",
-            backgroundColor: "rgba(25, 118, 210, 0.08)",
-            borderWidth: 2,
-            yAxisID: "yV",
-            tension: 0.28,
-            pointRadius: 2
-          },
-          {
-            label: "Courant (A)",
-            data: [],
-            borderColor: "#2E7D32",
-            backgroundColor: "rgba(46, 125, 50, 0.08)",
-            borderWidth: 2,
-            yAxisID: "yIT",
-            tension: 0.28,
-            pointRadius: 2
-          },
-          {
-            label: "Temp. (°C)",
-            data: [],
-            borderColor: "#C62828",
-            backgroundColor: "rgba(198, 40, 40, 0.08)",
-            borderWidth: 2,
-            yAxisID: "yIT",
-            tension: 0.28,
-            pointRadius: 2
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: false,
-        plugins: {
-          legend: {
-            position: "top",
-            align: "end",
-            labels: { color: "#111827", font: { family: "'Inter', sans-serif", size: 11.5, weight: "600" } }
-          }
-        },
-        scales: {
-          x: {
-            ticks: { color: "#64748B", maxTicksLimit: 8, font: { family: "'IBM Plex Mono', monospace", size: 10.5 } },
-            grid: { color: "#F1F5F9" }
-          },
-          yV: {
-            type: "linear",
-            position: "left",
-            min: 0,
-            suggestedMax: 16,
-            ticks: { color: "#1976D2", font: { family: "'IBM Plex Mono', monospace", size: 10.5 } },
-            grid: { color: "#F1F5F9" }
-          },
-          yIT: {
-            type: "linear",
-            position: "right",
-            min: 0,
-            suggestedMax: 80,
-            ticks: { color: "#2E7D32", font: { family: "'IBM Plex Mono', monospace", size: 10.5 } },
-            grid: { drawOnChartArea: false }
-          }
-        }
-      }
-    });
-
-    const powerWaterChart = new Chart(document.getElementById("powerWaterChart").getContext("2d"), {
-      type: "line",
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: "Puissance (W)",
-            data: [],
-            borderColor: "#3F51B5",
-            backgroundColor: "rgba(63, 81, 181, 0.08)",
-            fill: true,
-            borderWidth: 2,
-            yAxisID: "yP",
-            tension: 0.28,
-            pointRadius: 2
-          },
-          {
-            label: "Polytank (%)",
-            data: [],
-            borderColor: "#1976D2",
-            backgroundColor: "rgba(25, 118, 210, 0.10)",
-            borderWidth: 2,
-            yAxisID: "yW",
-            tension: 0.28,
-            pointRadius: 2
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: false,
-        plugins: {
-          legend: {
-            position: "top",
-            align: "end",
-            labels: { color: "#111827", font: { family: "'Inter', sans-serif", size: 11.5, weight: "600" } }
-          }
-        },
-        scales: {
-          x: {
-            ticks: { color: "#64748B", maxTicksLimit: 8, font: { family: "'IBM Plex Mono', monospace", size: 10.5 } },
-            grid: { color: "#F1F5F9" }
-          },
-          yP: {
-            type: "linear",
-            position: "left",
-            min: 0,
-            suggestedMax: 30,
-            ticks: { color: "#3F51B5", font: { family: "'IBM Plex Mono', monospace", size: 10.5 } },
-            grid: { color: "#F1F5F9" }
-          },
-          yW: {
-            type: "linear",
-            position: "right",
-            min: 0,
-            max: 100,
-            ticks: { color: "#1976D2", font: { family: "'IBM Plex Mono', monospace", size: 10.5 } },
-            grid: { drawOnChartArea: false }
-          }
-        }
-      }
-    });
-
-    // =========================================================
-    // 5. CONNEXION MQTT RÉELLE (HIVEMQ) + COMMANDE 4 RELAIS
+    // 4. LIAISON TEMPS RÉEL ARRIÈRE-PLAN & ANTI-REBOND ALARMES
     // =========================================================
     const TELEMETRY_TOPIC = "cge/uauben/david/smartgrid";
     const COMMAND_TOPIC   = "cge/uauben/david/smartgrid/cmd";
 
     const VALID_SOURCES = new Set(["SONABEL", "SOLAIRE", "COUPURE"]);
-    const CURRENT_OVERLOAD_LIMIT = 3.5;   // Seuil déclenchement surcharge ACS712 (A)
-    const CURRENT_OVERLOAD_CLEAR = 3.3;   // Seuil hystérésis retour courant nominal (A)
-    const SONABEL_LOW_LIMIT      = 9.5;   // Seuil coupure SONABEL (V)
-    const SONABEL_CLEAR_LIMIT    = 10.2;  // Seuil hystérésis retour SONABEL (V)
-    const TEMP_HYSTERESIS_C      = 2.0;   // Hystérésis retour température (°C)
-    const TANK_HYSTERESIS_PCT    = 5;     // Hystérésis retour Polytank (%)
-    const ALARM_CONFIRM_FRAMES   = 2;     // Confirmation sur 2 trames consécutives
-    const ALARM_CLEAR_FRAMES     = 2;     // Effacement durable sur 2 trames consécutives en zone normale
-    const ALARM_COOLDOWN_MS      = 60000; // Cooldown minimum 60 s par type d'alarme
+    const CURRENT_OVERLOAD_LIMIT = 3.5;
+    const CURRENT_OVERLOAD_CLEAR = 3.3;
+    const SONABEL_LOW_LIMIT      = 9.5;
+    const SONABEL_CLEAR_LIMIT    = 10.2;
+    const TEMP_HYSTERESIS_C      = 2.0;
+    const TANK_HYSTERESIS_PCT    = 5;
+    const ALARM_CONFIRM_FRAMES   = 2;
+    const ALARM_CLEAR_FRAMES     = 2;
+    const ALARM_COOLDOWN_MS      = 60000;
 
-    let brokerOnline = false;
-    let hasRealMqttTelemetry = false;
-    let lastRealMqttAt = 0;
+    let linkOnline = false;
+    let hasRealTelemetry = false;
+    let lastRealAt = 0;
     let demoSimTimer = null;
-    let rxCount = 0;
+    let receivedCount = 0;
     let rejectedFrames = 0;
     let dispatchedAlertsCount = 0;
     let prevSrc = null, prevDisj = null, prevPompe = null;
@@ -2905,45 +1867,26 @@
       return VALID_SOURCES.has(s) ? s : null;
     }
 
-    function setBrokerUI(state) {
-      const pill = document.getElementById("broker-pill");
-      const dot = document.getElementById("mqtt-dot");
-      const txt = document.getElementById("mqtt-status");
-      const cmdStatus = document.getElementById("cmd-status-txt");
-      const devStatus = document.getElementById("card-device-status");
-      const cmds = document.querySelectorAll(".mqtt-cmd-btn, #btn-cmd-auto");
+    function setConnectionUI(state) {
+      const pill = document.getElementById("conn-pill");
+      const dot = document.getElementById("conn-dot");
+      const txt = document.getElementById("conn-status");
 
-      brokerOnline = (state === "online");
-      if (brokerOnline) stopDemoGenerator();
-      cmds.forEach(btn => { btn.disabled = !(brokerOnline || typeof BroadcastChannel !== "undefined"); });
+      linkOnline = (state === "online");
+      if (linkOnline) stopDemoGenerator();
 
       if (state === "online") {
-        pill.className = "broker-pill online";
-        dot.className = "dot online";
-        txt.textContent = "En ligne — HiveMQ";
-        if (cmdStatus) cmdStatus.textContent = "Commandes MQTT actives";
-        if (devStatus) {
-          devStatus.textContent = "En ligne";
-          devStatus.className = "kpi-val ok";
-        }
+        if (pill) pill.className = "status-pill online";
+        if (dot) dot.className = "status-dot online";
+        if (txt) txt.textContent = "En ligne";
       } else if (state === "reconnecting") {
-        pill.className = "broker-pill";
-        dot.className = "dot";
-        txt.textContent = "Reconnexion...";
-        if (cmdStatus) cmdStatus.textContent = "Reconnexion en cours";
-        if (devStatus) {
-          devStatus.textContent = "Reconnexion";
-          devStatus.className = "kpi-val warn";
-        }
+        if (pill) pill.className = "status-pill";
+        if (dot) dot.className = "status-dot";
+        if (txt) txt.textContent = "Connexion...";
       } else {
-        pill.className = "broker-pill offline";
-        dot.className = "dot offline";
-        txt.textContent = "Hors ligne";
-        if (cmdStatus) cmdStatus.textContent = "Broker hors ligne";
-        if (devStatus) {
-          devStatus.textContent = "Hors ligne";
-          devStatus.className = "kpi-val alert";
-        }
+        if (pill) pill.className = "status-pill offline";
+        if (dot) dot.className = "status-dot offline";
+        if (txt) txt.textContent = "Hors ligne";
       }
     }
 
@@ -2958,50 +1901,48 @@
       });
 
       client.on("connect", () => {
-        setBrokerUI("online");
+        setConnectionUI("online");
         stopDemoGenerator();
         client.subscribe(TELEMETRY_TOPIC, { qos: 0 });
-        ajouterLog("Connexion établie avec le broker HiveMQ. Abonnement actif sur " + TELEMETRY_TOPIC + ".", "ok");
+        ajouterLog("Connexion établie. Supervision temps réel active.", "ok");
       });
 
       client.on("reconnect", () => {
-        setBrokerUI("reconnecting");
+        setConnectionUI("reconnecting");
       });
 
       client.on("offline", () => {
-        setBrokerUI("offline");
-        ajouterLog("Broker MQTT hors ligne — tentative de reconnexion automatique.", "warn");
+        setConnectionUI("offline");
+        ajouterLog("Liaison interrompue — reconnexion automatique en cours.", "warn");
       });
 
       client.on("error", () => {
-        setBrokerUI("offline");
-        ajouterLog("Erreur de connexion au broker MQTT HiveMQ.", "err");
+        setConnectionUI("offline");
       });
 
       client.on("message", (t, message) => {
         if (t !== TELEMETRY_TOPIC) return;
         try {
           const d = JSON.parse(message.toString());
-          hasRealMqttTelemetry = true;
-          lastRealMqttAt = Date.now();
+          hasRealTelemetry = true;
+          lastRealAt = Date.now();
           stopDemoGenerator();
-          traiterTrameMQTT(d, "mqtt");
+          traiterTrameMQTT(d, "live");
         } catch (e) {
           rejectedFrames += 1;
         }
       });
     } else {
-      setBrokerUI("offline");
-      ajouterLog("Mode hors ligne détecté : client MQTT indisponible sans connexion réseau.", "warn");
+      setConnectionUI("offline");
+      ajouterLog("Mode hors ligne détecté.", "warn");
     }
 
     const scadaBus = (typeof BroadcastChannel !== "undefined") ? new BroadcastChannel("cge_uauben_smartgrid_bus") : null;
     if (scadaBus) {
       scadaBus.addEventListener("message", ev => {
-        // Dès que MQTT HiveMQ est connecté ou actif, ignore les trames locales pour éviter tout conflit.
-        if (brokerOnline || hasRealMqttTelemetry) return;
+        if (linkOnline || hasRealTelemetry) return;
         if (ev.data && ev.data.topic === TELEMETRY_TOPIC && ev.data.payload) {
-          traiterTrameMQTT(ev.data.payload, "bus");
+          traiterTrameMQTT(ev.data.payload, "local");
         }
       });
     }
@@ -3018,26 +1959,23 @@
       };
       updateDriveModeUI(false);
       updateLocalChargeBadges(relayId, cmd === "ON", label);
-      if (client && brokerOnline) {
+      if (client && linkOnline) {
         client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
-        ajouterLog(`Commande MQTT envoyée -> ${label || relayId} (GPIO ${gpio}) : ${cmd}`, cmd === "ON" ? "ok" : "warn");
-      } else {
-        if (scadaBus) {
-          try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
-        }
-        ajouterLog(`Commande envoyée au simulateur local -> ${label || relayId} (GPIO ${gpio}) : ${cmd}`, cmd === "ON" ? "ok" : "warn");
+      } else if (scadaBus) {
+        try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
       }
+      ajouterLog(`Commande envoyée : ${label || relayId} (${cmd}).`, cmd === "ON" ? "ok" : "warn");
     }
 
     function sendAutoModeCommand() {
       updateDriveModeUI(true);
       const cmdObj = { mode: "AUTO", ts: Date.now() };
-      if (client && brokerOnline) {
+      if (client && linkOnline) {
         client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
       } else if (scadaBus) {
         try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
       }
-      ajouterLog("Commande MQTT envoyée -> Retour en régulation automatique ESP32 (Mode AUTO).", "ok");
+      ajouterLog("Retour en régulation automatique.", "ok");
     }
 
     function majBadgeRelais(elId, isOn, onTxt, offTxt, onCls, offCls = "bg-gray") {
@@ -3050,7 +1988,6 @@
     function refreshThresholdDrivenStates(m) {
       const { t, eau, i, disj, src } = m;
 
-      // Température transformateur (DS18B20)
       const valTEl = document.getElementById("val-t");
       const valTState = document.getElementById("val-t-state");
       if (valTEl) valTEl.textContent = t.toFixed(1);
@@ -3068,7 +2005,6 @@
       }
       updateTempGauge(t);
 
-      // Polytank (HC-SR04)
       const barEau = document.getElementById("bar-eau");
       if (barEau) {
         barEau.style.width = eau + "%";
@@ -3076,43 +2012,22 @@
       }
       updateHmiTank(eau);
 
-      const tankStatus = document.getElementById("tank-status-text");
-      if (tankStatus) {
-        if (alarmState.eau.active) {
-          tankStatus.textContent = "NIVEAU CRITIQUE";
-          tankStatus.setAttribute("fill", "#DC2626");
-        } else if (eau >= scadaLimits.tankHigh) {
-          tankStatus.textContent = "POLYTANK PLEIN";
-          tankStatus.setAttribute("fill", "#2E7D32");
-        } else {
-          tankStatus.textContent = "NIVEAU NORMAL";
-          tankStatus.setAttribute("fill", "#1976D2");
-        }
-      }
-
-      // Alarmes actives confirmées (anti-rebond 2 trames + hystérésis)
       const activeAlarms = [];
       if (alarmState.disj.active) activeAlarms.push("Disjoncteur Q1 ouvert");
       if (alarmState.acs.active) activeAlarms.push(`Surcharge (>${CURRENT_OVERLOAD_LIMIT.toFixed(1)} A)`);
       if (alarmState.temp.active) activeAlarms.push(`Surchauffe (>${scadaLimits.tempHigh} °C)`);
       if (alarmState.eau.active) activeAlarms.push(`Niveau bas (<${scadaLimits.tankLow}%)`);
-      if (alarmState.sonabel.active) activeAlarms.push(src === "SOLAIRE" ? "Secours Solaire (perte SONABEL)" : "Coupure SONABEL");
+      if (alarmState.sonabel.active) activeAlarms.push(src === "SOLAIRE" ? "Secours Solaire" : "Coupure SONABEL");
 
       const alarmCount = activeAlarms.length;
       const countEl = document.getElementById("kpi-alarm-count");
       const detailEl = document.getElementById("kpi-alarm-detail");
-      const navBadge = document.getElementById("nav-alarm-badge");
       const viewBadge = document.getElementById("alarm-view-badge");
       const banner = document.getElementById("alert-banner");
-      const synState = document.getElementById("syn-state");
 
       if (countEl) countEl.textContent = alarmCount;
-      if (navBadge) {
-        navBadge.textContent = alarmCount;
-        navBadge.className = "nav-badge" + (alarmCount > 0 ? " has-alarm" : "");
-      }
       if (detailEl) {
-        detailEl.textContent = alarmCount > 0 ? activeAlarms.join(" · ") : "Système nominal";
+        detailEl.textContent = alarmCount > 0 ? activeAlarms[0] : "Nominal";
         detailEl.style.color = alarmCount > 0 ? "var(--red)" : "var(--green)";
       }
       if (viewBadge) {
@@ -3128,40 +2043,29 @@
           banner.style.display = "none";
         }
       }
-      if (synState) {
-        if (alarmCount > 0) {
-          synState.textContent = "DÉFAUT PROTECTION";
-          synState.className = "badge bg-red";
-        } else {
-          synState.textContent = "EXPLOITATION NOMINALE";
-          synState.className = "badge bg-green";
-        }
-      }
 
-      // Tableaux Alarmes (reflètent les alarmes confirmées avec hystérésis)
       document.getElementById("al-val-disj").textContent = disj === 1 ? "FERMÉ" : "OUVERT";
-      document.getElementById("al-st-disj").textContent = alarmState.disj.active ? "ALARME" : "NOMINAL";
+      document.getElementById("al-st-disj").textContent = alarmState.disj.active ? "ALARME" : "OK";
       document.getElementById("al-st-disj").className = alarmState.disj.active ? "badge bg-red" : "badge bg-green";
 
       document.getElementById("al-val-i").textContent = i.toFixed(2) + " A";
-      document.getElementById("al-st-i").textContent = alarmState.acs.active ? "SURCHARGE" : "NOMINAL";
+      document.getElementById("al-st-i").textContent = alarmState.acs.active ? "SURCHARGE" : "OK";
       document.getElementById("al-st-i").className = alarmState.acs.active ? "badge bg-red" : "badge bg-green";
 
       document.getElementById("al-val-t").textContent = t.toFixed(1) + " °C";
-      document.getElementById("al-st-t").textContent = alarmState.temp.active ? "SURCHAUFFE" : "NOMINAL";
+      document.getElementById("al-st-t").textContent = alarmState.temp.active ? "SURCHAUFFE" : "OK";
       document.getElementById("al-st-t").className = alarmState.temp.active ? "badge bg-red" : "badge bg-green";
 
       document.getElementById("al-val-eau").textContent = eau + " %";
-      document.getElementById("al-st-eau").textContent = alarmState.eau.active ? "NIVEAU BAS" : "NOMINAL";
+      document.getElementById("al-st-eau").textContent = alarmState.eau.active ? "BAS" : "OK";
       document.getElementById("al-st-eau").className = alarmState.eau.active ? "badge bg-red" : "badge bg-green";
 
       document.getElementById("al-val-src").textContent = src;
-      document.getElementById("al-st-src").textContent = alarmState.sonabel.active ? (src === "SOLAIRE" ? "SECOURS" : "DÉFAUT") : "NOMINAL";
+      document.getElementById("al-st-src").textContent = alarmState.sonabel.active ? (src === "SOLAIRE" ? "SECOURS" : "COUPURE") : "OK";
       document.getElementById("al-st-src").className = alarmState.sonabel.active ? (src === "SOLAIRE" ? "badge bg-yellow" : "badge bg-red") : "badge bg-green";
     }
 
-    function traiterTrameMQTT(d, origin = "mqtt") {
-      // Validation stricte : ignore toute trame malformée ou incomplète sans jamais remplacer par 0
+    function traiterTrameMQTT(d, origin = "live") {
       if (!d || typeof d !== "object" || Array.isArray(d)) {
         rejectedFrames += 1;
         return false;
@@ -3176,7 +2080,6 @@
       const disjRaw  = parseBinaryFlag(d.disj);
       const pompeRaw = parseBinaryFlag(d.pompe);
 
-      // Tous les champs de mesure de base doivent être valides et non-null
       if (vRaw === null || iRaw === null || tRaw === null || battRaw === null ||
           eauRaw === null || srcRaw === null || disjRaw === null || pompeRaw === null) {
         rejectedFrames += 1;
@@ -3194,7 +2097,6 @@
       const disj = disjRaw;
       const pompe = pompeRaw;
 
-      // Champs étendus optionnels : conserve la dernière valeur valide si absente, jamais forcée à 0
       const vSonParsed = parseFiniteNumber(d.v_sonabel, 0, 60);
       const vSonabel = vSonParsed !== null
         ? vSonParsed
@@ -3221,11 +2123,7 @@
         : (prev ? prev.ventilo : disj);
 
       const nowStr = new Date().toLocaleTimeString();
-      rxCount += 1;
-      document.getElementById("rx-count").textContent = rxCount;
-      document.getElementById("last-update").textContent = nowStr;
-      const cardMaj = document.getElementById("card-last-update");
-      if (cardMaj) cardMaj.textContent = nowStr;
+      receivedCount += 1;
 
       if (d.mode === "AUTO") updateDriveModeUI(true);
       else if (d.mode === "MANUAL") updateDriveModeUI(false);
@@ -3236,26 +2134,38 @@
         nowStr, origin
       };
 
-      // 1. Cartes électriques & numériques
-      document.getElementById("val-v").textContent = v.toFixed(1);
-      document.getElementById("val-v-detail").textContent = (vSonabel !== null) ? `SONABEL ${vSonabel.toFixed(1)} V` : src;
+      // Ligne 1 : 4 cartes KPI
+      const vDisplay = vSonabel !== null ? vSonabel : v;
+      document.getElementById("val-v").textContent = vDisplay.toFixed(1);
+      document.getElementById("val-v-detail").textContent = vDisplay >= SONABEL_LOW_LIMIT ? "Tension nominale" : "Sous-tension / Coupure";
+
+      const battVoltage = vBatt !== null ? vBatt : (10.5 + (batt / 100) * 2.1);
+      document.getElementById("val-batt-v").textContent = battVoltage.toFixed(1);
       document.getElementById("val-batt").textContent = batt;
-      document.getElementById("val-batt-v").textContent = (vBatt !== null) ? `${vBatt.toFixed(1)} V` : `${(10.5 + (batt / 100) * 2.1).toFixed(1)} V`;
+      const barBatt = document.getElementById("bar-batt");
+      if (barBatt) {
+        barBatt.style.width = batt + "%";
+        barBatt.style.background = batt < 25 ? "#DC2626" : (batt < 55 ? "#D97706" : "#2E7D32");
+      }
+
       document.getElementById("val-i").textContent = i.toFixed(2);
       document.getElementById("kpi-power").textContent = powerW;
       document.getElementById("kpi-eau").textContent = eau;
 
-      const barBatt = document.getElementById("bar-batt");
-      barBatt.style.width = batt + "%";
-      barBatt.style.background = batt < 25 ? "#DC2626" : (batt < 55 ? "#D97706" : "#2E7D32");
+      const srcEl = document.getElementById("val-src");
+      if (srcEl) {
+        srcEl.textContent = src;
+        srcEl.className = "badge " + (src === "SONABEL" ? "bg-green" : (src === "SOLAIRE" ? "bg-yellow" : "bg-red"));
+      }
+      const disjEl = document.getElementById("val-disj");
+      if (disjEl) {
+        disjEl.textContent = disj === 1 ? "Q1 FERMÉ" : "Q1 OUVERT";
+        disjEl.className = "badge " + (disj === 1 ? "bg-green" : "bg-red");
+      }
 
-      // 2. État des 4 relais (K1 ATS, K2 Lumière, K3 Ventilateur, K4 Pompe)
-      majBadgeRelais("rel-st-1", src === "SONABEL", "SONABEL (NC)", src === "SOLAIRE" ? "SOLAIRE (NO)" : "COUPURE", "bg-green", src === "SOLAIRE" ? "bg-yellow" : "bg-red");
-      majBadgeRelais("rel-st-2", lumiere === 1, "ALLUMÉE (ON)", "ÉTEINTE (OFF)", "bg-green", "bg-gray");
-      majBadgeRelais("rel-st-3", ventilo === 1, "EN MARCHE (ON)", disj === 0 ? "DÉLESTÉ" : "ARRÊTÉ (OFF)", "bg-green", disj === 0 ? "bg-red" : "bg-gray");
-      majBadgeRelais("rel-st-4", pompe === 1, "EN MARCHE", "ARRÊTÉE", "bg-blue");
+      // Badges relais et charges
+      majBadgeRelais("rel-st-1", src === "SONABEL", "SONABEL", src === "SOLAIRE" ? "SOLAIRE" : "COUPURE", "bg-green", src === "SOLAIRE" ? "bg-yellow" : "bg-red");
 
-      // Badges HMI Lumière (K2), Ventilateur (K3) et Pompe (K4)
       const hmiLumBadge = document.getElementById("hmi-lumiere-badge");
       if (hmiLumBadge) {
         hmiLumBadge.textContent = lumiere === 1 ? "K2 : ALLUMÉE" : "K2 : ÉTEINTE";
@@ -3263,178 +2173,41 @@
       }
       const hmiFanBadge = document.getElementById("hmi-ventilo-badge");
       if (hmiFanBadge) {
-        hmiFanBadge.textContent = ventilo === 1 ? "K3 : EN MARCHE" : (disj === 0 ? "K3 : DÉLESTÉ" : "K3 : ARRÊTÉ");
+        hmiFanBadge.textContent = ventilo === 1 ? "K3 : MARCHE" : (disj === 0 ? "K3 : DÉLESTÉ" : "K3 : ARRÊT");
         hmiFanBadge.className = "hmi-status-pill " + (ventilo === 1 ? "is-running" : (disj === 0 ? "is-manual" : ""));
       }
       const hmiPompeBadge = document.getElementById("hmi-pompe-badge");
       if (hmiPompeBadge) {
-        hmiPompeBadge.textContent = pompe === 1 ? "K4 : EN MARCHE" : "K4 : ARRÊTÉE";
+        hmiPompeBadge.textContent = pompe === 1 ? "K4 : MARCHE" : "K4 : ARRÊT";
         hmiPompeBadge.className = "hmi-status-pill " + (pompe === 1 ? "is-running" : "");
       }
-
-      // 3. Synoptique P&ID
-      const srcEl = document.getElementById("val-src");
-      srcEl.textContent = src;
-      document.getElementById("svg-v").textContent = v.toFixed(1) + " V";
-      document.getElementById("svg-batt").textContent = batt + " %";
-      document.getElementById("svg-i").textContent = i.toFixed(2) + " A";
-      document.getElementById("svg-p").textContent = powerW + " W";
-      document.getElementById("svg-t").textContent = t.toFixed(1) + " °C";
-      const svgSrc = document.getElementById("svg-src");
-      svgSrc.textContent = src;
-
-      const lSon = document.getElementById("line-sonabel");
-      const lSol = document.getElementById("line-solaire");
-      const lAts = document.getElementById("line-ats-disj");
-      const lLoad = document.getElementById("line-disj-load");
-      const atsArm = document.getElementById("ats-arm");
-
-      lSon.setAttribute("class", "flow-line");
-      lSol.setAttribute("class", "flow-line");
-      lAts.setAttribute("class", "flow-line");
-      lLoad.setAttribute("class", "flow-line");
-
-      if (src === "SONABEL") {
-        srcEl.className = "badge bg-green";
-        svgSrc.setAttribute("fill", "#2E7D32");
-        atsArm.style.transform = "rotate(19deg)";
-        atsArm.setAttribute("stroke", "#2E7D32");
-        lSon.setAttribute("class", "flow-line flow-active-green");
-        lAts.setAttribute("class", "flow-line flow-active-green");
-        if (disj === 1) lLoad.setAttribute("class", "flow-line flow-active-green");
-      } else if (src === "SOLAIRE") {
-        srcEl.className = "badge bg-yellow";
-        svgSrc.setAttribute("fill", "#B45309");
-        atsArm.style.transform = "rotate(-19deg)";
-        atsArm.setAttribute("stroke", "#B45309");
-        lSol.setAttribute("class", "flow-line flow-active-yellow");
-        lAts.setAttribute("class", "flow-line flow-active-yellow");
-        if (disj === 1) lLoad.setAttribute("class", "flow-line flow-active-yellow");
-      } else {
-        srcEl.className = "badge bg-red";
-        svgSrc.setAttribute("fill", "#DC2626");
-        atsArm.style.transform = "rotate(0deg)";
-        atsArm.setAttribute("stroke", "#DC2626");
-        lAts.setAttribute("class", "flow-line flow-fault");
-      }
-
-      // Disjoncteur Q1 (représentation synoptique)
-      const disjEl = document.getElementById("val-disj");
-      const svgDisj = document.getElementById("svg-disj");
-      const boxDisj = document.getElementById("box-disj");
-      const cbBlade = document.getElementById("cb-blade");
-
-      if (disj === 1) {
-        disjEl.textContent = "Q1 FERMÉ";
-        disjEl.className = "badge bg-green";
-        svgDisj.textContent = "FERMÉ";
-        svgDisj.setAttribute("fill", "#2E7D32");
-        boxDisj.setAttribute("stroke", "#2E7D32");
-        cbBlade.style.transform = "rotate(0deg)";
-        cbBlade.setAttribute("stroke", "#2E7D32");
-      } else {
-        disjEl.textContent = "Q1 OUVERT";
-        disjEl.className = "badge bg-red";
-        svgDisj.textContent = "OUVERT";
-        svgDisj.setAttribute("fill", "#DC2626");
-        boxDisj.setAttribute("stroke", "#DC2626");
-        cbBlade.style.transform = "rotate(22deg)";
-        cbBlade.setAttribute("stroke", "#DC2626");
-      }
-
-      // Polytank P&ID & Pompe P-101
-      const maxH = 176;
-      const waterH = (eau / 100) * maxH;
-      const waterY = 314 - waterH;
-      document.getElementById("tank-water-rect").setAttribute("y", waterY);
-      document.getElementById("tank-water-rect").setAttribute("height", waterH);
-      document.getElementById("tank-wave").setAttribute("transform", `translate(0, ${waterY})`);
-      document.getElementById("tank-pct-text").textContent = eau + "%";
-
       const pompeEl = document.getElementById("val-pompe");
-      const pipePump = document.getElementById("pipe-pump");
-      const pumpCircle = document.getElementById("pump-circle");
-      const pumpImpeller = document.getElementById("pump-impeller");
-      const pumpLed = document.getElementById("pump-led");
-      const svgPompeLbl = document.getElementById("svg-pompe-lbl");
-      const valveAct = document.getElementById("valve-actuator");
-
-      if (pompe === 1) {
-        pompeEl.textContent = "POMPE ON";
-        pompeEl.className = "badge bg-blue";
-        pipePump.setAttribute("class", "flow-line flow-active-cyan");
-        pumpCircle.setAttribute("stroke", "#1976D2");
-        pumpCircle.setAttribute("fill", "#EBF3FE");
-        pumpImpeller.setAttribute("stroke", "#1565C0");
-        pumpLed.setAttribute("fill", "#16A34A");
-        svgPompeLbl.textContent = "En marche";
-        svgPompeLbl.setAttribute("fill", "#2E7D32");
-        valveAct.setAttribute("fill", "#16A34A");
-      } else {
-        pompeEl.textContent = "POMPE OFF";
-        pompeEl.className = "badge bg-gray";
-        pipePump.setAttribute("class", "flow-line");
-        pumpCircle.setAttribute("stroke", "#475569");
-        pumpCircle.setAttribute("fill", "#E2E8F0");
-        pumpImpeller.setAttribute("stroke", "#475569");
-        pumpLed.setAttribute("fill", "#94A3B8");
-        svgPompeLbl.textContent = "Arrêtée";
-        svgPompeLbl.setAttribute("fill", "#64748B");
-        valveAct.setAttribute("fill", "#94A3B8");
+      if (pompeEl) {
+        pompeEl.textContent = pompe === 1 ? "POMPE ON" : "POMPE OFF";
+        pompeEl.className = "badge " + (pompe === 1 ? "bg-blue" : "bg-gray");
       }
 
-      // 4. Évaluation anti-rebond (2 trames) + hystérésis + cooldown 60s + Alertes Agent
+      // Évaluation anti-rebond (2 mesures consécutives) + hystérésis + cooldown 60s
       evaluateAgentAlerts(lastTelemetry);
-
-      // 5. Jauges HMI, bandeau d'alerte et table d'alarmes (synchronisés sur les alarmes confirmées)
       refreshThresholdDrivenStates(lastTelemetry);
 
-      // Tableau Équipements
-      document.getElementById("eq-v").textContent = v.toFixed(1) + " V";
-      document.getElementById("eq-t").textContent = t.toFixed(1) + " °C";
-      document.getElementById("eq-batt").textContent = batt + " %";
-      document.getElementById("eq-src").textContent = src;
-      document.getElementById("eq-disj").textContent = disj === 1 ? "FERMÉ (OK)" : "OUVERT (DÉFAUT)";
-      document.getElementById("eq-i").textContent = `${i.toFixed(2)} A (${powerW} W)`;
-      document.getElementById("eq-eau").textContent = eau + " %";
-      document.getElementById("eq-pompe").textContent = pompe === 1 ? "EN MARCHE" : "ARRÊTÉE";
-
-      // 6. Journalisation sur changement d'état
+      // Journalisation des transitions d'état
       if (prevSrc !== null && prevSrc !== src) {
-        ajouterLog(`Bascule source ATS : ${prevSrc} -> ${src}`, src === "SONABEL" ? "ok" : (src === "SOLAIRE" ? "warn" : "err"));
+        ajouterLog(`Bascule source : ${prevSrc} -> ${src}.`, src === "SONABEL" ? "ok" : (src === "SOLAIRE" ? "warn" : "err"));
       }
       if (prevDisj !== null && prevDisj !== disj) {
-        ajouterLog(disj === 0 ? "Déclenchement disjoncteur Q1 (défaut détecté)." : "Disjoncteur Q1 réarmé (retour nominal).", disj === 0 ? "err" : "ok");
+        ajouterLog(disj === 0 ? "Ouverture disjoncteur Q1." : "Disjoncteur Q1 réarmé.", disj === 0 ? "err" : "ok");
       }
       if (prevPompe !== null && prevPompe !== pompe) {
-        ajouterLog(pompe === 1 ? `Démarrage pompe Polytank (niveau ${eau}%).` : `Arrêt pompe Polytank (niveau ${eau}%).`, "ok");
+        ajouterLog(pompe === 1 ? `Pompe démarrée (cuve ${eau}%).` : `Pompe arrêtée (cuve ${eau}%).`, "ok");
       }
       prevSrc = src; prevDisj = disj; prevPompe = pompe;
 
-      // 7. Mise à jour des 2 graphiques Chart.js
-      scadaChart.data.labels.push(nowStr);
-      scadaChart.data.datasets[0].data.push(v);
-      scadaChart.data.datasets[1].data.push(i);
-      scadaChart.data.datasets[2].data.push(t);
-      if (scadaChart.data.labels.length > 30) {
-        scadaChart.data.labels.shift();
-        scadaChart.data.datasets.forEach(ds => ds.data.shift());
-      }
-      scadaChart.update();
-
-      powerWaterChart.data.labels.push(nowStr);
-      powerWaterChart.data.datasets[0].data.push(powerW);
-      powerWaterChart.data.datasets[1].data.push(eau);
-      if (powerWaterChart.data.labels.length > 30) {
-        powerWaterChart.data.labels.shift();
-        powerWaterChart.data.datasets.forEach(ds => ds.data.shift());
-      }
-      powerWaterChart.update();
       return true;
     }
 
     // =========================================================================
-    // 6. ALERTES AGENT DE MAINTENANCE (WHATSAPP TEXTMEBOT + TELEGRAM)
+    // 5. ALERTES AGENT DE MAINTENANCE (WHATSAPP TEXTMEBOT + TELEGRAM)
     // =========================================================================
     const ALERT_CFG_KEY = "uauben_scada_agent_alerts_v1";
 
@@ -3483,13 +2256,13 @@
       const activeCount = (waOn ? 1 : 0) + (tgOn ? 1 : 0);
       if (badge) {
         if (activeCount === 2) {
-          badge.textContent = "2 CANAUX ACTIFS (WA + TG)";
+          badge.textContent = "WA + TG ACTIFS";
           badge.className = "badge bg-green";
         } else if (activeCount === 1) {
-          badge.textContent = waOn ? "1 CANAL ACTIF (WHATSAPP)" : "1 CANAL ACTIF (TELEGRAM)";
+          badge.textContent = waOn ? "WHATSAPP ACTIF" : "TELEGRAM ACTIF";
           badge.className = "badge bg-blue";
         } else {
-          badge.textContent = "CANAUX INACTIFS";
+          badge.textContent = "INACTIF";
           badge.className = "badge bg-gray";
         }
       }
@@ -3497,7 +2270,7 @@
       if (!waOn) {
         setChannelStatus("wa", "Canal désactivé");
       } else if (!alertConfig.waPhone.trim() || !alertConfig.waApiKey.trim()) {
-        setChannelStatus("wa", "Renseignez numéro (+226...) et clé API", "warn");
+        setChannelStatus("wa", "Renseignez numéro et clé API", "warn");
       } else {
         setChannelStatus("wa", "Prêt — " + alertConfig.waPhone.trim(), "ok");
       }
@@ -3514,9 +2287,9 @@
     function updateLatchUI() {
       const map = [
         { key: "sonabel", id: "latch-sonabel", label: "SONABEL" },
-        { key: "acs",     id: "latch-acs",     label: "ACS712" },
-        { key: "temp",    id: "latch-temp",    label: "DS18B20" },
-        { key: "eau",     id: "latch-eau",     label: "POLYTANK" }
+        { key: "acs",     id: "latch-acs",     label: "COURANT" },
+        { key: "temp",    id: "latch-temp",    label: "TEMP" },
+        { key: "eau",     id: "latch-eau",     label: "CUVE" }
       ];
       map.forEach(item => {
         const el = document.getElementById(item.id);
@@ -3576,10 +2349,7 @@
       alertConfig.tgToken   = tgTk ? tgTk.value.trim() : "";
       alertConfig.tgChatId  = tgId ? tgId.value.trim() : "";
 
-      try {
-        localStorage.setItem(ALERT_CFG_KEY, JSON.stringify(alertConfig));
-      } catch (e) {}
-
+      try { localStorage.setItem(ALERT_CFG_KEY, JSON.stringify(alertConfig)); } catch (e) {}
       updateAlertUI();
     }
 
@@ -3589,12 +2359,6 @@
       const isHidden = input.type === "password";
       input.type = isHidden ? "text" : "password";
       if (btn) btn.textContent = isHidden ? "Cacher" : "Voir";
-    }
-
-    function openAgentAlertsPanel() {
-      switchView("supervision");
-      const panel = document.getElementById("agent-alerts-panel");
-      if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function resetAlertLatches() {
@@ -3611,7 +2375,7 @@
       alertLatch.eau = false;
       updateLatchUI();
       if (lastTelemetry) refreshThresholdDrivenStates(lastTelemetry);
-      ajouterLog("Verrous anti-spam et compteurs d'hystérésis réarmés manuellement.", "ok");
+      ajouterLog("Verrous anti-spam réarmés manuellement.", "ok");
     }
 
     async function sendWhatsAppMessage(msg, isTest = false) {
@@ -3619,22 +2383,22 @@
       const phone = rawPhone.replace(/\+/g, "").replace(/\s+/g, "");
       const apikey = alertConfig.waApiKey.trim();
       if (!phone || !apikey) {
-        setChannelStatus("wa", "Numéro WhatsApp ou clé API manquant", "err");
-        ajouterLog("Échec alerte WhatsApp : renseignez le numéro (+226...) et la clé API TextMeBot.", "warn");
+        setChannelStatus("wa", "Numéro ou clé API manquant", "err");
+        ajouterLog("Échec alerte WhatsApp : renseignez le numéro et la clé API.", "warn");
         return false;
       }
 
       const url = `https://api.textmebot.com/send.php?recipient=${encodeURIComponent(phone)}&apikey=${encodeURIComponent(apikey)}&text=${encodeURIComponent(msg)}`;
-      setChannelStatus("wa", "Envoi vers TextMeBot...", "warn");
+      setChannelStatus("wa", "Envoi en cours...", "warn");
 
       try {
         await fetch(url, { method: "GET", mode: "no-cors" });
-        setChannelStatus("wa", `Transmise à TextMeBot (${new Date().toLocaleTimeString()})`, "ok");
-        ajouterLog(`Alerte WhatsApp transmise à TextMeBot${isTest ? " [TEST]" : ""} (${phone}).`, "ok");
+        setChannelStatus("wa", `Transmise (${new Date().toLocaleTimeString()})`, "ok");
+        ajouterLog(`Notification WhatsApp transmise${isTest ? " [TEST]" : ""} (${phone}).`, "ok");
         return true;
       } catch (err) {
-        setChannelStatus("wa", "Échec réseau TextMeBot", "err");
-        ajouterLog("Échec réseau lors de l'envoi WhatsApp TextMeBot.", "err");
+        setChannelStatus("wa", "Échec réseau", "err");
+        ajouterLog("Échec réseau lors de l'envoi WhatsApp.", "err");
         return false;
       }
     }
@@ -3649,7 +2413,7 @@
       }
 
       const url = `https://api.telegram.org/bot${encodeURIComponent(token)}/sendMessage?chat_id=${encodeURIComponent(chatId)}&text=${encodeURIComponent(msg)}`;
-      setChannelStatus("tg", "Envoi vers Telegram...", "warn");
+      setChannelStatus("tg", "Envoi en cours...", "warn");
 
       try {
         const resp = await fetch(url, { method: "GET" });
@@ -3657,21 +2421,21 @@
         try { data = await resp.json(); } catch (e) {}
         if (resp.ok && (!data || data.ok !== false)) {
           setChannelStatus("tg", `${isTest ? "Test envoyé" : "Alerte envoyée"} (${new Date().toLocaleTimeString()})`, "ok");
-          ajouterLog(`Telegram envoyé vers Chat ${chatId}${isTest ? " [TEST]" : ""}.`, "ok");
+          ajouterLog(`Notification Telegram envoyée${isTest ? " [TEST]" : ""}.`, "ok");
           return true;
         }
         const desc = (data && data.description) ? data.description : `HTTP ${resp.status}`;
         setChannelStatus("tg", `Erreur : ${desc}`, "err");
-        ajouterLog(`Erreur Telegram Bot API : ${desc}.`, "err");
+        ajouterLog(`Erreur Telegram : ${desc}.`, "err");
         return false;
       } catch (err) {
         try {
           await fetch(url, { method: "GET", mode: "no-cors" });
           setChannelStatus("tg", `${isTest ? "Test transmis" : "Alerte transmise"} (${new Date().toLocaleTimeString()})`, "ok");
-          ajouterLog(`Telegram transmis vers Chat ${chatId}${isTest ? " [TEST]" : ""}.`, "ok");
+          ajouterLog(`Notification Telegram transmise${isTest ? " [TEST]" : ""}.`, "ok");
           return true;
         } catch (err2) {
-          setChannelStatus("tg", "Échec réseau Telegram", "err");
+          setChannelStatus("tg", "Échec réseau", "err");
           ajouterLog("Échec réseau lors de l'envoi Telegram.", "err");
           return false;
         }
@@ -3682,7 +2446,7 @@
       saveAlertConfig();
       const btn = document.getElementById("btn-test-wa");
       if (btn) btn.disabled = true;
-      const msg = `[TEST SCADA] Club du Génie Électrique Aube Nouvelle Ouaga — Canal WhatsApp opérationnel (${new Date().toLocaleTimeString()}).`;
+      const msg = `[TEST SUPERVISION] Smart Grid U-AUBEN — Canal WhatsApp opérationnel (${new Date().toLocaleTimeString()}).`;
       try { await sendWhatsAppMessage(msg, true); } finally { if (btn) btn.disabled = false; }
     }
 
@@ -3690,7 +2454,7 @@
       saveAlertConfig();
       const btn = document.getElementById("btn-test-tg");
       if (btn) btn.disabled = true;
-      const msg = `[TEST SCADA] Club du Génie Électrique Aube Nouvelle Ouaga — Canal Telegram opérationnel (${new Date().toLocaleTimeString()}).`;
+      const msg = `[TEST SUPERVISION] Smart Grid U-AUBEN — Canal Telegram opérationnel (${new Date().toLocaleTimeString()}).`;
       try { await sendTelegramMessage(msg, true); } finally { if (btn) btn.disabled = false; }
     }
 
@@ -3702,14 +2466,14 @@
 
       if (channels.length === 0) {
         ajouterLog(
-          `${isRecovery ? "Retour nominal" : "Défaut confirmé"} [${faultTitle}] — aucun canal WhatsApp/Telegram activé.`,
+          `${isRecovery ? "Retour normal" : "Défaut confirmé"} [${faultTitle}] — aucun canal activé.`,
           isRecovery ? "ok" : "warn"
         );
         return;
       }
 
       ajouterLog(
-        `Envoi ${isRecovery ? "retour nominal" : "alerte critique"} [${faultTitle}] sur ${channels.join(" + ")}...`,
+        `Envoi ${isRecovery ? "retour normal" : "alerte"} [${faultTitle}] via ${channels.join(" + ")}.`,
         isRecovery ? "ok" : "err"
       );
 
@@ -3761,7 +2525,6 @@
     function evaluateAgentAlerts(m) {
       const nowMs = Date.now();
 
-      // Conditions de déclenchement (en fonctionnement normal : SONABEL ~12V, Batt ~12V, I < 3.5A, T < 60°C, Eau 30..85%, Q1=1 -> 0 alarme)
       const sonabelFault = (m.src !== "SONABEL") ||
         (m.vSonabel !== null && m.vSonabel < SONABEL_LOW_LIMIT) ||
         (m.src === "SONABEL" && m.v < SONABEL_LOW_LIMIT);
@@ -3781,16 +2544,14 @@
       const eauFault  = (m.eau < scadaLimits.tankLow);
       const eauClear  = (m.eau >= Math.min(100, scadaLimits.tankLow + TANK_HYSTERESIS_PCT));
 
-      // 0. Disjoncteur Q1 (suivi anti-rebond pour bandeau et tableau d'alarmes)
       stepAlarmMachine("disj", disjFault, disjClear, nowMs);
 
-      // 1. Coupure SONABEL (confirmation 2 trames + hystérésis + cooldown 60 s)
       const evSonabel = stepAlarmMachine("sonabel", sonabelFault, sonabelClear, nowMs);
       alertLatch.sonabel = alarmState.sonabel.active;
       if (evSonabel === "TRIGGER_NOTIFY") {
         dispatchAgentAlert(
           "Coupure SONABEL",
-          `[ALERTE] SMART GRID — COUPURE SONABEL\nSource active : ${m.src}\nBus DC : ${m.v.toFixed(1)} V | Batterie 3S : ${m.batt}%\nHeure : ${m.nowStr}`,
+          `[ALERTE] SMART GRID — COUPURE SONABEL\nSource active : ${m.src}\nBus DC : ${m.v.toFixed(1)} V | Batterie : ${m.batt}%\nHeure : ${m.nowStr}`,
           false
         );
       } else if (evSonabel === "CLEAR_NOTIFY") {
@@ -3801,47 +2562,44 @@
         );
       }
 
-      // 2. Surcharge courant ACS712 (> 3.5 A)
       const evAcs = stepAlarmMachine("acs", acsFault, acsClear, nowMs);
       alertLatch.acs = alarmState.acs.active;
       if (evAcs === "TRIGGER_NOTIFY") {
         dispatchAgentAlert(
-          "Surcharge ACS712",
-          `[ALERTE] SMART GRID — SURCHARGE COURANT (ACS712)\nCourant mesuré : ${m.i.toFixed(2)} A (> ${CURRENT_OVERLOAD_LIMIT.toFixed(1)} A)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
+          "Surcharge courant",
+          `[ALERTE] SMART GRID — SURCHARGE COURANT\nCourant mesuré : ${m.i.toFixed(2)} A (> ${CURRENT_OVERLOAD_LIMIT.toFixed(1)} A)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
           false
         );
       } else if (evAcs === "CLEAR_NOTIFY") {
         dispatchAgentAlert(
           "Courant nominal",
-          `[RETOUR NORMAL] COURANT ACS712\nCourant charge stabilisé à ${m.i.toFixed(2)} A | Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}.\nHeure : ${m.nowStr}`,
+          `[RETOUR NORMAL] COURANT\nCourant stabilisé à ${m.i.toFixed(2)} A | Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}.\nHeure : ${m.nowStr}`,
           true
         );
       }
 
-      // 3. Surchauffe transformateur DS18B20 (> Seuil Haut)
       const evTemp = stepAlarmMachine("temp", tempFault, tempClear, nowMs);
       alertLatch.temp = alarmState.temp.active;
       if (evTemp === "TRIGGER_NOTIFY") {
         dispatchAgentAlert(
-          "Surchauffe DS18B20",
-          `[ALERTE] SMART GRID — SURCHAUFFE TRANSFORMATEUR\nSonde DS18B20 : ${m.t.toFixed(1)} °C (> ${scadaLimits.tempHigh} °C)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
+          "Surchauffe",
+          `[ALERTE] SMART GRID — SURCHAUFFE TRANSFORMATEUR\nTempérature : ${m.t.toFixed(1)} °C (> ${scadaLimits.tempHigh} °C)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
           false
         );
       } else if (evTemp === "CLEAR_NOTIFY") {
         dispatchAgentAlert(
           "Température nominale",
-          `[RETOUR NORMAL] TEMPÉRATURE DS18B20\nTempérature transformateur redescendue à ${m.t.toFixed(1)} °C.\nHeure : ${m.nowStr}`,
+          `[RETOUR NORMAL] TEMPÉRATURE\nTempérature redescendue à ${m.t.toFixed(1)} °C.\nHeure : ${m.nowStr}`,
           true
         );
       }
 
-      // 4. Polytank niveau bas (< Seuil Bas)
       const evEau = stepAlarmMachine("eau", eauFault, eauClear, nowMs);
       alertLatch.eau = alarmState.eau.active;
       if (evEau === "TRIGGER_NOTIFY") {
         dispatchAgentAlert(
           "Polytank niveau bas",
-          `[ALERTE] POLYTANK — NIVEAU CRITIQUE BAS\nNiveau mesuré (HC-SR04) : ${m.eau}% (< ${scadaLimits.tankLow}%)\nPompe 12V : ${m.pompe ? "EN MARCHE" : "ARRÊTÉE"}\nHeure : ${m.nowStr}`,
+          `[ALERTE] POLYTANK — NIVEAU CRITIQUE BAS\nNiveau mesuré : ${m.eau}% (< ${scadaLimits.tankLow}%)\nPompe 12V : ${m.pompe ? "EN MARCHE" : "ARRÊTÉE"}\nHeure : ${m.nowStr}`,
           false
         );
       } else if (evEau === "CLEAR_NOTIFY") {
@@ -3856,17 +2614,16 @@
     }
 
     window.getScadaAlarmDebug = () => ({
-      rxCount,
+      receivedCount,
       rejectedFrames,
-      brokerOnline,
-      hasRealMqttTelemetry,
+      linkOnline,
+      hasRealTelemetry,
       dispatchedAlertsCount,
       lastTelemetry,
       alarmState: JSON.parse(JSON.stringify(alarmState)),
       alertLatch: { ...alertLatch }
     });
 
-    // Chargement automatique des seuils et paramètres sauvegardés au démarrage
     loadScadaLimits();
     loadAlertConfig();
   </script>

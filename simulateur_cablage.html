@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <title>Smart Grid U-AUBEN 12V DC — Conception, Code &amp; Simulation</title>
   <meta name="description" content="Environnement de conception et simulation électrique 12V DC sur ESP32 pour le projet Smart Grid et Supervision Polytank — CGE U-AUBEN, routage orthogonal 90 degrés, génération de code C++ et liaison SCADA MQTT HiveMQ." />
   <link rel="icon" type="image/png" href="./favicon.png" />
@@ -62,10 +64,17 @@
 
     *, *::before, *::after { box-sizing: border-box; }
 
+    html {
+      -webkit-text-size-adjust: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
+      max-width: 100%;
       background: var(--bg-canvas);
       color: var(--ink);
       font-family: var(--font-sans);
@@ -82,7 +91,7 @@
       overflow: hidden;
     }
 
-    button, input { font-family: inherit; }
+    button, input, a { font-family: inherit; touch-action: manipulation; }
 
     /* =========================================================
        CIRKIT DESIGNER TOP BAR (56px, #FFFFFF, border #E2E6EC)
@@ -1728,38 +1737,68 @@
       .flash-grid, .share-links-grid { grid-template-columns: 1fr; }
       .build-body { padding: 12px; overflow: visible; }
       .build-view.active { height: auto; overflow: visible; }
+      html, body { max-width: 100%; overflow-x: hidden; }
       body { height: auto; min-height: 100vh; overflow-y: auto; }
       .topbar {
+        width: 100%;
+        max-width: 100%;
         height: auto;
         min-height: 56px;
         flex-wrap: wrap;
         padding: 8px 10px;
         gap: 8px;
       }
-      .tb-left { width: 100%; justify-content: flex-start; }
-      .pill-nav { width: 100%; overflow-x: auto; justify-content: space-between; }
-      .pill-tab { padding: 5px 8px; font-size: 11px; }
-      .tb-right { width: 100%; justify-content: space-between; }
+      .tb-left { width: 100%; max-width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+      .pill-nav {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 4px;
+        border-radius: 12px;
+        padding: 4px;
+        overflow-x: hidden;
+      }
+      .pill-tab {
+        height: auto;
+        min-height: 40px;
+        padding: 6px 10px;
+        font-size: 12px;
+        flex: 1 1 auto;
+      }
+      .tb-right {
+        width: 100%;
+        max-width: 100%;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 6px;
+      }
+      .status-chip, .btn-mqtt, .btn-export { min-height: 40px; }
 
-      .workspace-shell { flex-direction: column; overflow: visible; }
+      .workspace-shell { flex-direction: column; overflow: visible; width: 100%; max-width: 100%; }
       .left-rail {
         width: 100%;
+        max-width: 100%;
         min-width: 0;
         height: auto;
         flex-direction: row;
-        padding: 4px 6px;
+        padding: 6px;
         gap: 4px;
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         border-right: none;
         border-bottom: 1px solid var(--border);
       }
-      .rail-stack { flex-direction: row; justify-content: flex-start; width: auto; gap: 3px; }
-      .rail-btn { width: auto; height: 32px; padding: 0 7px; flex-direction: row; gap: 4px; font-size: 9.5px; white-space: nowrap; }
-      .rail-btn svg { width: 15px; height: 15px; }
+      .rail-stack { flex-direction: row; justify-content: flex-start; width: auto; gap: 4px; }
+      .rail-btn { width: auto; min-height: 40px; height: auto; padding: 6px 10px; flex-direction: row; gap: 5px; font-size: 11px; white-space: nowrap; }
+      .rail-btn svg { width: 16px; height: 16px; }
       .rail-btn.active::before { left: 5px; right: 5px; top: auto; bottom: -4px; width: auto; height: 2px; }
 
       .canvas-area {
         order: 1;
+        width: 100%;
+        max-width: 100%;
         height: auto;
         min-height: 0;
         padding: 8px 6px 10px 6px;
@@ -1768,35 +1807,45 @@
         gap: 8px;
         border-bottom: 1px solid var(--border);
       }
-      #workspace-svg { height: 230px; }
-      .floating-toolbar { position: static; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-      .btn-play-circle { width: 34px; height: 34px; }
-      .ft-pill-btn { height: 30px; padding: 0 8px; font-size: 10.5px; }
-      .ft-btn { width: 27px; height: 27px; }
-      .floating-bottom { position: static; }
+      #workspace-svg { height: 250px; width: 100%; max-width: 100%; }
+      .floating-toolbar { position: static; flex-wrap: wrap; justify-content: flex-start; gap: 6px; max-width: 100%; }
+      .btn-play-circle { width: 44px; height: 44px; }
+      .ft-pill-btn { min-height: 40px; height: auto; padding: 6px 10px; font-size: 11.5px; }
+      .ft-btn { width: 38px; height: 38px; }
+      .floating-bottom { position: static; flex-wrap: wrap; max-width: 100%; }
       .color-swatches { display: none; }
 
       .comp-drawer {
         order: 2;
         width: 100%;
+        max-width: 100%;
         min-width: 0;
-        max-height: 320px;
+        max-height: 340px;
         border-right: none;
         border-bottom: 1px solid var(--border);
       }
       .comp-drawer.collapsed { display: none; }
+      .search-input { font-size: 16px; min-height: 44px; }
 
       .right-drawer {
         order: 3;
         width: 100%;
+        max-width: 100%;
         min-width: 0;
         border-left: none;
         overflow: visible;
       }
 
-      .code-view.active { flex-direction: column; height: auto; overflow: visible; }
+      .code-view.active { flex-direction: column; height: auto; overflow: visible; max-width: 100%; }
       .code-sidebar { width: 100%; min-width: 0; border-right: none; border-bottom: 1px solid var(--border); }
-      .code-pre { max-height: 460px; }
+      .code-pre { max-height: 460px; max-width: 100%; overflow-x: auto; }
+    }
+
+    @media (max-width: 640px) {
+      .pill-tab, .status-chip, .btn-mqtt, .btn-export, .ft-pill-btn, .rail-btn {
+        min-height: 44px;
+      }
+      .ft-btn { width: 44px; height: 44px; }
     }
 
     /* Mode intégré léger (?embed=1) */
