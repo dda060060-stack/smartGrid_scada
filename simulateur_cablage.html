@@ -1681,8 +1681,8 @@
         gap: 8px;
       }
       .tb-left { width: 100%; justify-content: flex-start; }
-      .pill-nav { width: 100%; overflow-x: auto; justify-content: space-between; }
-      .pill-tab { padding: 5px 8px; font-size: 11px; }
+      .pill-nav { width: 100%; flex-wrap: wrap; justify-content: flex-start; gap: 3px; border-radius: 9px; }
+      .pill-tab { padding: 5px 9px; font-size: 11.5px; height: auto; border-radius: 6px; }
       .tb-right { width: 100%; justify-content: space-between; }
 
       .workspace-shell { flex-direction: column; overflow: visible; }
@@ -1741,13 +1741,71 @@
       .code-sidebar { width: 100%; min-width: 0; border-right: none; border-bottom: 1px solid var(--border); }
       .code-pre { max-height: 460px; }
     }
+
+    /* =========================================================
+       EMBED MODE (?embed=1) — SCHÉMA RÉEL PRÉCÂBLÉ UNIQUEMENT
+       ========================================================= */
+    html.embed-mode,
+    html.embed-mode body {
+      height: 100vh !important;
+      min-height: 100vh !important;
+      overflow: hidden !important;
+      background: var(--bg-canvas) !important;
+    }
+    html.embed-mode .topbar,
+    html.embed-mode .left-rail,
+    html.embed-mode .comp-drawer,
+    html.embed-mode .right-drawer,
+    html.embed-mode .code-view,
+    html.embed-mode .build-view,
+    html.embed-mode .floating-bottom,
+    html.embed-mode #btn-play,
+    html.embed-mode #ft-labels,
+    html.embed-mode #ft-ortho,
+    html.embed-mode #ft-grid,
+    html.embed-mode #ft-rotate,
+    html.embed-mode #ft-delete,
+    html.embed-mode .floating-toolbar .ft-sep {
+      display: none !important;
+    }
+    html.embed-mode .workspace-shell {
+      height: 100vh !important;
+      flex-direction: row !important;
+      overflow: hidden !important;
+    }
+    html.embed-mode .canvas-area {
+      width: 100% !important;
+      height: 100vh !important;
+      padding: 0 !important;
+      border: none !important;
+      cursor: grab;
+    }
+    html.embed-mode .canvas-area:active {
+      cursor: grabbing;
+    }
+    html.embed-mode #workspace-svg {
+      width: 100% !important;
+      height: 100% !important;
+      flex: 1 !important;
+    }
+    html.embed-mode .floating-toolbar {
+      top: auto !important;
+      bottom: 12px !important;
+      right: 12px !important;
+      gap: 4px !important;
+    }
   </style>
+  <script>
+    if (new URLSearchParams(window.location.search).get("embed") === "1") {
+      document.documentElement.classList.add("embed-mode");
+    }
+  </script>
 </head>
 <body>
   <!-- TOP WHITE BAR (56px, Cirkit Designer Layout) -->
   <header class="topbar">
     <div class="tb-left">
-      <a class="brand-icon" href="./index.html" title="Retour à l'accueil Smart Grid U-AUBEN" aria-label="Accueil">
+      <a class="brand-icon" href="./index.html" title="Documentation Smart Grid U-AUBEN" aria-label="Documentation">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
           <path d="M5 19L19 5" />
           <path d="M5 12L12 5" />
@@ -1772,8 +1830,6 @@
               <button type="button" class="dd-item" id="dd-reset"><span>Réinitialiser le schéma</span><span class="dd-tag">RAZ</span></button>
               <button type="button" class="dd-item" id="dd-save-json"><span>Enregistrer copie locale JSON</span><span class="dd-tag">Ctrl+S</span></button>
               <button type="button" class="dd-item" id="dd-import-json"><span>Ouvrir / Importer JSON...</span><span class="dd-tag">.json</span></button>
-              <div class="dd-sep"></div>
-              <a class="dd-item" href="./index.html" style="text-decoration:none;"><span>Portail Accueil U-AUBEN</span><span class="dd-tag">Index</span></a>
             </div>
           </div>
           <!-- Affichage -->
@@ -1827,14 +1883,13 @@
       </div>
     </div>
 
-    <!-- Center Pill Switcher (Cirkit Designer Style) -->
-    <nav class="pill-nav" role="tablist" aria-label="Vues du projet">
-      <button type="button" class="pill-tab active" data-view="design" role="tab" aria-selected="true">Conception</button>
-      <button type="button" class="pill-tab" data-view="code" role="tab" aria-selected="false">Code</button>
-      <button type="button" class="pill-tab" data-view="sim" role="tab" aria-selected="false">Simulateur</button>
-      <button type="button" class="pill-tab" data-view="build" role="tab" aria-selected="false">Construire</button>
+    <!-- Navigation principale unifiée (5 entrées) -->
+    <nav class="pill-nav" aria-label="Navigation principale">
+      <a class="pill-tab" href="./index.html">Documentation</a>
+      <a class="pill-tab active" href="./simulateur_cablage.html" aria-current="page">Simulateur</a>
       <a class="pill-tab" href="./scada_smartgrid.html">SCADA</a>
-      <a class="pill-tab" href="./demo_3d_smartgrid.html">3D</a>
+      <a class="pill-tab" href="./demo_3d_smartgrid.html">Maquette 3D</a>
+      <a class="pill-tab" href="./motion_9_16.html">Vidéo 9:16</a>
     </nav>
 
     <!-- Right Compact Controls -->
@@ -1901,6 +1956,14 @@
           </svg>
           <span>Simuler</span>
           <span id="rail-err-badge" class="rail-badge">0</span>
+        </button>
+
+        <button type="button" class="rail-btn" id="rail-code" title="Code Firmware ESP32 (.ino)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6" />
+            <polyline points="8 6 2 12 8 18" />
+          </svg>
+          <span>Code</span>
         </button>
 
         <button type="button" class="rail-btn" id="rail-build" title="Vue Construire : Nomenclature BOM et étapes de montage">
@@ -2500,11 +2563,6 @@
         <div class="share-url-row">
           <input id="share-url-input" class="share-url-input" type="text" readonly />
           <button type="button" id="btn-copy-share-url" class="code-btn primary">Copier</button>
-        </div>
-        <div class="share-links-grid">
-          <a class="share-link-card" href="./scada_smartgrid.html">Supervision SCADA<span>Broker MQTT HiveMQ</span></a>
-          <a class="share-link-card" href="./demo_3d_smartgrid.html">Maquette 3D<span>Vue interactive</span></a>
-          <a class="share-link-card" href="./index.html">Portail U-AUBEN<span>Documentation projet</span></a>
         </div>
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;">
           <button type="button" id="share-exp-png" class="mini-action-btn">Image PNG</button>
@@ -4604,6 +4662,8 @@
         document.getElementById("zoom-readout").textContent = `${Math.round((2060 / state.vb.w) * 100)}%`;
       }
 
+      const IS_EMBED = new URLSearchParams(window.location.search).get("embed") === "1";
+
       function fitView() {
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
         state.zones.forEach(z => { minX = Math.min(minX, z.x); minY = Math.min(minY, z.y - 30); maxX = Math.max(maxX, z.x + z.w); maxY = Math.max(maxY, z.y + z.h); });
@@ -4612,9 +4672,9 @@
         if (!isFinite(minX)) { state.vb = { x: 0, y: 0, w: 2060, h: 990 }; applyViewBox(); return; }
         const rect = svgEl.getBoundingClientRect();
         const isMobileCanvas = rect.width > 0 && rect.width <= 640;
-        const pad = isMobileCanvas ? 22 : 40;
-        const padTop = isMobileCanvas ? 24 : 74;
-        const padBot = isMobileCanvas ? 22 : 52;
+        const pad = IS_EMBED ? (isMobileCanvas ? 16 : 26) : (isMobileCanvas ? 22 : 40);
+        const padTop = IS_EMBED ? pad : (isMobileCanvas ? 24 : 74);
+        const padBot = IS_EMBED ? pad : (isMobileCanvas ? 22 : 52);
         const contentW = Math.max(1100, (maxX - minX) + pad * 2);
         const contentH = Math.max(660, (maxY - minY) + padBot + padTop);
         const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2 + (padBot - padTop) / 2;
@@ -4647,6 +4707,7 @@
       canvasArea.addEventListener("dragover", ev => { ev.preventDefault(); ev.dataTransfer.dropEffect = "copy"; });
       canvasArea.addEventListener("drop", ev => {
         ev.preventDefault();
+        if (IS_EMBED) return;
         const type = ev.dataTransfer.getData("text/plain");
         if (COMPONENT_DEFS[type]) { const pt = clientToSvg(ev.clientX, ev.clientY); spawnComponent(type, pt.x, pt.y); }
       });
@@ -4662,6 +4723,12 @@
       svgEl.addEventListener("pointerdown", ev => {
         if (ev.button !== 0 && ev.button !== 1) return;
         closeAllMenus();
+
+        if (IS_EMBED) {
+          panning = { startX: ev.clientX, startY: ev.clientY, vbX: state.vb.x, vbY: state.vb.y };
+          try { svgEl.setPointerCapture(ev.pointerId); } catch (_) {}
+          return;
+        }
 
         const delBtn = ev.target.closest("[data-delete-comp]");
         if (delBtn) { ev.stopPropagation(); deleteComponent(delBtn.getAttribute("data-delete-comp")); return; }
@@ -4700,6 +4767,7 @@
       });
 
       svgEl.addEventListener("dblclick", ev => {
+        if (IS_EMBED) { fitView(); return; }
         const wireEl = ev.target.closest("[data-wire-id]");
         if (wireEl) { ev.stopPropagation(); deleteWire(wireEl.getAttribute("data-wire-id")); }
       });
@@ -4751,7 +4819,11 @@
           const w = state.wires.find(x => x.id === wireEl.getAttribute("data-wire-id"));
           if (w) {
             const p1 = getPinWorldPos(w.from), p2 = getPinWorldPos(w.to);
-            if (p1 && p2) { showTooltip(ev.clientX, ev.clientY, `<span class="tt-pin">${escapeHtml(p1.def.name)} (${escapeHtml(p1.pin.label)}) -- ${escapeHtml(p2.def.name)} (${escapeHtml(p2.pin.label)})</span><span class="tt-sub">Double-clic pour supprimer ce conducteur</span>`); return; }
+            if (p1 && p2) {
+              const subTxt = IS_EMBED ? "Liaison orthogonale 90° vérifiée" : "Double-clic pour supprimer ce conducteur";
+              showTooltip(ev.clientX, ev.clientY, `<span class="tt-pin">${escapeHtml(p1.def.name)} (${escapeHtml(p1.pin.label)}) -- ${escapeHtml(p2.def.name)} (${escapeHtml(p2.pin.label)})</span><span class="tt-sub">${subTxt}</span>`);
+              return;
+            }
           }
         }
         hideTooltip();
@@ -5095,9 +5167,11 @@
         const rightD = document.getElementById("right-drawer");
         leftD.classList.toggle("collapsed", state.drawerCollapsed);
         rightD.classList.toggle("collapsed", !state.rightOpen);
-        document.getElementById("rail-parts").classList.toggle("active", !state.drawerCollapsed && state.drawerTab === "parts");
-        document.getElementById("rail-presets").classList.toggle("active", !state.drawerCollapsed && state.drawerTab === "presets");
-        document.getElementById("rail-sim").classList.toggle("active", state.rightOpen);
+        document.getElementById("rail-parts").classList.toggle("active", state.activeView !== "code" && state.activeView !== "build" && !state.drawerCollapsed && state.drawerTab === "parts");
+        document.getElementById("rail-presets").classList.toggle("active", state.activeView !== "code" && state.activeView !== "build" && !state.drawerCollapsed && state.drawerTab === "presets");
+        document.getElementById("rail-sim").classList.toggle("active", state.activeView !== "code" && state.activeView !== "build" && state.rightOpen);
+        const railCode = document.getElementById("rail-code");
+        if (railCode) railCode.classList.toggle("active", state.activeView === "code");
         document.getElementById("rail-build").classList.toggle("active", state.activeView === "build");
         if (state.activeView !== "code" && state.activeView !== "build") {
           state.activeView = state.rightOpen ? "sim" : "design";
@@ -5291,7 +5365,14 @@
         if (state.activeView === "code" || state.activeView === "build") setView("sim");
         else { state.rightOpen = !state.rightOpen; syncDrawers(); requestAnimationFrame(fitView); }
       });
-      document.getElementById("rail-build").addEventListener("click", () => setView("build"));
+      document.getElementById("rail-code").addEventListener("click", () => {
+        setView(state.activeView === "code" ? "design" : "code");
+        syncDrawers();
+      });
+      document.getElementById("rail-build").addEventListener("click", () => {
+        setView(state.activeView === "build" ? "design" : "build");
+        syncDrawers();
+      });
       document.getElementById("rail-toggle-drawer").addEventListener("click", () => {
         state.drawerCollapsed = !state.drawerCollapsed;
         syncDrawers(); requestAnimationFrame(fitView);
@@ -5482,8 +5563,19 @@
 
       let resizeTimer = null;
       window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitView, 140); });
+      if (typeof ResizeObserver !== "undefined" && canvasArea) {
+        const ro = new ResizeObserver(() => {
+          clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(fitView, 60);
+        });
+        ro.observe(canvasArea);
+      }
 
       // Init
+      if (IS_EMBED) {
+        state.drawerCollapsed = true;
+        state.rightOpen = false;
+      }
       renderPalette();
       syncDrawers();
       loadPreset("smartgrid");

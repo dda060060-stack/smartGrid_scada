@@ -23,7 +23,7 @@
       --ink: #111827;
       --ink-secondary: #334155;
       --muted: #64748B;
-      --border: #E2E6EC;
+      --border: #DADDE1;
       --border-strong: #CBD5E1;
 
       --blue: #1976D2;
@@ -35,8 +35,8 @@
       --indigo-hover: #303F9F;
       --indigo-soft: #EEF0FB;
 
-      --green: #2E7D32;
-      --green-toggle: #16A34A;
+      --green: #2E8555;
+      --green-toggle: #2E8555;
       --green-soft: #E8F5E9;
       --green-border: #BBF7D0;
 
@@ -1479,7 +1479,8 @@
         padding-right: 14px;
       }
       .utb-sub { display: none; }
-      .utb-nav { width: 100%; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
+      .utb-nav { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 3px; }
+      .utb-link { font-size: 12px; padding: 5px 9px; }
       .sensor-cards-grid { grid-template-columns: 1fr; }
       .hmi-card { padding: 16px; }
       .hmi-num-input { width: 108px; }
@@ -1504,11 +1505,11 @@
     </a>
 
     <nav class="utb-nav" aria-label="Navigation principale">
-      <a class="utb-link" href="./index.html">Accueil</a>
+      <a class="utb-link" href="./index.html">Documentation</a>
       <a class="utb-link" href="./simulateur_cablage.html">Simulateur</a>
       <a class="utb-link active" href="./scada_smartgrid.html" aria-current="page">SCADA</a>
       <a class="utb-link" href="./demo_3d_smartgrid.html">Maquette 3D</a>
-      <a class="utb-link" href="./motion_9_16.html">Motion 9:16</a>
+      <a class="utb-link" href="./motion_9_16.html">Vidéo 9:16</a>
     </nav>
 
     <div class="utb-right">
@@ -1516,7 +1517,6 @@
         <span id="mqtt-dot" class="dot"></span>
         <span id="mqtt-status">Connexion au broker...</span>
       </div>
-      <button id="btn-install-pwa" class="btn-header btn-install-pwa" type="button" onclick="installPWA()">Installer PWA</button>
     </div>
   </header>
 
@@ -1549,7 +1549,7 @@
          ======================================================= -->
     <section id="view-supervision" class="view-container active" aria-label="Pupitre HMI SCADA temps réel">
 
-      <!-- 1. PUPITRE HMI 2x2 (CONDUITE, COMMANDE POMPE/RELAIS, TEMPÉRATURE DS18B20, POLYTANK HC-SR04) -->
+      <!-- 1. PUPITRE HMI 2x2 (CONDUITE, COMMANDES MANUELLES, TEMPÉRATURE DS18B20, POLYTANK HC-SR04) -->
       <div class="hmi-grid">
         <!-- CARTE 1 : MODE DE CONDUITE -->
         <article class="hmi-card" aria-label="Mode de conduite">
@@ -1571,9 +1571,9 @@
           </p>
         </article>
 
-        <!-- CARTE 2 : COMMANDE MANUELLE POMPE & RELAIS -->
-        <article class="hmi-card" aria-label="Commande manuelle Pompe et Relais">
-          <h2 class="hmi-card-title">Commande manuelle Pompe &amp; Relais</h2>
+        <!-- CARTE 2 : COMMANDES MANUELLES -->
+        <article class="hmi-card" aria-label="Commandes manuelles">
+          <h2 class="hmi-card-title">Commandes manuelles</h2>
           <div class="hmi-btn-row">
             <button id="btn-hmi-pompe-on" class="hmi-btn" type="button" onclick="sendHmiCommand('IN4', 12, 'ON', 'Pompe ON')">Pompe ON</button>
             <button id="btn-hmi-pompe-off" class="hmi-btn" type="button" onclick="sendHmiCommand('IN4', 12, 'OFF', 'Pompe OFF')">Pompe OFF</button>
@@ -1584,13 +1584,13 @@
             <span id="hmi-pompe-badge" class="hmi-status-pill">ARRÊTÉE</span>
           </div>
           <p class="hmi-helper">
-            Pilote directement les relais <span class="mono">IN4 (GPIO 12)</span> et <span class="mono">IN3 (GPIO 14)</span> via MQTT. Le retour d'état provient de la télémétrie ESP32.
+            Pilote directement les relais <span class="mono">IN4 (GPIO 12)</span> et <span class="mono">IN3 (GPIO 14)</span> sur <span class="mono">cge/uauben/david/smartgrid/cmd</span>.
           </p>
         </article>
 
-        <!-- CARTE 3 : TEMPÉRATURE TRANSFORMATEUR (DS18B20) -->
-        <article class="hmi-card" aria-label="Température Transformateur DS18B20">
-          <h2 class="hmi-card-title">Température Transformateur (DS18B20)</h2>
+        <!-- CARTE 3 : TEMPÉRATURE (DS18B20) -->
+        <article class="hmi-card" aria-label="Température DS18B20">
+          <h2 class="hmi-card-title">Température (DS18B20)</h2>
           <div class="gauge-stage">
             <svg class="temp-gauge-svg" viewBox="0 0 280 158" role="img" aria-label="Jauge semi-circulaire température transformateur 0 à 80 degrés Celsius">
               <!-- Piste semi-circulaire grise -->
@@ -1644,7 +1644,7 @@
                 <rect id="hmi-tank-surface" x="9" y="207" width="98" height="5" fill="#64B5F6" opacity="0.85" style="transition: y 0.45s ease;" />
               </g>
               <!-- Repères Seuil Haut / Seuil Bas -->
-              <line id="hmi-tank-line-high" x1="10" y1="38.7" x2="106" y2="38.7" stroke="#2E7D32" stroke-width="1.4" stroke-dasharray="4 3" />
+              <line id="hmi-tank-line-high" x1="10" y1="38.7" x2="106" y2="38.7" stroke="#2E8555" stroke-width="1.4" stroke-dasharray="4 3" />
               <line id="hmi-tank-line-low" x1="10" y1="147.6" x2="106" y2="147.6" stroke="#DC2626" stroke-width="1.4" stroke-dasharray="4 3" />
             </svg>
 
@@ -1682,7 +1682,7 @@
         </article>
       </div>
 
-      <!-- 2. CARTES MESURES ÉLECTRIQUES ÉPURÉES (TENSION SONABEL, BATTERIE, ACS712, ÉTAT SYSTÈME) -->
+      <!-- 2. CARTES MESURES ÉLECTRIQUES ÉPURÉES (TENSION SONABEL, BATTERIE, ACS712, ÉTAT CONNEXION) -->
       <div class="sensor-cards-grid" aria-label="Mesures électriques et état de liaison">
         <article class="sensor-card">
           <div class="sensor-icon-box ic-blue" aria-hidden="true">
@@ -1741,7 +1741,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0" /><path d="M8.53 16.11a6 6 0 0 1 6.95 0" /><line x1="12" y1="20" x2="12.01" y2="20" /></svg>
           </div>
           <div class="sensor-body">
-            <span class="sensor-lbl">État En ligne · Protection</span>
+            <span class="sensor-lbl">État connexion</span>
             <div class="sensor-val-row">
               <span id="card-device-status" class="kpi-val" style="font-size:19px;">Connexion...</span>
             </div>
@@ -1751,7 +1751,7 @@
             </div>
             <div class="sensor-foot">
               <span>Alarmes actives : <strong id="kpi-alarm-count" class="mono">0</strong></span>
-              <span id="kpi-alarm-detail" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px;">En attente</span>
+              <span id="kpi-alarm-detail">En attente</span>
             </div>
           </div>
         </article>
@@ -2314,15 +2314,7 @@
         <h3>Smart Grid U-AUBEN · CGE</h3>
         <p>Supervision industrielle temps réel sur broker MQTT HiveMQ — Architecture 12V DC &amp; Polytank sur ESP32.</p>
       </div>
-      <div class="footer-links">
-        <a class="footer-link" href="./index.html">Accueil</a>
-        <a class="footer-link" href="./simulateur_cablage.html">Simulateur</a>
-        <a class="footer-link" href="./demo_3d_smartgrid.html">Maquette 3D</a>
-        <button class="footer-link" type="button" onclick="switchView('supervision')">Pupitre HMI</button>
-        <button class="footer-link" type="button" onclick="switchView('tendances')">Tendances</button>
-        <button class="footer-link" type="button" onclick="switchView('alarmes')">Alarmes</button>
-        <button class="footer-link" type="button" onclick="switchView('equipements')">Équipements</button>
-      </div>
+      <span class="meta-chip">Broker : <strong>broker.hivemq.com</strong> · Topic : <strong>cge/uauben/david/smartgrid</strong></span>
     </div>
   </footer>
 
