@@ -1168,6 +1168,277 @@
       line-height: 1.4;
     }
 
+    /* Alertes Simulation (WhatsApp & Telegram) — Panneau repliable sobre */
+    .sim-alert-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-drawer);
+      color: var(--ink);
+      font-size: 11.5px;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.14s ease, border-color 0.14s ease;
+    }
+    .sim-alert-trigger:hover {
+      background: var(--bg-hover);
+      border-color: var(--border-strong);
+    }
+    .sim-alert-trigger-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+      flex: 1;
+    }
+    .sim-alert-trigger-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .sim-alert-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+      flex-shrink: 0;
+    }
+    .sim-alert-dot.is-on { background: var(--ok); }
+    .sim-alert-state-pill {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--bg-pills);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .sim-alert-state-pill.is-on {
+      background: var(--ok-bg);
+      color: var(--ok);
+      border: 1px solid var(--ok-border);
+    }
+    .sim-alert-trigger[aria-expanded="true"] .erc-chevron { transform: rotate(180deg); }
+
+    .sim-alert-body {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      min-width: 0;
+    }
+    .sim-alert-body.is-collapsed { display: none; }
+
+    .sim-alert-master-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 9px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg-drawer);
+      min-width: 0;
+    }
+    .sim-alert-master-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+    .sim-alert-master-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+    .sim-alert-master-hint {
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.32;
+    }
+
+    .sim-switch {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      flex-shrink: 0;
+      user-select: none;
+    }
+    .sim-switch input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .sim-switch-lbl {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      min-width: 22px;
+      text-align: right;
+    }
+    .sim-switch.is-on .sim-switch-lbl { color: var(--ok); }
+    .sim-switch-track {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      transition: background 0.16s ease;
+      display: inline-block;
+    }
+    .sim-switch-track::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.2);
+      transition: transform 0.16s ease;
+    }
+    .sim-switch input:checked + .sim-switch-track { background: var(--play-green); }
+    .sim-switch input:checked + .sim-switch-track::after { transform: translateX(16px); }
+
+    .sim-alert-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg-drawer);
+      padding: 9px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 0;
+    }
+    .sim-alert-card.is-enabled {
+      background: var(--bg-white);
+      border-color: var(--border-strong);
+    }
+    .sim-alert-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+    .sim-alert-card-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--ink);
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+    .sim-alert-field {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+    .sim-alert-field label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .sim-alert-input-row {
+      display: flex;
+      gap: 5px;
+      min-width: 0;
+    }
+    .sim-alert-input {
+      width: 100%;
+      min-width: 0;
+      height: 32px;
+      padding: 0 8px;
+      border: 1px solid var(--border-strong);
+      border-radius: 5px;
+      background: var(--bg-white);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      outline: none;
+    }
+    .sim-alert-input:focus {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.14);
+    }
+    .sim-alert-secret-btn {
+      height: 32px;
+      padding: 0 8px;
+      border-radius: 5px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-white);
+      color: var(--ink-2);
+      font-size: 10.5px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .sim-alert-secret-btn:hover { border-color: var(--indigo); color: var(--indigo); }
+
+    .sim-alert-card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .sim-alert-test-btn {
+      width: 100%;
+      min-height: 32px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px solid var(--indigo);
+      background: var(--indigo-soft);
+      color: var(--indigo-dark);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.14s ease, color 0.14s ease;
+    }
+    .sim-alert-test-btn:hover:not(:disabled) {
+      background: var(--indigo);
+      color: #ffffff;
+    }
+    .sim-alert-test-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .sim-alert-status-line {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      line-height: 1.35;
+      color: var(--muted);
+      min-height: 14px;
+      overflow-wrap: anywhere;
+    }
+    .sim-alert-status-line.ok   { color: var(--ok); font-weight: 600; }
+    .sim-alert-status-line.warn { color: var(--warn); font-weight: 600; }
+    .sim-alert-status-line.err  { color: var(--err); font-weight: 600; }
+
+    .sim-alert-meta-note {
+      font-size: 10px;
+      line-height: 1.38;
+      color: var(--muted);
+      padding: 6px 8px;
+      border-radius: 5px;
+      background: var(--bg-drawer);
+      border: 1px solid var(--border);
+      overflow-wrap: anywhere;
+    }
+
     /* =========================================================
        FULL CODE VIEW (TAB "Code")
        ========================================================= */
@@ -1825,7 +2096,8 @@
         border-bottom: 1px solid var(--border);
       }
       .comp-drawer.collapsed { display: none; }
-      .search-input { font-size: 16px; min-height: 44px; }
+      .search-input, .sim-alert-input { font-size: 16px; min-height: 44px; height: auto; }
+      .sim-alert-secret-btn { min-height: 44px; height: auto; padding: 0 10px; }
 
       .right-drawer {
         order: 3;
@@ -1842,7 +2114,7 @@
     }
 
     @media (max-width: 640px) {
-      .pill-tab, .status-chip, .btn-mqtt, .btn-export, .ft-pill-btn, .rail-btn {
+      .pill-tab, .status-chip, .btn-mqtt, .btn-export, .ft-pill-btn, .rail-btn, .sim-alert-trigger, .sim-alert-test-btn {
         min-height: 44px;
       }
       .ft-btn { width: 44px; height: 44px; }
@@ -2460,6 +2732,95 @@
             <span>Topic MQTT : cge/uauben/david/smartgrid</span>
           </div>
           <div id="mqtt-tx-json" class="mqtt-box-json">En attente de mise sous tension et de connexion MQTT HiveMQ.</div>
+        </div>
+      </div>
+
+      <!-- ALERTES SIMULATION (WHATSAPP TEXTMEBOT & TELEGRAM) -->
+      <div class="rd-section" id="sim-alerts-section">
+        <button type="button" id="sim-alerts-toggle" class="sim-alert-trigger" aria-expanded="false" aria-controls="sim-alerts-body">
+          <span class="sim-alert-trigger-left">
+            <span id="sim-alert-dot" class="sim-alert-dot is-on" aria-hidden="true"></span>
+            <span class="erc-label">Alertes Simulation (WhatsApp &amp; Telegram)</span>
+          </span>
+          <span class="sim-alert-trigger-right">
+            <span id="sim-alerts-summary-badge" class="sim-alert-state-pill is-on">ACTIF</span>
+            <svg class="erc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </span>
+        </button>
+
+        <div id="sim-alerts-body" class="sim-alert-body is-collapsed">
+          <!-- Interrupteur principal -->
+          <div class="sim-alert-master-row">
+            <div class="sim-alert-master-copy">
+              <span class="sim-alert-master-title">Envoi direct depuis le simulateur</span>
+              <span class="sim-alert-master-hint">Désactiver si le Web SCADA est déjà ouvert pour éviter les doublons.</span>
+            </div>
+            <label id="sim-alert-master-wrap" class="sim-switch is-on" for="sim-alert-master">
+              <span id="sim-alert-master-lbl" class="sim-switch-lbl">ON</span>
+              <input id="sim-alert-master" type="checkbox" checked />
+              <span class="sim-switch-track"></span>
+            </label>
+          </div>
+
+          <!-- WhatsApp (TextMeBot) -->
+          <div id="sim-alert-wa-card" class="sim-alert-card is-enabled">
+            <div class="sim-alert-card-head">
+              <span class="sim-alert-card-title">WhatsApp (TextMeBot)</span>
+              <label id="sim-alert-wa-wrap" class="sim-switch is-on" for="sim-alert-wa-enabled">
+                <span id="sim-alert-wa-lbl" class="sim-switch-lbl">ON</span>
+                <input id="sim-alert-wa-enabled" type="checkbox" checked />
+                <span class="sim-switch-track"></span>
+              </label>
+            </div>
+            <div class="sim-alert-field">
+              <label for="sim-alert-wa-phone">Numéro WhatsApp (sans "+")</label>
+              <input id="sim-alert-wa-phone" class="sim-alert-input" type="tel" inputmode="tel" value="22665359481" placeholder="22665359481" autocomplete="off" />
+            </div>
+            <div class="sim-alert-field">
+              <label for="sim-alert-wa-apikey">Clé API TextMeBot</label>
+              <div class="sim-alert-input-row">
+                <input id="sim-alert-wa-apikey" class="sim-alert-input" type="password" value="BKxsKCkxTJx2" placeholder="Clé API" autocomplete="off" />
+                <button type="button" id="btn-sim-wa-eye" class="sim-alert-secret-btn">Voir</button>
+              </div>
+            </div>
+            <div class="sim-alert-card-actions">
+              <button type="button" id="btn-sim-test-wa" class="sim-alert-test-btn">Tester WhatsApp</button>
+              <div id="sim-alert-wa-status" class="sim-alert-status-line">Prêt (22665359481)</div>
+            </div>
+          </div>
+
+          <!-- Telegram -->
+          <div id="sim-alert-tg-card" class="sim-alert-card is-enabled">
+            <div class="sim-alert-card-head">
+              <span class="sim-alert-card-title">Telegram</span>
+              <label id="sim-alert-tg-wrap" class="sim-switch is-on" for="sim-alert-tg-enabled">
+                <span id="sim-alert-tg-lbl" class="sim-switch-lbl">ON</span>
+                <input id="sim-alert-tg-enabled" type="checkbox" checked />
+                <span class="sim-switch-track"></span>
+              </label>
+            </div>
+            <div class="sim-alert-field">
+              <label for="sim-alert-tg-token">Bot Token</label>
+              <div class="sim-alert-input-row">
+                <input id="sim-alert-tg-token" class="sim-alert-input" type="password" value="9166728277:AAHG7LMk9IaBCJvl2avixGQUCzY8JLe8ZWg" placeholder="Bot Token" autocomplete="off" />
+                <button type="button" id="btn-sim-tg-eye" class="sim-alert-secret-btn">Voir</button>
+              </div>
+            </div>
+            <div class="sim-alert-field">
+              <label for="sim-alert-tg-chatid">Chat ID</label>
+              <input id="sim-alert-tg-chatid" class="sim-alert-input" type="text" value="7919618396" placeholder="Chat ID" autocomplete="off" />
+            </div>
+            <div class="sim-alert-card-actions">
+              <button type="button" id="btn-sim-test-tg" class="sim-alert-test-btn">Tester Telegram</button>
+              <div id="sim-alert-tg-status" class="sim-alert-status-line">Prêt (Chat 7919618396)</div>
+            </div>
+          </div>
+
+          <div id="sim-alert-last-status" class="sim-alert-meta-note">
+            Déclenchement auto (Simuler actif) : SONABEL &lt; 9,5 V, ACS712 &gt; 3,5 A, DS18B20 &gt; 60 °C, Polytank &lt; 20 % — confirmation 2 s, cooldown 60 s.
+          </div>
         </div>
       </div>
     </aside>
@@ -4552,6 +4913,7 @@
           updatePlayButtonUI();
           if (!IS_EMBED_MODE && state.mqttEnabled && !state.mqttClient) connectMqtt();
           restartMqttInterval();
+          startSimAlertMonitor();
         }
         const isFan = comp.id === "bp_ventilo" || comp.target === "k3" || (comp.tag && comp.tag.toUpperCase().includes("VENTIL"));
         if (isFan) {
@@ -4699,6 +5061,346 @@
         txCount: state.mqttTxCount,
         lastPayload: lastPublishedPayload
       });
+
+      // =====================================================================
+      // 8B. DIRECT SIMULATION ALERTS (WHATSAPP TEXTMEBOT & TELEGRAM)
+      // =====================================================================
+      const SIM_ALERTS_STORAGE_KEY = "uauben_sim_direct_alerts_v1";
+      const SIM_ALERT_CONFIRM_MS = 2000;
+      const SIM_ALERT_COOLDOWN_MS = 60000;
+
+      const DEFAULT_SIM_ALERTS_CFG = {
+        masterEnabled: true,
+        waEnabled: true,
+        waPhone: "22665359481",
+        waApiKey: "BKxsKCkxTJx2",
+        tgEnabled: true,
+        tgToken: "9166728277:AAHG7LMk9IaBCJvl2avixGQUCzY8JLe8ZWg",
+        tgChatId: "7919618396"
+      };
+
+      const simAlertCfg = { ...DEFAULT_SIM_ALERTS_CFG };
+      const simFaultState = {
+        sonabel: { faultSince: null, active: false, lastSentAt: 0 },
+        acs:     { faultSince: null, active: false, lastSentAt: 0 },
+        temp:    { faultSince: null, active: false, lastSentAt: 0 },
+        eau:     { faultSince: null, active: false, lastSentAt: 0 }
+      };
+      let simAlertTimer = null;
+      let simAlertDispatchCount = 0;
+
+      function sanitizeWaPhone(raw) {
+        return String(raw || "").replace(/\+/g, "").replace(/\s+/g, "").trim();
+      }
+
+      function setSimChannelStatus(channel, text, level = "") {
+        const id = channel === "wa" ? "sim-alert-wa-status" : "sim-alert-tg-status";
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = text;
+        el.className = "sim-alert-status-line" + (level ? " " + level : "");
+      }
+
+      function setSimLastAlertNote(text) {
+        const el = document.getElementById("sim-alert-last-status");
+        if (el) el.textContent = text;
+      }
+
+      function updateSimAlertsUI() {
+        const masterOn = Boolean(simAlertCfg.masterEnabled);
+        const waOn = Boolean(simAlertCfg.waEnabled);
+        const tgOn = Boolean(simAlertCfg.tgEnabled);
+        const anyActive = masterOn && (waOn || tgOn);
+
+        const dot = document.getElementById("sim-alert-dot");
+        const pill = document.getElementById("sim-alerts-summary-badge");
+        const mWrap = document.getElementById("sim-alert-master-wrap");
+        const mLbl = document.getElementById("sim-alert-master-lbl");
+        const waCard = document.getElementById("sim-alert-wa-card");
+        const waWrap = document.getElementById("sim-alert-wa-wrap");
+        const waLbl = document.getElementById("sim-alert-wa-lbl");
+        const tgCard = document.getElementById("sim-alert-tg-card");
+        const tgWrap = document.getElementById("sim-alert-tg-wrap");
+        const tgLbl = document.getElementById("sim-alert-tg-lbl");
+
+        if (dot) dot.classList.toggle("is-on", anyActive);
+        if (pill) {
+          pill.classList.toggle("is-on", anyActive);
+          pill.textContent = anyActive ? "ACTIF" : "INACTIF";
+        }
+        if (mWrap) mWrap.classList.toggle("is-on", masterOn);
+        if (mLbl) mLbl.textContent = masterOn ? "ON" : "OFF";
+        if (waCard) waCard.classList.toggle("is-enabled", waOn);
+        if (waWrap) waWrap.classList.toggle("is-on", waOn);
+        if (waLbl) waLbl.textContent = waOn ? "ON" : "OFF";
+        if (tgCard) tgCard.classList.toggle("is-enabled", tgOn);
+        if (tgWrap) tgWrap.classList.toggle("is-on", tgOn);
+        if (tgLbl) tgLbl.textContent = tgOn ? "ON" : "OFF";
+
+        const cleanPhone = sanitizeWaPhone(simAlertCfg.waPhone);
+        if (!waOn) {
+          setSimChannelStatus("wa", "Canal désactivé");
+        } else if (!cleanPhone || !simAlertCfg.waApiKey.trim()) {
+          setSimChannelStatus("wa", "Numéro ou clé API manquant", "warn");
+        } else {
+          const cur = document.getElementById("sim-alert-wa-status");
+          if (cur && !/transmise|envoyé|transmis|Envoi|Échec/i.test(cur.textContent || "")) {
+            setSimChannelStatus("wa", `Prêt (${cleanPhone})`);
+          }
+        }
+
+        if (!tgOn) {
+          setSimChannelStatus("tg", "Canal désactivé");
+        } else if (!simAlertCfg.tgToken.trim() || !simAlertCfg.tgChatId.trim()) {
+          setSimChannelStatus("tg", "Token ou Chat ID manquant", "warn");
+        } else {
+          const cur = document.getElementById("sim-alert-tg-status");
+          if (cur && !/transmise|envoyé|transmis|Envoi|Erreur|Échec/i.test(cur.textContent || "")) {
+            setSimChannelStatus("tg", `Prêt (Chat ${simAlertCfg.tgChatId.trim()})`);
+          }
+        }
+      }
+
+      function saveSimAlertConfig() {
+        const mEl = document.getElementById("sim-alert-master");
+        const waEn = document.getElementById("sim-alert-wa-enabled");
+        const waPh = document.getElementById("sim-alert-wa-phone");
+        const waAk = document.getElementById("sim-alert-wa-apikey");
+        const tgEn = document.getElementById("sim-alert-tg-enabled");
+        const tgTk = document.getElementById("sim-alert-tg-token");
+        const tgId = document.getElementById("sim-alert-tg-chatid");
+
+        const cleanedPhone = sanitizeWaPhone(waPh ? waPh.value : simAlertCfg.waPhone);
+        if (waPh && waPh.value !== cleanedPhone && /\+/.test(waPh.value)) {
+          waPh.value = cleanedPhone;
+        }
+
+        simAlertCfg.masterEnabled = mEl ? mEl.checked : simAlertCfg.masterEnabled;
+        simAlertCfg.waEnabled     = waEn ? waEn.checked : simAlertCfg.waEnabled;
+        simAlertCfg.waPhone       = cleanedPhone;
+        simAlertCfg.waApiKey      = waAk ? waAk.value.trim() : simAlertCfg.waApiKey;
+        simAlertCfg.tgEnabled     = tgEn ? tgEn.checked : simAlertCfg.tgEnabled;
+        simAlertCfg.tgToken       = tgTk ? tgTk.value.trim() : simAlertCfg.tgToken;
+        simAlertCfg.tgChatId      = tgId ? tgId.value.trim() : simAlertCfg.tgChatId;
+
+        try { localStorage.setItem(SIM_ALERTS_STORAGE_KEY, JSON.stringify(simAlertCfg)); } catch (_) {}
+        if (!simAlertCfg.masterEnabled) resetSimFaultPending();
+        updateSimAlertsUI();
+      }
+
+      function loadSimAlertConfig() {
+        try {
+          const raw = localStorage.getItem(SIM_ALERTS_STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") {
+              if (typeof parsed.masterEnabled === "boolean") simAlertCfg.masterEnabled = parsed.masterEnabled;
+              if (typeof parsed.waEnabled === "boolean") simAlertCfg.waEnabled = parsed.waEnabled;
+              if (typeof parsed.waPhone === "string") simAlertCfg.waPhone = sanitizeWaPhone(parsed.waPhone);
+              if (typeof parsed.waApiKey === "string") simAlertCfg.waApiKey = parsed.waApiKey.trim();
+              if (typeof parsed.tgEnabled === "boolean") simAlertCfg.tgEnabled = parsed.tgEnabled;
+              if (typeof parsed.tgToken === "string") simAlertCfg.tgToken = parsed.tgToken.trim();
+              if (typeof parsed.tgChatId === "string") simAlertCfg.tgChatId = parsed.tgChatId.trim();
+            }
+          }
+        } catch (_) {}
+
+        const mEl = document.getElementById("sim-alert-master");
+        const waEn = document.getElementById("sim-alert-wa-enabled");
+        const waPh = document.getElementById("sim-alert-wa-phone");
+        const waAk = document.getElementById("sim-alert-wa-apikey");
+        const tgEn = document.getElementById("sim-alert-tg-enabled");
+        const tgTk = document.getElementById("sim-alert-tg-token");
+        const tgId = document.getElementById("sim-alert-tg-chatid");
+
+        if (mEl) mEl.checked = simAlertCfg.masterEnabled;
+        if (waEn) waEn.checked = simAlertCfg.waEnabled;
+        if (waPh) waPh.value = sanitizeWaPhone(simAlertCfg.waPhone);
+        if (waAk) waAk.value = simAlertCfg.waApiKey;
+        if (tgEn) tgEn.checked = simAlertCfg.tgEnabled;
+        if (tgTk) tgTk.value = simAlertCfg.tgToken;
+        if (tgId) tgId.value = simAlertCfg.tgChatId;
+
+        updateSimAlertsUI();
+      }
+
+      function resetSimFaultPending() {
+        Object.keys(simFaultState).forEach(k => {
+          simFaultState[k].faultSince = null;
+          simFaultState[k].active = false;
+        });
+      }
+
+      async function sendSimWhatsApp(msg, isTest = false) {
+        if (IS_EMBED_MODE) return false;
+        const phone = sanitizeWaPhone(simAlertCfg.waPhone);
+        const apikey = String(simAlertCfg.waApiKey || "").trim();
+        if (!phone || !apikey) {
+          setSimChannelStatus("wa", "Numéro ou clé API manquant", "err");
+          return false;
+        }
+        const url = `https://api.textmebot.com/send.php?recipient=${encodeURIComponent(phone)}&apikey=${encodeURIComponent(apikey)}&text=${encodeURIComponent(msg)}`;
+        setSimChannelStatus("wa", "Envoi en cours...", "warn");
+        try {
+          await fetch(url, { method: "GET", mode: "no-cors" });
+          const nowStr = new Date().toLocaleTimeString();
+          setSimChannelStatus("wa", `${isTest ? "Test transmis" : "Alerte transmise"} · ${nowStr}`, "ok");
+          return true;
+        } catch (_) {
+          setSimChannelStatus("wa", "Échec réseau WhatsApp", "err");
+          return false;
+        }
+      }
+
+      async function sendSimTelegram(msg, isTest = false) {
+        if (IS_EMBED_MODE) return false;
+        const token = String(simAlertCfg.tgToken || "").trim();
+        const chatId = String(simAlertCfg.tgChatId || "").trim();
+        if (!token || !chatId) {
+          setSimChannelStatus("tg", "Token ou Chat ID manquant", "err");
+          return false;
+        }
+        const safeToken = token.split(":").map(part => encodeURIComponent(part)).join(":");
+        const url = `https://api.telegram.org/bot${safeToken}/sendMessage?chat_id=${encodeURIComponent(chatId)}&text=${encodeURIComponent(msg)}`;
+        setSimChannelStatus("tg", "Envoi en cours...", "warn");
+        try {
+          const resp = await fetch(url, { method: "GET" });
+          let data = null;
+          try { data = await resp.json(); } catch (_) {}
+          const nowStr = new Date().toLocaleTimeString();
+          if (resp.ok && (!data || data.ok !== false)) {
+            setSimChannelStatus("tg", `${isTest ? "Test transmis" : "Alerte transmise"} · ${nowStr}`, "ok");
+            return true;
+          }
+          const desc = (data && data.description) ? data.description : `HTTP ${resp.status}`;
+          setSimChannelStatus("tg", `Erreur Telegram : ${desc}`, "err");
+          return false;
+        } catch (_) {
+          try {
+            await fetch(url, { method: "GET", mode: "no-cors" });
+            const nowStr = new Date().toLocaleTimeString();
+            setSimChannelStatus("tg", `${isTest ? "Test transmis" : "Alerte transmise"} · ${nowStr}`, "ok");
+            return true;
+          } catch (_err2) {
+            setSimChannelStatus("tg", "Échec réseau Telegram", "err");
+            return false;
+          }
+        }
+      }
+
+      function dispatchSimAlert(faultLabel, msg) {
+        if (IS_EMBED_MODE) return;
+        if (!simAlertCfg.masterEnabled) return;
+        const channels = [];
+        if (simAlertCfg.waEnabled) {
+          channels.push("WhatsApp");
+          sendSimWhatsApp(msg, false);
+        }
+        if (simAlertCfg.tgEnabled) {
+          channels.push("Telegram");
+          sendSimTelegram(msg, false);
+        }
+        if (channels.length > 0) {
+          simAlertDispatchCount += 1;
+          const nowStr = new Date().toLocaleTimeString();
+          setSimLastAlertNote(`Alerte transmise (${faultLabel} · ${channels.join(" + ")}) — ${nowStr}`);
+        }
+      }
+
+      function evaluateSimAlerts(nowMs = Date.now()) {
+        if (IS_EMBED_MODE) return;
+        if (!state.powered || !state.analysis || !state.analysis.valid || !simAlertCfg.masterEnabled) {
+          resetSimFaultPending();
+          return;
+        }
+        if (!simAlertCfg.waEnabled && !simAlertCfg.tgEnabled) {
+          resetSimFaultPending();
+          return;
+        }
+
+        const s = computeSim();
+        if (!s.active) {
+          resetSimFaultPending();
+          return;
+        }
+
+        const nowStr = new Date(nowMs).toLocaleTimeString();
+        const checks = [
+          {
+            key: "sonabel",
+            label: "Coupure SONABEL",
+            fault: s.vSonabel < 9.5 || s.source === "COUPURE",
+            clear: s.vSonabel >= 10.0 && s.source === "SONABEL",
+            msg: `[ALERTE SIMULATEUR] SMART GRID — COUPURE SONABEL\nTension SONABEL : ${s.vSonabel.toFixed(1)} V (< 9,5 V)\nSource active : ${s.source} (${s.vActive.toFixed(1)} V)\nBatterie : ${s.vBatt.toFixed(1)} V (${s.battPct}%)\nHeure : ${nowStr}`
+          },
+          {
+            key: "acs",
+            label: "Surcharge ACS712",
+            fault: s.iCharge > 3.5,
+            clear: s.iCharge <= 3.3,
+            msg: `[ALERTE SIMULATEUR] SMART GRID — SURCHARGE ACS712\nCourant mesuré : ${s.iCharge.toFixed(2)} A (> 3,5 A)\nRelais K3 (Ventilateur) : ${s.k3NonPrio ? "ON" : "DÉLESTÉ"}\nDisjoncteur Q1 : ${s.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${nowStr}`
+          },
+          {
+            key: "temp",
+            label: "Surchauffe DS18B20",
+            fault: s.temp > 60.0,
+            clear: s.temp <= 58.0,
+            msg: `[ALERTE SIMULATEUR] SMART GRID — SURCHAUFFE DS18B20\nTempérature mesurée : ${s.temp.toFixed(1)} °C (> 60 °C)\nDisjoncteur Q1 : ${s.disj ? "FERMÉ" : "OUVERT"} | K2/K3 : ${s.k2Prio ? "ON" : "OFF"}/${s.k3NonPrio ? "ON" : "OFF"}\nHeure : ${nowStr}`
+          },
+          {
+            key: "eau",
+            label: "Polytank bas critique",
+            fault: s.eau < 20,
+            clear: s.eau >= 25,
+            msg: `[ALERTE SIMULATEUR] POLYTANK — NIVEAU BAS CRITIQUE\nNiveau mesuré : ${s.eau}% (< 20%)\nPompe 12V (K4) : ${s.k4Pump ? "EN MARCHE" : "ARRÊTÉE"}\nHeure : ${nowStr}`
+          }
+        ];
+
+        for (const c of checks) {
+          const st = simFaultState[c.key];
+          if (c.fault) {
+            if (st.faultSince === null) {
+              st.faultSince = nowMs;
+            } else if (!st.active && (nowMs - st.faultSince >= SIM_ALERT_CONFIRM_MS)) {
+              st.active = true;
+              if (nowMs - st.lastSentAt >= SIM_ALERT_COOLDOWN_MS) {
+                st.lastSentAt = nowMs;
+                dispatchSimAlert(c.label, c.msg);
+              }
+            }
+          } else {
+            st.faultSince = null;
+            if (c.clear) st.active = false;
+          }
+        }
+      }
+
+      function stopSimAlertMonitor() {
+        if (simAlertTimer !== null) {
+          clearInterval(simAlertTimer);
+          simAlertTimer = null;
+        }
+        resetSimFaultPending();
+      }
+
+      function startSimAlertMonitor() {
+        stopSimAlertMonitor();
+        if (IS_EMBED_MODE) return;
+        if (!state.powered || !state.analysis || !state.analysis.valid) return;
+        simAlertTimer = setInterval(() => evaluateSimAlerts(), 250);
+      }
+
+      window.addEventListener("beforeunload", stopSimAlertMonitor);
+
+      window.getSimAlertsDebug = () => ({
+        isEmbed: IS_EMBED_MODE,
+        powered: state.powered,
+        hasMonitorTimer: simAlertTimer !== null,
+        dispatchCount: simAlertDispatchCount,
+        config: { ...simAlertCfg },
+        faults: JSON.parse(JSON.stringify(simFaultState))
+      });
+      window.__evaluateSimAlertsAt = (ts) => evaluateSimAlerts(ts);
 
       // =====================================================================
       // 9. REALISTIC WEB AUDIO API PHYSICAL ENGINE (RELAIS, POMPE, VENTILO, BUZZER)
@@ -5465,6 +6167,7 @@
         });
         syncCircuitAudio(s, true);
         updateSimUI(s);
+        evaluateSimAlerts();
       }
 
       function syncWiringLockUI() {
@@ -5587,6 +6290,7 @@
         if (!state.analysis.valid && wasPowered) {
           state.powered = false;
           stopMqttInterval();
+          stopSimAlertMonitor();
           if (wireDisconnectedEvent && wasValid) publishMqttNow(true, wasPowered);
         } else if (wireDisconnectedEvent && state.powered && state.analysis.valid) {
           publishMqttNow(false);
@@ -5602,6 +6306,8 @@
         if (typeof renderBuildView === "function") renderBuildView();
         updateLiveVisuals();
         restartMqttInterval();
+        if (state.powered && state.analysis.valid) startSimAlertMonitor();
+        else stopSimAlertMonitor();
       }
 
       // =====================================================================
@@ -6526,10 +7232,12 @@
           }
           publishMqttNow(false);
           restartMqttInterval();
+          startSimAlertMonitor();
           requestAnimationFrame(fitView);
         } else {
           state.powered = false;
           stopMqttInterval();
+          stopSimAlertMonitor();
           disconnectMqtt();
           updatePlayButtonUI();
           updateDiagnosticUI();
@@ -6646,6 +7354,77 @@
           updateDiagnosticUI();
         });
       }
+
+      // Panneau repliable Alertes Simulation (WhatsApp & Telegram)
+      const simAlertsToggleBtn = document.getElementById("sim-alerts-toggle");
+      const simAlertsBody = document.getElementById("sim-alerts-body");
+      if (simAlertsToggleBtn && simAlertsBody) {
+        simAlertsToggleBtn.addEventListener("click", () => {
+          const isOpen = simAlertsToggleBtn.getAttribute("aria-expanded") === "true";
+          simAlertsToggleBtn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+          simAlertsBody.classList.toggle("is-collapsed", isOpen);
+        });
+      }
+
+      function bindSecretToggle(btnId, inputId) {
+        const btn = document.getElementById(btnId);
+        const inp = document.getElementById(inputId);
+        if (!btn || !inp) return;
+        btn.addEventListener("click", () => {
+          const hidden = inp.type === "password";
+          inp.type = hidden ? "text" : "password";
+          btn.textContent = hidden ? "Cacher" : "Voir";
+        });
+      }
+      bindSecretToggle("btn-sim-wa-eye", "sim-alert-wa-apikey");
+      bindSecretToggle("btn-sim-tg-eye", "sim-alert-tg-token");
+
+      ["sim-alert-master", "sim-alert-wa-enabled", "sim-alert-tg-enabled"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("change", saveSimAlertConfig);
+      });
+      ["sim-alert-wa-phone", "sim-alert-wa-apikey", "sim-alert-tg-token", "sim-alert-tg-chatid"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener("input", saveSimAlertConfig);
+          el.addEventListener("blur", saveSimAlertConfig);
+        }
+      });
+
+      const btnSimTestWa = document.getElementById("btn-sim-test-wa");
+      if (btnSimTestWa) {
+        btnSimTestWa.addEventListener("click", async () => {
+          if (IS_EMBED_MODE) return;
+          saveSimAlertConfig();
+          btnSimTestWa.disabled = true;
+          const nowStr = new Date().toLocaleTimeString();
+          const msg = `[TEST SIMULATEUR] Smart Grid U-AUBEN — Canal WhatsApp opérationnel (${nowStr}).`;
+          try {
+            const ok = await sendSimWhatsApp(msg, true);
+            if (ok) setSimLastAlertNote(`Test WhatsApp transmis — ${nowStr}`);
+          } finally {
+            btnSimTestWa.disabled = false;
+          }
+        });
+      }
+
+      const btnSimTestTg = document.getElementById("btn-sim-test-tg");
+      if (btnSimTestTg) {
+        btnSimTestTg.addEventListener("click", async () => {
+          if (IS_EMBED_MODE) return;
+          saveSimAlertConfig();
+          btnSimTestTg.disabled = true;
+          const nowStr = new Date().toLocaleTimeString();
+          const msg = `[TEST SIMULATEUR] Smart Grid U-AUBEN — Canal Telegram opérationnel (${nowStr}).`;
+          try {
+            const ok = await sendSimTelegram(msg, true);
+            if (ok) setSimLastAlertNote(`Test Telegram transmis — ${nowStr}`);
+          } finally {
+            btnSimTestTg.disabled = false;
+          }
+        });
+      }
+
       document.getElementById("btn-buzzer-sound").addEventListener("click", () => toggleSound());
       document.getElementById("wire-color-picker").addEventListener("click", ev => {
         const b = ev.target.closest("[data-color]"); if (!b) return;
@@ -6677,11 +7456,12 @@
         state.mqttEnabled = false;
         state.soundEnabled = false;
         state.buzzerSound = false;
-        state.powered = true; // Rendu visuel du schéma dans l'iframe uniquement (zéro MQTT / zéro BroadcastChannel)
+        state.powered = true; // Rendu visuel du schéma dans l'iframe uniquement (zéro MQTT / zéro BroadcastChannel / zéro alerte)
       } else {
-        // Hors mode intégré, la publication MQTT démarre uniquement lorsque l'utilisateur active "Simuler" (Play)
+        // Hors mode intégré, la publication MQTT et les alertes démarrent uniquement lorsque l'utilisateur active "Simuler" (Play)
         state.powered = false;
       }
+      loadSimAlertConfig();
       syncSoundUI();
       syncWiringLockUI();
       renderPalette();
