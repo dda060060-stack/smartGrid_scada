@@ -1541,7 +1541,7 @@
     </div>
   </div>
 
-  <div id="alert-banner">ALERTE CRITIQUE : DISJONCTEUR Q1 OUVERT — SURCHARGE (&gt;15 A) OU SURCHAUFFE TRANSFORMATEUR</div>
+  <div id="alert-banner">ALERTE CRITIQUE : DISJONCTEUR Q1 OUVERT — SURCHARGE (&gt;3.5 A) OU SURCHAUFFE TRANSFORMATEUR</div>
 
   <main class="main-shell">
     <!-- =======================================================
@@ -1900,7 +1900,7 @@
               <line x1="450" y1="202" x2="442" y2="210" stroke="#111827" stroke-width="2" />
               <line id="cb-blade" x1="518" y1="206" x2="447" y2="206" stroke="#64748B" stroke-width="3.6" stroke-linecap="round" />
               <circle cx="518" cy="206" r="4.5" fill="#FFFFFF" stroke="#111827" stroke-width="2" />
-              <text x="482" y="252" fill="#64748B" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">BUS DC · PROT. 15A</text>
+              <text x="482" y="252" fill="#64748B" font-family="Inter, sans-serif" font-size="8.2" font-weight="700" text-anchor="middle">BUS DC · PROT. 3.5A</text>
             </g>
 
             <!-- IT-101 CHARGES 12V -->
@@ -2249,7 +2249,7 @@
               <tr>
                 <td class="mono"><strong>IT-101_HI</strong></td>
                 <td>Surcharge Courant Charge (ACS712 #1 / GPIO 35)</td>
-                <td class="mono">&gt; 15.0 A</td>
+                <td class="mono">&gt; 3.5 A</td>
                 <td class="mono" id="al-val-i">--.- A</td>
                 <td><span id="al-st-i" class="badge bg-gray">ATTENTE</span></td>
               </tr>
@@ -2458,7 +2458,7 @@
       const ratio = Math.max(0, Math.min(1, tempValue / 80));
       const offset = arcLen * (1 - ratio);
       const deg = ratio * 180;
-      const isOver = tempValue > scadaLimits.tempHigh;
+      const isOver = Boolean(typeof alarmState !== "undefined" && alarmState.temp && alarmState.temp.active);
 
       if (arc) {
         arc.setAttribute("stroke-dashoffset", offset.toFixed(1));
@@ -2519,19 +2519,20 @@
       const clamped = Math.max(0, Math.min(100, eauValue));
       const h = (clamped / 100) * 198;
       const y = 207 - h;
+      const isLowConfirmed = Boolean(typeof alarmState !== "undefined" && alarmState.eau && alarmState.eau.active);
 
       if (waterEl) {
         waterEl.setAttribute("y", y.toFixed(1));
         waterEl.setAttribute("height", h.toFixed(1));
-        waterEl.setAttribute("fill", clamped < scadaLimits.tankLow ? "#DC2626" : "#1976D2");
+        waterEl.setAttribute("fill", isLowConfirmed ? "#DC2626" : "#1976D2");
       }
       if (surfEl) {
         surfEl.setAttribute("y", y.toFixed(1));
-        surfEl.setAttribute("fill", clamped < scadaLimits.tankLow ? "#FCA5A5" : "#64B5F6");
+        surfEl.setAttribute("fill", isLowConfirmed ? "#FCA5A5" : "#64B5F6");
       }
 
       if (statusEl) {
-        if (clamped < scadaLimits.tankLow) {
+        if (isLowConfirmed) {
           statusEl.textContent = "NIVEAU CRITIQUE";
           statusEl.className = "badge bg-red";
         } else if (clamped >= scadaLimits.tankHigh) {
@@ -2544,9 +2545,8 @@
       }
 
       if (warnBox) {
-        const isLow = clamped < scadaLimits.tankLow;
         warnBox.textContent = `Alerte : le niveau Polytank (${clamped}%) est inférieur au seuil bas configuré (${scadaLimits.tankLow}%).`;
-        warnBox.classList.toggle("visible", isLow);
+        warnBox.classList.toggle("visible", isLowConfirmed);
       }
     }
 
@@ -2648,13 +2648,13 @@
         sendAutoModeCommand();
       } else {
         const cmdObj = { mode: "MANUAL", ts: Date.now() };
-        if (typeof scadaBus !== "undefined" && scadaBus) {
-          try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
-        }
         if (client && brokerOnline) {
           client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
           ajouterLog("Commande MQTT envoyée : passage en mode MANUEL opérateur.", "warn");
         } else {
+          if (typeof scadaBus !== "undefined" && scadaBus) {
+            try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
+          }
           ajouterLog("Mode de conduite basculé sur MANUEL.", "warn");
         }
       }
@@ -2851,9 +2851,59 @@
     const TELEMETRY_TOPIC = "cge/uauben/david/smartgrid";
     const COMMAND_TOPIC   = "cge/uauben/david/smartgrid/cmd";
 
+    const VALID_SOURCES = new Set(["SONABEL", "SOLAIRE", "COUPURE"]);
+    const CURRENT_OVERLOAD_LIMIT = 3.5;   // Seuil déclenchement surcharge ACS712 (A)
+    const CURRENT_OVERLOAD_CLEAR = 3.3;   // Seuil hystérésis retour courant nominal (A)
+    const SONABEL_LOW_LIMIT      = 9.5;   // Seuil coupure SONABEL (V)
+    const SONABEL_CLEAR_LIMIT    = 10.2;  // Seuil hystérésis retour SONABEL (V)
+    const TEMP_HYSTERESIS_C      = 2.0;   // Hystérésis retour température (°C)
+    const TANK_HYSTERESIS_PCT    = 5;     // Hystérésis retour Polytank (%)
+    const ALARM_CONFIRM_FRAMES   = 2;     // Confirmation sur 2 trames consécutives
+    const ALARM_CLEAR_FRAMES     = 2;     // Effacement durable sur 2 trames consécutives en zone normale
+    const ALARM_COOLDOWN_MS      = 60000; // Cooldown minimum 60 s par type d'alarme
+
     let brokerOnline = false;
+    let hasRealMqttTelemetry = false;
+    let lastRealMqttAt = 0;
+    let demoSimTimer = null;
     let rxCount = 0;
+    let rejectedFrames = 0;
+    let dispatchedAlertsCount = 0;
     let prevSrc = null, prevDisj = null, prevPompe = null;
+
+    const alarmState = {
+      sonabel: { active: false, faultStreak: 0, normalStreak: 0, lastAlertAt: 0, lastRecoveryAt: 0 },
+      disj:    { active: false, faultStreak: 0, normalStreak: 0, lastAlertAt: 0, lastRecoveryAt: 0 },
+      acs:     { active: false, faultStreak: 0, normalStreak: 0, lastAlertAt: 0, lastRecoveryAt: 0 },
+      temp:    { active: false, faultStreak: 0, normalStreak: 0, lastAlertAt: 0, lastRecoveryAt: 0 },
+      eau:     { active: false, faultStreak: 0, normalStreak: 0, lastAlertAt: 0, lastRecoveryAt: 0 }
+    };
+
+    function stopDemoGenerator() {
+      if (demoSimTimer !== null) {
+        clearInterval(demoSimTimer);
+        demoSimTimer = null;
+      }
+    }
+
+    function parseFiniteNumber(val, min = -Infinity, max = Infinity) {
+      if (val === null || val === undefined || val === "" || typeof val === "boolean") return null;
+      const n = Number(val);
+      if (!Number.isFinite(n) || n < min || n > max) return null;
+      return n;
+    }
+
+    function parseBinaryFlag(val) {
+      if (val === 1 || val === "1" || val === true) return 1;
+      if (val === 0 || val === "0" || val === false) return 0;
+      return null;
+    }
+
+    function parseValidSource(val) {
+      if (typeof val !== "string") return null;
+      const s = val.trim().toUpperCase();
+      return VALID_SOURCES.has(s) ? s : null;
+    }
 
     function setBrokerUI(state) {
       const pill = document.getElementById("broker-pill");
@@ -2864,6 +2914,7 @@
       const cmds = document.querySelectorAll(".mqtt-cmd-btn, #btn-cmd-auto");
 
       brokerOnline = (state === "online");
+      if (brokerOnline) stopDemoGenerator();
       cmds.forEach(btn => { btn.disabled = !(brokerOnline || typeof BroadcastChannel !== "undefined"); });
 
       if (state === "online") {
@@ -2908,6 +2959,7 @@
 
       client.on("connect", () => {
         setBrokerUI("online");
+        stopDemoGenerator();
         client.subscribe(TELEMETRY_TOPIC, { qos: 0 });
         ajouterLog("Connexion établie avec le broker HiveMQ. Abonnement actif sur " + TELEMETRY_TOPIC + ".", "ok");
       });
@@ -2927,11 +2979,15 @@
       });
 
       client.on("message", (t, message) => {
+        if (t !== TELEMETRY_TOPIC) return;
         try {
           const d = JSON.parse(message.toString());
-          traiterTrameMQTT(d);
+          hasRealMqttTelemetry = true;
+          lastRealMqttAt = Date.now();
+          stopDemoGenerator();
+          traiterTrameMQTT(d, "mqtt");
         } catch (e) {
-          console.error("Trame JSON invalide :", e);
+          rejectedFrames += 1;
         }
       });
     } else {
@@ -2942,8 +2998,10 @@
     const scadaBus = (typeof BroadcastChannel !== "undefined") ? new BroadcastChannel("cge_uauben_smartgrid_bus") : null;
     if (scadaBus) {
       scadaBus.addEventListener("message", ev => {
+        // Dès que MQTT HiveMQ est connecté ou actif, ignore les trames locales pour éviter tout conflit.
+        if (brokerOnline || hasRealMqttTelemetry) return;
         if (ev.data && ev.data.topic === TELEMETRY_TOPIC && ev.data.payload) {
-          traiterTrameMQTT(ev.data.payload);
+          traiterTrameMQTT(ev.data.payload, "bus");
         }
       });
     }
@@ -2960,13 +3018,13 @@
       };
       updateDriveModeUI(false);
       updateLocalChargeBadges(relayId, cmd === "ON", label);
-      if (scadaBus) {
-        try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
-      }
       if (client && brokerOnline) {
         client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
         ajouterLog(`Commande MQTT envoyée -> ${label || relayId} (GPIO ${gpio}) : ${cmd}`, cmd === "ON" ? "ok" : "warn");
       } else {
+        if (scadaBus) {
+          try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
+        }
         ajouterLog(`Commande envoyée au simulateur local -> ${label || relayId} (GPIO ${gpio}) : ${cmd}`, cmd === "ON" ? "ok" : "warn");
       }
     }
@@ -2974,11 +3032,10 @@
     function sendAutoModeCommand() {
       updateDriveModeUI(true);
       const cmdObj = { mode: "AUTO", ts: Date.now() };
-      if (scadaBus) {
-        try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
-      }
       if (client && brokerOnline) {
         client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
+      } else if (scadaBus) {
+        try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
       }
       ajouterLog("Commande MQTT envoyée -> Retour en régulation automatique ESP32 (Mode AUTO).", "ok");
     }
@@ -2998,7 +3055,7 @@
       const valTState = document.getElementById("val-t-state");
       if (valTEl) valTEl.textContent = t.toFixed(1);
       if (valTState) {
-        if (t > scadaLimits.tempHigh) {
+        if (alarmState.temp.active) {
           valTState.textContent = "SURCHAUFFE";
           valTState.className = "badge bg-red";
         } else if (t > scadaLimits.tempHigh - 10) {
@@ -3015,13 +3072,13 @@
       const barEau = document.getElementById("bar-eau");
       if (barEau) {
         barEau.style.width = eau + "%";
-        barEau.style.background = eau < scadaLimits.tankLow ? "#DC2626" : (eau >= scadaLimits.tankHigh ? "#2E7D32" : "#1976D2");
+        barEau.style.background = alarmState.eau.active ? "#DC2626" : (eau >= scadaLimits.tankHigh ? "#2E7D32" : "#1976D2");
       }
       updateHmiTank(eau);
 
       const tankStatus = document.getElementById("tank-status-text");
       if (tankStatus) {
-        if (eau < scadaLimits.tankLow) {
+        if (alarmState.eau.active) {
           tankStatus.textContent = "NIVEAU CRITIQUE";
           tankStatus.setAttribute("fill", "#DC2626");
         } else if (eau >= scadaLimits.tankHigh) {
@@ -3033,18 +3090,21 @@
         }
       }
 
-      // Alarmes actives
+      // Alarmes actives confirmées (anti-rebond 2 trames + hystérésis)
       const activeAlarms = [];
-      if (disj === 0) activeAlarms.push("Disjoncteur ouvert");
-      if (i > 15) activeAlarms.push("Surcharge (>15 A)");
-      if (t > scadaLimits.tempHigh) activeAlarms.push(`Surchauffe (>${scadaLimits.tempHigh} °C)`);
-      if (eau < scadaLimits.tankLow) activeAlarms.push(`Niveau bas (<${scadaLimits.tankLow}%)`);
+      if (alarmState.disj.active) activeAlarms.push("Disjoncteur Q1 ouvert");
+      if (alarmState.acs.active) activeAlarms.push(`Surcharge (>${CURRENT_OVERLOAD_LIMIT.toFixed(1)} A)`);
+      if (alarmState.temp.active) activeAlarms.push(`Surchauffe (>${scadaLimits.tempHigh} °C)`);
+      if (alarmState.eau.active) activeAlarms.push(`Niveau bas (<${scadaLimits.tankLow}%)`);
+      if (alarmState.sonabel.active) activeAlarms.push(src === "SOLAIRE" ? "Secours Solaire (perte SONABEL)" : "Coupure SONABEL");
 
       const alarmCount = activeAlarms.length;
       const countEl = document.getElementById("kpi-alarm-count");
       const detailEl = document.getElementById("kpi-alarm-detail");
       const navBadge = document.getElementById("nav-alarm-badge");
       const viewBadge = document.getElementById("alarm-view-badge");
+      const banner = document.getElementById("alert-banner");
+      const synState = document.getElementById("syn-state");
 
       if (countEl) countEl.textContent = alarmCount;
       if (navBadge) {
@@ -3060,29 +3120,106 @@
         viewBadge.className = "badge " + (alarmCount > 0 ? "bg-red" : "bg-green");
       }
 
-      // Tableaux Alarmes
+      if (banner) {
+        if (alarmCount > 0) {
+          banner.textContent = `ALERTE CRITIQUE : ${activeAlarms.join(" — ").toUpperCase()}`;
+          banner.style.display = "block";
+        } else {
+          banner.style.display = "none";
+        }
+      }
+      if (synState) {
+        if (alarmCount > 0) {
+          synState.textContent = "DÉFAUT PROTECTION";
+          synState.className = "badge bg-red";
+        } else {
+          synState.textContent = "EXPLOITATION NOMINALE";
+          synState.className = "badge bg-green";
+        }
+      }
+
+      // Tableaux Alarmes (reflètent les alarmes confirmées avec hystérésis)
       document.getElementById("al-val-disj").textContent = disj === 1 ? "FERMÉ" : "OUVERT";
-      document.getElementById("al-st-disj").textContent = disj === 1 ? "NOMINAL" : "ALARME";
-      document.getElementById("al-st-disj").className = disj === 1 ? "badge bg-green" : "badge bg-red";
+      document.getElementById("al-st-disj").textContent = alarmState.disj.active ? "ALARME" : "NOMINAL";
+      document.getElementById("al-st-disj").className = alarmState.disj.active ? "badge bg-red" : "badge bg-green";
 
       document.getElementById("al-val-i").textContent = i.toFixed(2) + " A";
-      document.getElementById("al-st-i").textContent = i > 15 ? "SURCHARGE" : "NOMINAL";
-      document.getElementById("al-st-i").className = i > 15 ? "badge bg-red" : "badge bg-green";
+      document.getElementById("al-st-i").textContent = alarmState.acs.active ? "SURCHARGE" : "NOMINAL";
+      document.getElementById("al-st-i").className = alarmState.acs.active ? "badge bg-red" : "badge bg-green";
 
       document.getElementById("al-val-t").textContent = t.toFixed(1) + " °C";
-      document.getElementById("al-st-t").textContent = t > scadaLimits.tempHigh ? "SURCHAUFFE" : "NOMINAL";
-      document.getElementById("al-st-t").className = t > scadaLimits.tempHigh ? "badge bg-red" : "badge bg-green";
+      document.getElementById("al-st-t").textContent = alarmState.temp.active ? "SURCHAUFFE" : "NOMINAL";
+      document.getElementById("al-st-t").className = alarmState.temp.active ? "badge bg-red" : "badge bg-green";
 
       document.getElementById("al-val-eau").textContent = eau + " %";
-      document.getElementById("al-st-eau").textContent = eau < scadaLimits.tankLow ? "NIVEAU BAS" : "NOMINAL";
-      document.getElementById("al-st-eau").className = eau < scadaLimits.tankLow ? "badge bg-red" : "badge bg-green";
+      document.getElementById("al-st-eau").textContent = alarmState.eau.active ? "NIVEAU BAS" : "NOMINAL";
+      document.getElementById("al-st-eau").className = alarmState.eau.active ? "badge bg-red" : "badge bg-green";
 
       document.getElementById("al-val-src").textContent = src;
-      document.getElementById("al-st-src").textContent = src === "SONABEL" ? "NOMINAL" : (src === "SOLAIRE" ? "SECOURS" : "DÉFAUT");
-      document.getElementById("al-st-src").className = src === "SONABEL" ? "badge bg-green" : (src === "SOLAIRE" ? "badge bg-yellow" : "badge bg-red");
+      document.getElementById("al-st-src").textContent = alarmState.sonabel.active ? (src === "SOLAIRE" ? "SECOURS" : "DÉFAUT") : "NOMINAL";
+      document.getElementById("al-st-src").className = alarmState.sonabel.active ? (src === "SOLAIRE" ? "badge bg-yellow" : "badge bg-red") : "badge bg-green";
     }
 
-    function traiterTrameMQTT(d) {
+    function traiterTrameMQTT(d, origin = "mqtt") {
+      // Validation stricte : ignore toute trame malformée ou incomplète sans jamais remplacer par 0
+      if (!d || typeof d !== "object" || Array.isArray(d)) {
+        rejectedFrames += 1;
+        return false;
+      }
+
+      const vRaw     = parseFiniteNumber(d.v, 0, 60);
+      const iRaw     = parseFiniteNumber(d.i, 0, 50);
+      const tRaw     = parseFiniteNumber(d.t, -40, 150);
+      const battRaw  = parseFiniteNumber(d.batt, 0, 100);
+      const eauRaw   = parseFiniteNumber(d.eau, 0, 100);
+      const srcRaw   = parseValidSource(d.src);
+      const disjRaw  = parseBinaryFlag(d.disj);
+      const pompeRaw = parseBinaryFlag(d.pompe);
+
+      // Tous les champs de mesure de base doivent être valides et non-null
+      if (vRaw === null || iRaw === null || tRaw === null || battRaw === null ||
+          eauRaw === null || srcRaw === null || disjRaw === null || pompeRaw === null) {
+        rejectedFrames += 1;
+        return false;
+      }
+
+      const prev = lastTelemetry;
+      const v = vRaw;
+      const i = iRaw;
+      const t = tRaw;
+      const powerW = Math.round(v * i);
+      const batt = Math.max(0, Math.min(100, Math.round(battRaw)));
+      const eau = Math.max(0, Math.min(100, Math.round(eauRaw)));
+      const src = srcRaw;
+      const disj = disjRaw;
+      const pompe = pompeRaw;
+
+      // Champs étendus optionnels : conserve la dernière valeur valide si absente, jamais forcée à 0
+      const vSonParsed = parseFiniteNumber(d.v_sonabel, 0, 60);
+      const vSonabel = vSonParsed !== null
+        ? vSonParsed
+        : (src === "SONABEL" ? v : (prev && prev.vSonabel !== null ? prev.vSonabel : null));
+
+      const vBattParsed = parseFiniteNumber(d.v_batt, 0, 30);
+      const vBatt = vBattParsed !== null
+        ? vBattParsed
+        : (prev && prev.vBatt !== null ? prev.vBatt : null);
+
+      const iSolParsed = parseFiniteNumber(d.i_solaire, 0, 50);
+      const iSolaire = iSolParsed !== null
+        ? iSolParsed
+        : (prev && prev.iSolaire !== null ? prev.iSolaire : null);
+
+      const lumParsed = parseBinaryFlag(d.lumiere);
+      const lumiere = lumParsed !== null
+        ? lumParsed
+        : (prev ? prev.lumiere : (src !== "COUPURE" ? 1 : 0));
+
+      const ventParsed = parseBinaryFlag(d.ventilo);
+      const ventilo = ventParsed !== null
+        ? ventParsed
+        : (prev ? prev.ventilo : disj);
+
       const nowStr = new Date().toLocaleTimeString();
       rxCount += 1;
       document.getElementById("rx-count").textContent = rxCount;
@@ -3090,32 +3227,20 @@
       const cardMaj = document.getElementById("card-last-update");
       if (cardMaj) cardMaj.textContent = nowStr;
 
-      const v = Number(d.v) || 0;
-      const i = Number(d.i) || 0;
-      const t = Number(d.t) || 0;
-      const powerW = Math.round(v * i);
-      const batt = Math.max(0, Math.min(100, Math.round(Number(d.batt) || 0)));
-      const eau = Math.max(0, Math.min(100, Math.round(Number(d.eau) || 0)));
-      const src = d.src || "COUPURE";
-      const disj = Number(d.disj) === 1 ? 1 : 0;
-      const pompe = Number(d.pompe) === 1 ? 1 : 0;
-      const lumiere = d.lumiere !== undefined ? (Number(d.lumiere) === 1 ? 1 : 0) : (src !== "COUPURE" ? 1 : 0);
-      const ventilo = d.ventilo !== undefined ? (Number(d.ventilo) === 1 ? 1 : 0) : disj;
-
       if (d.mode === "AUTO") updateDriveModeUI(true);
       else if (d.mode === "MANUAL") updateDriveModeUI(false);
 
       lastTelemetry = {
         src, v, i, t, batt, eau, disj, lumiere, ventilo, pompe,
-        vSonabel: d.v_sonabel !== undefined ? Number(d.v_sonabel) : undefined,
-        nowStr
+        vSonabel, vBatt, iSolaire,
+        nowStr, origin
       };
 
       // 1. Cartes électriques & numériques
       document.getElementById("val-v").textContent = v.toFixed(1);
-      document.getElementById("val-v-detail").textContent = (d.v_sonabel !== undefined) ? `SONABEL ${Number(d.v_sonabel).toFixed(1)} V` : src;
+      document.getElementById("val-v-detail").textContent = (vSonabel !== null) ? `SONABEL ${vSonabel.toFixed(1)} V` : src;
       document.getElementById("val-batt").textContent = batt;
-      document.getElementById("val-batt-v").textContent = (d.v_batt !== undefined) ? `${Number(d.v_batt).toFixed(1)} V` : `${(10.5 + (batt / 100) * 2.1).toFixed(1)} V`;
+      document.getElementById("val-batt-v").textContent = (vBatt !== null) ? `${vBatt.toFixed(1)} V` : `${(10.5 + (batt / 100) * 2.1).toFixed(1)} V`;
       document.getElementById("val-i").textContent = i.toFixed(2);
       document.getElementById("kpi-power").textContent = powerW;
       document.getElementById("kpi-eau").textContent = eau;
@@ -3193,13 +3318,11 @@
         lAts.setAttribute("class", "flow-line flow-fault");
       }
 
-      // Disjoncteur Q1
+      // Disjoncteur Q1 (représentation synoptique)
       const disjEl = document.getElementById("val-disj");
       const svgDisj = document.getElementById("svg-disj");
       const boxDisj = document.getElementById("box-disj");
       const cbBlade = document.getElementById("cb-blade");
-      const banner = document.getElementById("alert-banner");
-      const synState = document.getElementById("syn-state");
 
       if (disj === 1) {
         disjEl.textContent = "Q1 FERMÉ";
@@ -3209,9 +3332,6 @@
         boxDisj.setAttribute("stroke", "#2E7D32");
         cbBlade.style.transform = "rotate(0deg)";
         cbBlade.setAttribute("stroke", "#2E7D32");
-        banner.style.display = "none";
-        synState.textContent = "EXPLOITATION NOMINALE";
-        synState.className = "badge bg-green";
       } else {
         disjEl.textContent = "Q1 OUVERT";
         disjEl.className = "badge bg-red";
@@ -3220,9 +3340,6 @@
         boxDisj.setAttribute("stroke", "#DC2626");
         cbBlade.style.transform = "rotate(22deg)";
         cbBlade.setAttribute("stroke", "#DC2626");
-        banner.style.display = "block";
-        synState.textContent = "DÉFAUT PROTECTION";
-        synState.className = "badge bg-red";
       }
 
       // Polytank P&ID & Pompe P-101
@@ -3266,7 +3383,10 @@
         valveAct.setAttribute("fill", "#94A3B8");
       }
 
-      // 4. Jauges HMI, seuils et table d'alarmes
+      // 4. Évaluation anti-rebond (2 trames) + hystérésis + cooldown 60s + Alertes Agent
+      evaluateAgentAlerts(lastTelemetry);
+
+      // 5. Jauges HMI, bandeau d'alerte et table d'alarmes (synchronisés sur les alarmes confirmées)
       refreshThresholdDrivenStates(lastTelemetry);
 
       // Tableau Équipements
@@ -3279,22 +3399,19 @@
       document.getElementById("eq-eau").textContent = eau + " %";
       document.getElementById("eq-pompe").textContent = pompe === 1 ? "EN MARCHE" : "ARRÊTÉE";
 
-      // 5. Journalisation sur changement d'état
+      // 6. Journalisation sur changement d'état
       if (prevSrc !== null && prevSrc !== src) {
         ajouterLog(`Bascule source ATS : ${prevSrc} -> ${src}`, src === "SONABEL" ? "ok" : (src === "SOLAIRE" ? "warn" : "err"));
       }
       if (prevDisj !== null && prevDisj !== disj) {
-        ajouterLog(disj === 0 ? "Déclenchement disjoncteur Q1 (défaut critique détecté)." : "Disjoncteur Q1 réarmé (retour nominal).", disj === 0 ? "err" : "ok");
+        ajouterLog(disj === 0 ? "Déclenchement disjoncteur Q1 (défaut détecté)." : "Disjoncteur Q1 réarmé (retour nominal).", disj === 0 ? "err" : "ok");
       }
       if (prevPompe !== null && prevPompe !== pompe) {
         ajouterLog(pompe === 1 ? `Démarrage pompe Polytank (niveau ${eau}%).` : `Arrêt pompe Polytank (niveau ${eau}%).`, "ok");
       }
       prevSrc = src; prevDisj = disj; prevPompe = pompe;
 
-      // 5b. Évaluation et envoi multi-canal Alertes Agent (WhatsApp + Telegram)
-      evaluateAgentAlerts(lastTelemetry);
-
-      // 6. Mise à jour des 2 graphiques Chart.js
+      // 7. Mise à jour des 2 graphiques Chart.js
       scadaChart.data.labels.push(nowStr);
       scadaChart.data.datasets[0].data.push(v);
       scadaChart.data.datasets[1].data.push(i);
@@ -3313,6 +3430,7 @@
         powerWaterChart.data.datasets.forEach(ds => ds.data.shift());
       }
       powerWaterChart.update();
+      return true;
     }
 
     // =========================================================================
@@ -3480,12 +3598,20 @@
     }
 
     function resetAlertLatches() {
+      Object.keys(alarmState).forEach(key => {
+        alarmState[key].active = false;
+        alarmState[key].faultStreak = 0;
+        alarmState[key].normalStreak = 0;
+        alarmState[key].lastAlertAt = 0;
+        alarmState[key].lastRecoveryAt = 0;
+      });
       alertLatch.sonabel = false;
       alertLatch.acs = false;
       alertLatch.temp = false;
       alertLatch.eau = false;
       updateLatchUI();
-      ajouterLog("Verrous anti-spam Alertes Agent réarmés manuellement.", "ok");
+      if (lastTelemetry) refreshThresholdDrivenStates(lastTelemetry);
+      ajouterLog("Verrous anti-spam et compteurs d'hystérésis réarmés manuellement.", "ok");
     }
 
     async function sendWhatsAppMessage(msg, isTest = false) {
@@ -3569,13 +3695,14 @@
     }
 
     function dispatchAgentAlert(faultTitle, msg, isRecovery = false) {
+      dispatchedAlertsCount += 1;
       const channels = [];
       if (alertConfig.waEnabled) channels.push("WhatsApp");
       if (alertConfig.tgEnabled) channels.push("Telegram");
 
       if (channels.length === 0) {
         ajouterLog(
-          `${isRecovery ? "Retour nominal" : "Défaut détecté"} [${faultTitle}] — aucun canal WhatsApp/Telegram activé.`,
+          `${isRecovery ? "Retour nominal" : "Défaut confirmé"} [${faultTitle}] — aucun canal WhatsApp/Telegram activé.`,
           isRecovery ? "ok" : "warn"
         );
         return;
@@ -3590,22 +3717,83 @@
       if (alertConfig.tgEnabled) sendTelegramMessage(msg, false);
     }
 
-    function evaluateAgentAlerts(m) {
-      const isSonabelDown = (m.src !== "SONABEL") || (m.vSonabel !== undefined && m.vSonabel < 9.5);
-      const isOverload    = m.i > 15.0;
-      const isOverheat    = m.t > scadaLimits.tempHigh;
-      const isTankLow     = m.eau < scadaLimits.tankLow;
+    function stepAlarmMachine(key, rawFault, rawClear, nowMs) {
+      const st = alarmState[key];
+      if (!st.active) {
+        if (rawFault) {
+          st.faultStreak += 1;
+          st.normalStreak = 0;
+          if (st.faultStreak >= ALARM_CONFIRM_FRAMES) {
+            st.active = true;
+            st.faultStreak = 0;
+            const canNotify = (nowMs - st.lastAlertAt) >= ALARM_COOLDOWN_MS;
+            if (canNotify) {
+              st.lastAlertAt = nowMs;
+              return "TRIGGER_NOTIFY";
+            }
+            return "TRIGGER_COOLDOWN";
+          }
+        } else {
+          st.faultStreak = 0;
+        }
+        return "IDLE";
+      }
 
-      // 1. Coupure SONABEL
-      if (isSonabelDown && !alertLatch.sonabel) {
-        alertLatch.sonabel = true;
+      if (rawClear) {
+        st.normalStreak += 1;
+        st.faultStreak = 0;
+        if (st.normalStreak >= ALARM_CLEAR_FRAMES) {
+          st.active = false;
+          st.normalStreak = 0;
+          const canNotifyRecovery = (st.lastAlertAt > 0) && ((nowMs - st.lastRecoveryAt) >= ALARM_COOLDOWN_MS);
+          if (canNotifyRecovery) {
+            st.lastRecoveryAt = nowMs;
+            return "CLEAR_NOTIFY";
+          }
+          return "CLEAR_COOLDOWN";
+        }
+      } else {
+        st.normalStreak = 0;
+      }
+      return "ACTIVE";
+    }
+
+    function evaluateAgentAlerts(m) {
+      const nowMs = Date.now();
+
+      // Conditions de déclenchement (en fonctionnement normal : SONABEL ~12V, Batt ~12V, I < 3.5A, T < 60°C, Eau 30..85%, Q1=1 -> 0 alarme)
+      const sonabelFault = (m.src !== "SONABEL") ||
+        (m.vSonabel !== null && m.vSonabel < SONABEL_LOW_LIMIT) ||
+        (m.src === "SONABEL" && m.v < SONABEL_LOW_LIMIT);
+      const sonabelClear = (m.src === "SONABEL") &&
+        (m.v >= SONABEL_CLEAR_LIMIT) &&
+        (m.vSonabel === null || m.vSonabel >= SONABEL_CLEAR_LIMIT);
+
+      const disjFault = (m.disj === 0);
+      const disjClear = (m.disj === 1);
+
+      const acsFault  = (m.i > CURRENT_OVERLOAD_LIMIT);
+      const acsClear  = (m.i <= CURRENT_OVERLOAD_CLEAR);
+
+      const tempFault = (m.t > scadaLimits.tempHigh);
+      const tempClear = (m.t <= (scadaLimits.tempHigh - TEMP_HYSTERESIS_C));
+
+      const eauFault  = (m.eau < scadaLimits.tankLow);
+      const eauClear  = (m.eau >= Math.min(100, scadaLimits.tankLow + TANK_HYSTERESIS_PCT));
+
+      // 0. Disjoncteur Q1 (suivi anti-rebond pour bandeau et tableau d'alarmes)
+      stepAlarmMachine("disj", disjFault, disjClear, nowMs);
+
+      // 1. Coupure SONABEL (confirmation 2 trames + hystérésis + cooldown 60 s)
+      const evSonabel = stepAlarmMachine("sonabel", sonabelFault, sonabelClear, nowMs);
+      alertLatch.sonabel = alarmState.sonabel.active;
+      if (evSonabel === "TRIGGER_NOTIFY") {
         dispatchAgentAlert(
           "Coupure SONABEL",
           `[ALERTE] SMART GRID — COUPURE SONABEL\nSource active : ${m.src}\nBus DC : ${m.v.toFixed(1)} V | Batterie 3S : ${m.batt}%\nHeure : ${m.nowStr}`,
           false
         );
-      } else if (!isSonabelDown && alertLatch.sonabel) {
-        alertLatch.sonabel = false;
+      } else if (evSonabel === "CLEAR_NOTIFY") {
         dispatchAgentAlert(
           "SONABEL rétabli",
           `[RETOUR NORMAL] SONABEL\nAlimentation principale rétablie (${m.v.toFixed(1)} V).\nHeure : ${m.nowStr}`,
@@ -3613,16 +3801,16 @@
         );
       }
 
-      // 2. Surcharge courant ACS712 (> 15.0 A)
-      if (isOverload && !alertLatch.acs) {
-        alertLatch.acs = true;
+      // 2. Surcharge courant ACS712 (> 3.5 A)
+      const evAcs = stepAlarmMachine("acs", acsFault, acsClear, nowMs);
+      alertLatch.acs = alarmState.acs.active;
+      if (evAcs === "TRIGGER_NOTIFY") {
         dispatchAgentAlert(
           "Surcharge ACS712",
-          `[ALERTE] SMART GRID — SURCHARGE COURANT (ACS712)\nCourant mesuré : ${m.i.toFixed(2)} A (> 15.0 A)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
+          `[ALERTE] SMART GRID — SURCHARGE COURANT (ACS712)\nCourant mesuré : ${m.i.toFixed(2)} A (> ${CURRENT_OVERLOAD_LIMIT.toFixed(1)} A)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
           false
         );
-      } else if (!isOverload && alertLatch.acs) {
-        alertLatch.acs = false;
+      } else if (evAcs === "CLEAR_NOTIFY") {
         dispatchAgentAlert(
           "Courant nominal",
           `[RETOUR NORMAL] COURANT ACS712\nCourant charge stabilisé à ${m.i.toFixed(2)} A | Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}.\nHeure : ${m.nowStr}`,
@@ -3631,15 +3819,15 @@
       }
 
       // 3. Surchauffe transformateur DS18B20 (> Seuil Haut)
-      if (isOverheat && !alertLatch.temp) {
-        alertLatch.temp = true;
+      const evTemp = stepAlarmMachine("temp", tempFault, tempClear, nowMs);
+      alertLatch.temp = alarmState.temp.active;
+      if (evTemp === "TRIGGER_NOTIFY") {
         dispatchAgentAlert(
           "Surchauffe DS18B20",
           `[ALERTE] SMART GRID — SURCHAUFFE TRANSFORMATEUR\nSonde DS18B20 : ${m.t.toFixed(1)} °C (> ${scadaLimits.tempHigh} °C)\nDisjoncteur Q1 : ${m.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${m.nowStr}`,
           false
         );
-      } else if (!isOverheat && alertLatch.temp) {
-        alertLatch.temp = false;
+      } else if (evTemp === "CLEAR_NOTIFY") {
         dispatchAgentAlert(
           "Température nominale",
           `[RETOUR NORMAL] TEMPÉRATURE DS18B20\nTempérature transformateur redescendue à ${m.t.toFixed(1)} °C.\nHeure : ${m.nowStr}`,
@@ -3648,15 +3836,15 @@
       }
 
       // 4. Polytank niveau bas (< Seuil Bas)
-      if (isTankLow && !alertLatch.eau) {
-        alertLatch.eau = true;
+      const evEau = stepAlarmMachine("eau", eauFault, eauClear, nowMs);
+      alertLatch.eau = alarmState.eau.active;
+      if (evEau === "TRIGGER_NOTIFY") {
         dispatchAgentAlert(
           "Polytank niveau bas",
           `[ALERTE] POLYTANK — NIVEAU CRITIQUE BAS\nNiveau mesuré (HC-SR04) : ${m.eau}% (< ${scadaLimits.tankLow}%)\nPompe 12V : ${m.pompe ? "EN MARCHE" : "ARRÊTÉE"}\nHeure : ${m.nowStr}`,
           false
         );
-      } else if (!isTankLow && alertLatch.eau) {
-        alertLatch.eau = false;
+      } else if (evEau === "CLEAR_NOTIFY") {
         dispatchAgentAlert(
           "Polytank rétabli",
           `[RETOUR NORMAL] POLYTANK\nNiveau d'eau rétabli à ${m.eau}% | Pompe 12V : ${m.pompe ? "EN MARCHE" : "ARRÊTÉE"}.\nHeure : ${m.nowStr}`,
@@ -3666,6 +3854,17 @@
 
       updateLatchUI();
     }
+
+    window.getScadaAlarmDebug = () => ({
+      rxCount,
+      rejectedFrames,
+      brokerOnline,
+      hasRealMqttTelemetry,
+      dispatchedAlertsCount,
+      lastTelemetry,
+      alarmState: JSON.parse(JSON.stringify(alarmState)),
+      alertLatch: { ...alertLatch }
+    });
 
     // Chargement automatique des seuils et paramètres sauvegardés au démarrage
     loadScadaLimits();

@@ -3639,7 +3639,7 @@
         wireColorMode: "auto",
         drawingFrom: null,
         mouseSvg: { x: 0, y: 0 },
-        powered: true,
+        powered: false,
         soundEnabled: true,
         buzzerSound: true,
         wiringLocked: true,
@@ -4392,24 +4392,75 @@
       // =====================================================================
       // 8. BIDIRECTIONAL MQTT BRIDGE (broker.hivemq.com + BroadcastChannel)
       // =====================================================================
+      const IS_EMBED_MODE = document.documentElement.classList.contains("embed-mode") ||
+        (new URLSearchParams(window.location.search).get("embed") === "1");
       const MQTT_BROKER_URL = "wss://broker.hivemq.com:8884/mqtt";
       const TELEMETRY_TOPIC = "cge/uauben/david/smartgrid";
       const COMMAND_TOPIC   = "cge/uauben/david/smartgrid/cmd";
-      const scadaBus = (typeof BroadcastChannel !== "undefined") ? new BroadcastChannel("cge_uauben_smartgrid_bus") : null;
+      // En mode intégré (?embed=1), aucun BroadcastChannel ni aucune connexion MQTT n'est instancié.
+      const scadaBus = (!IS_EMBED_MODE && typeof BroadcastChannel !== "undefined")
+        ? new BroadcastChannel("cge_uauben_smartgrid_bus")
+        : null;
+      let lastPublishedPayload = null;
+      let activeIntervalCount = 0;
+
+      function finiteOr(val, fallback) {
+        const n = Number(val);
+        return Number.isFinite(n) ? n : fallback;
+      }
+
+      function buildTelemetryPayload(s, isWireFault = false) {
+        if (isWireFault) {
+          const hasBatt = Boolean(state.analysis && state.analysis.hasBatt);
+          return {
+            v: 0.0,
+            i: 0.00,
+            t: +finiteOr(state.sim.temp, 25.0).toFixed(1),
+            batt: hasBatt ? Math.max(0, Math.min(100, Math.round(finiteOr(state.sim.battPct, 86)))) : 0,
+            eau: Math.max(0, Math.min(100, Math.round(finiteOr(state.sim.eau, 62)))),
+            src: "COUPURE",
+            disj: 0,
+            pompe: 0,
+            v_sonabel: 0.0,
+            v_batt: hasBatt ? +finiteOr(state.sim.vBatt, 12.3).toFixed(1) : 0.0,
+            i_solaire: 0.00,
+            lumiere: 0,
+            ventilo: 0
+          };
+        }
+        const validSrc = (s.source === "SONABEL" || s.source === "SOLAIRE" || s.source === "COUPURE")
+          ? s.source
+          : "COUPURE";
+        return {
+          v: +finiteOr(s.vActive, 0.0).toFixed(1),
+          i: +finiteOr(s.iScada, 0.0).toFixed(2),
+          t: +finiteOr(s.temp, 25.0).toFixed(1),
+          batt: Math.max(0, Math.min(100, Math.round(finiteOr(s.battPct, 0)))),
+          eau: Math.max(0, Math.min(100, Math.round(finiteOr(s.eau, 0)))),
+          src: validSrc,
+          disj: s.disj === 1 ? 1 : 0,
+          pompe: s.k4Pump ? 1 : 0,
+          v_sonabel: +finiteOr(s.vSonabel, 0.0).toFixed(1),
+          v_batt: +finiteOr(s.vBatt, 0.0).toFixed(1),
+          i_solaire: +finiteOr(s.iSolaire, 0.0).toFixed(2),
+          lumiere: s.k2Prio ? 1 : 0,
+          ventilo: s.k3NonPrio ? 1 : 0
+        };
+      }
 
       function applyRemoteCommand(cmd) {
+        if (IS_EMBED_MODE) return;
         if (!cmd || typeof cmd !== "object") return;
-        if (!state.powered && state.analysis && state.analysis.valid) {
-          state.powered = true;
-          updatePlayButtonUI();
-          restartMqttInterval();
-        }
-        if (!state.analysis || !state.analysis.valid) return;
+        // Ne réveille pas un simulateur hors tension (évite tout conflit avec un ESP32 réel).
+        if (!state.powered || !state.analysis || !state.analysis.valid) return;
+        if (cmd.mode === "CONFIG") return;
 
         if (cmd.mode === "AUTO") {
           state.sim.manualMode = false;
           state.sim.manualSource = false;
           state.sim.manualShed = false;
+        } else if (cmd.mode === "MANUAL" && !cmd.relay && !cmd.target) {
+          state.sim.manualMode = true;
         } else {
           const on = cmd.cmd === "ON" || cmd.state === 1 || cmd.state === true;
           const target = String(cmd.relay || cmd.target || "").toUpperCase();
@@ -4427,6 +4478,8 @@
           } else if (target === "IN4" || target === "K4" || target === "POMPE" || target === "PUMP") {
             state.sim.manualMode = true;
             state.sim.pompe = on ? 1 : 0;
+          } else {
+            return;
           }
         }
         updateLiveVisuals();
@@ -4435,6 +4488,7 @@
 
       if (scadaBus) {
         scadaBus.addEventListener("message", ev => {
+          if (IS_EMBED_MODE) return;
           if (ev.data && ev.data.topic === COMMAND_TOPIC && ev.data.payload) {
             applyRemoteCommand(ev.data.payload);
           }
@@ -4447,6 +4501,7 @@
         if (!state.powered && state.analysis && state.analysis.valid) {
           state.powered = true;
           updatePlayButtonUI();
+          if (!IS_EMBED_MODE && state.mqttEnabled && !state.mqttClient) connectMqtt();
           restartMqttInterval();
         }
         const isFan = comp.id === "bp_ventilo" || comp.target === "k3" || (comp.tag && comp.tag.toUpperCase().includes("VENTIL"));
@@ -4477,8 +4532,31 @@
         if (led) led.className = "mqtt-led" + (st !== "disconnected" ? " " + st : "");
       }
 
+      function stopMqttInterval() {
+        if (state.mqttTimer !== null) {
+          clearInterval(state.mqttTimer);
+          state.mqttTimer = null;
+          activeIntervalCount = 0;
+        }
+      }
+
+      function restartMqttInterval() {
+        stopMqttInterval();
+        if (IS_EMBED_MODE) return;
+        if (!state.powered || !state.analysis || !state.analysis.valid) return;
+        const canMqtt = Boolean(state.mqttEnabled && state.mqttClient && state.mqttStatus === "connected");
+        const canLocalBus = Boolean(scadaBus && !canMqtt);
+        if (canMqtt || canLocalBus) {
+          state.mqttTimer = setInterval(() => publishMqttNow(false), 2000);
+          activeIntervalCount = 1;
+        }
+      }
+
       function connectMqtt() {
-        if (typeof mqtt === "undefined") { setMqttUi("error"); return; }
+        if (IS_EMBED_MODE) { disconnectMqtt(); return; }
+        if (!state.mqttEnabled || !state.powered) return;
+        if (typeof mqtt === "undefined") { setMqttUi("error"); restartMqttInterval(); return; }
+        stopMqttInterval();
         if (state.mqttClient) { try { state.mqttClient.end(true); } catch (e) {} state.mqttClient = null; }
         setMqttUi("connecting");
         try {
@@ -4488,23 +4566,45 @@
           });
           state.mqttClient = client;
           client.on("connect", () => {
-            if (state.mqttClient !== client || !state.mqttEnabled) return;
+            if (IS_EMBED_MODE || state.mqttClient !== client || !state.mqttEnabled) return;
             setMqttUi("connected");
             client.subscribe(COMMAND_TOPIC, { qos: 0 });
-            publishMqttNow(false);
-            restartMqttInterval();
+            if (state.powered && state.analysis && state.analysis.valid) {
+              publishMqttNow(false);
+              restartMqttInterval();
+            } else {
+              stopMqttInterval();
+            }
           });
-          client.on("reconnect", () => { if (state.mqttClient === client && state.mqttEnabled) setMqttUi("connecting"); });
-          client.on("offline", () => { if (state.mqttClient === client && state.mqttEnabled) setMqttUi("disconnected"); });
-          client.on("error", () => { if (state.mqttClient === client && state.mqttEnabled) setMqttUi("error"); });
+          client.on("reconnect", () => {
+            if (state.mqttClient === client && state.mqttEnabled) setMqttUi("connecting");
+          });
+          client.on("offline", () => {
+            if (state.mqttClient === client && state.mqttEnabled) {
+              setMqttUi("disconnected");
+              restartMqttInterval();
+            }
+          });
+          client.on("close", () => {
+            if (state.mqttClient === client) {
+              setMqttUi("disconnected");
+              restartMqttInterval();
+            }
+          });
+          client.on("error", () => {
+            if (state.mqttClient === client && state.mqttEnabled) {
+              setMqttUi("error");
+              restartMqttInterval();
+            }
+          });
           client.on("message", (topic, msg) => {
-            if (topic !== COMMAND_TOPIC) return;
+            if (IS_EMBED_MODE || topic !== COMMAND_TOPIC) return;
             try {
               const cmd = JSON.parse(msg.toString());
               applyRemoteCommand(cmd);
             } catch (e) {}
           });
-        } catch (e) { setMqttUi("error"); }
+        } catch (e) { setMqttUi("error"); restartMqttInterval(); }
       }
 
       function disconnectMqtt() {
@@ -4512,33 +4612,44 @@
         if (state.mqttClient) { try { state.mqttClient.end(true); } catch (e) {} state.mqttClient = null; }
         setMqttUi("disconnected");
       }
-      function stopMqttInterval() { if (state.mqttTimer) { clearInterval(state.mqttTimer); state.mqttTimer = null; } }
-      function restartMqttInterval() {
-        stopMqttInterval();
-        if (state.mqttEnabled && state.mqttStatus === "connected" && state.powered && state.analysis && state.analysis.valid) {
-          state.mqttTimer = setInterval(() => publishMqttNow(false), 2000);
-        }
-      }
-      function publishMqttNow(isWireFault = false) {
-        let payload;
-        if (isWireFault) {
-          payload = { v: 0.0, i: 0.00, t: +state.sim.temp.toFixed(1), batt: state.analysis && state.analysis.hasBatt ? state.sim.battPct : 0, eau: Math.round(state.sim.eau), src: "COUPURE", disj: 0, lumiere: 0, ventilo: 0, pompe: 0, v_sonabel: 0.0, v_batt: state.analysis && state.analysis.hasBatt ? state.sim.vBatt : 0.0, i_solaire: 0.00 };
-        } else {
-          const s = computeSim();
-          payload = { v: +s.vActive.toFixed(1), i: +s.iScada.toFixed(2), t: +s.temp.toFixed(1), batt: s.battPct, eau: s.eau, src: s.source, disj: s.disj, lumiere: s.k2Prio ? 1 : 0, ventilo: s.k3NonPrio ? 1 : 0, pompe: s.k4Pump ? 1 : 0, v_sonabel: +s.vSonabel.toFixed(1), v_batt: +s.vBatt.toFixed(1), i_solaire: +s.iSolaire.toFixed(2) };
-        }
+
+      window.addEventListener("beforeunload", disconnectMqtt);
+
+      function publishMqttNow(isWireFault = false, wasPoweredBeforeFault = false) {
+        if (IS_EMBED_MODE) return;
+        const canNorm = Boolean(state.powered && state.analysis && state.analysis.valid);
+        const canFlt = Boolean(isWireFault && wasPoweredBeforeFault);
+        if (!canNorm && !canFlt) return;
+
+        const payload = buildTelemetryPayload(canFlt ? null : computeSim(), canFlt);
         const json = JSON.stringify(payload);
+        lastPublishedPayload = payload;
         const txJsonEl = document.getElementById("mqtt-tx-json");
         if (txJsonEl) txJsonEl.textContent = json;
-        if (scadaBus && state.powered && state.analysis && state.analysis.valid) {
+
+        const mqttReady = Boolean(state.mqttEnabled && state.mqttClient && state.mqttStatus === "connected");
+        if (mqttReady) {
+          state.mqttTxCount += 1;
+          try { state.mqttClient.publish(TELEMETRY_TOPIC, json, { qos: 0 }); } catch (e) {}
+        } else if (scadaBus) {
+          // Fallback local inter-onglets uniquement si MQTT HiveMQ n'est pas connecté (évite tout doublon).
+          state.mqttTxCount += 1;
           try { scadaBus.postMessage({ topic: TELEMETRY_TOPIC, payload }); } catch (_) {}
         }
-        const canNorm = state.mqttEnabled && state.mqttClient && state.mqttStatus === "connected" && state.powered && state.analysis && state.analysis.valid;
-        const canFlt = isWireFault && state.mqttEnabled && state.mqttClient && state.mqttStatus === "connected";
-        if (!canNorm && !canFlt) return;
-        state.mqttTxCount += 1;
-        try { state.mqttClient.publish(TELEMETRY_TOPIC, json, { qos: 0 }); } catch (e) {}
       }
+
+      window.getSimMqttDebug = () => ({
+        isEmbed: IS_EMBED_MODE,
+        powered: state.powered,
+        mqttEnabled: state.mqttEnabled,
+        mqttStatus: state.mqttStatus,
+        hasClient: state.mqttClient !== null,
+        hasScadaBus: scadaBus !== null,
+        hasTimer: state.mqttTimer !== null,
+        activeIntervalCount,
+        txCount: state.mqttTxCount,
+        lastPayload: lastPublishedPayload
+      });
 
       // =====================================================================
       // 9. REALISTIC WEB AUDIO API PHYSICAL ENGINE (RELAIS, POMPE, VENTILO, BUZZER)
@@ -5427,7 +5538,7 @@
         if (!state.analysis.valid && wasPowered) {
           state.powered = false;
           stopMqttInterval();
-          if (wireDisconnectedEvent && wasValid) publishMqttNow(true);
+          if (wireDisconnectedEvent && wasValid) publishMqttNow(true, wasPowered);
         } else if (wireDisconnectedEvent && state.powered && state.analysis.valid) {
           publishMqttNow(false);
         }
@@ -6361,12 +6472,16 @@
           updatePlayButtonUI();
           updateDiagnosticUI();
           updateLiveVisuals();
+          if (!IS_EMBED_MODE && state.mqttEnabled && !state.mqttClient) {
+            connectMqtt();
+          }
           publishMqttNow(false);
           restartMqttInterval();
           requestAnimationFrame(fitView);
         } else {
           state.powered = false;
           stopMqttInterval();
+          disconnectMqtt();
           updatePlayButtonUI();
           updateDiagnosticUI();
           updateLiveVisuals();
@@ -6446,8 +6561,17 @@
 
       // MQTT Button
       document.getElementById("btn-mqtt").addEventListener("click", () => {
+        if (IS_EMBED_MODE) return;
         state.mqttEnabled = !state.mqttEnabled;
-        if (state.mqttEnabled) connectMqtt(); else disconnectMqtt();
+        if (state.mqttEnabled) {
+          if (state.powered) {
+            connectMqtt();
+          } else {
+            showToast("MQTT HiveMQ prêt : cliquez sur Simuler (Play) pour publier vers le SCADA.");
+          }
+        } else {
+          disconnectMqtt();
+        }
         updateLiveVisuals();
       });
 
@@ -6457,7 +6581,7 @@
           state.sim[key] = parseFloat(ev.target.value);
           state.sim.manualMode = false;
           updateLiveVisuals();
-          publishMqttNow(false);
+          if (state.powered) publishMqttNow(false);
         });
       }
       bindSlider("slider-v", "vSonabel");
@@ -6498,25 +6622,24 @@
       window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(fitView, 140); });
 
       // Init
-      const isEmbedInit = document.documentElement.classList.contains("embed-mode");
-      if (isEmbedInit) {
+      if (IS_EMBED_MODE) {
         state.leftOpen = false;
         state.rightOpen = false;
         state.mqttEnabled = false;
         state.soundEnabled = false;
         state.buzzerSound = false;
+        state.powered = true; // Rendu visuel du schéma dans l'iframe uniquement (zéro MQTT / zéro BroadcastChannel)
+      } else {
+        // Hors mode intégré, la publication MQTT démarre uniquement lorsque l'utilisateur active "Simuler" (Play)
+        state.powered = false;
       }
       syncSoundUI();
       syncWiringLockUI();
       renderPalette();
       syncDrawers();
       loadPreset("smartgrid");
-      if (!isEmbedInit && state.mqttEnabled) {
-        connectMqtt();
-      }
-      publishMqttNow(false);
       window.fitEmbeddedView = fitView;
-      if (isEmbedInit) {
+      if (IS_EMBED_MODE) {
         requestAnimationFrame(() => {
           fitView();
           setTimeout(fitView, 120);
