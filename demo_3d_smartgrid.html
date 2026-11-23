@@ -3,68 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Club U-AUBEN — Démo 3D Interactive | Smart Grid &amp; Supervision Polytank (12V DC)</title>
-  <meta name="description" content="Présentation 3D interactive d'ingénierie du prototype Club U-AUBEN : Smart Grid hybride SONABEL / Solaire 12V DC sur ESP32 et automatisation hydraulique Polytank, de l'architecture aux tests de validation." />
-  <meta name="theme-color" content="#09090B" />
+  <title>Smart Grid U-AUBEN · Maquette 3D Interactive (12V DC)</title>
+  <meta name="description" content="Présentation 3D interactive d'ingénierie du prototype CGE U-AUBEN : Smart Grid hybride SONABEL / Solaire 12V DC sur ESP32 et automatisation hydraulique Polytank, de l'architecture aux tests de validation." />
+  <meta name="theme-color" content="#FFFFFF" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     :root {
-      --bg: #FAFAFA;
+      --bg: #F5F7FA;
       --surface: #FFFFFF;
-      --surface-alt: #F4F4F5;
-      --surface-dark: #111216;
-      --ink: #09090B;
-      --ink-2: #3F3F46;
-      --muted: #71717A;
-      --border: #E4E4E7;
-      --border-strong: #D4D4D8;
-      --accent: #EAB308;
-      --accent-hover: #CA8A04;
-      --accent-soft: #FEF9C3;
-      --accent-ink: #713F12;
-      --ok: #16A34A;
-      --ok-bg: #DCFCE7;
-      --ok-ink: #166534;
-      --warn: #D97706;
-      --warn-bg: #FEF3C7;
+      --surface-alt: #F8F9FB;
+      --pill-track: #ECEFF4;
+      --surface-dark: #111827;
+      --ink: #111827;
+      --ink-2: #334155;
+      --muted: #64748B;
+      --border: #E2E6EC;
+      --border-strong: #CBD5E1;
+
+      --blue: #1976D2;
+      --blue-hover: #1565C0;
+      --blue-soft: #EBF3FE;
+      --blue-border: #BFDBFE;
+
+      --indigo: #3F51B5;
+      --indigo-hover: #303F9F;
+      --indigo-soft: #EEF0FB;
+
+      --accent: #1976D2;
+      --accent-hover: #1565C0;
+      --accent-soft: #EBF3FE;
+      --accent-ink: #1565C0;
+
+      --ok: #2E7D32;
+      --ok-bg: #E8F5E9;
+      --ok-ink: #2E7D32;
+      --warn: #B45309;
+      --warn-bg: #FFFBEB;
       --warn-ink: #92400E;
-      --danger: #DC2626;
+      --danger: #C62828;
       --danger-bg: #FEE2E2;
       --danger-ink: #991B1B;
-      --cyan: #0891B2;
-      --cyan-bg: #CFFAFE;
-      --cyan-ink: #155E75;
-      --blue: #2563EB;
+      --cyan: #1976D2;
+      --cyan-bg: #EBF3FE;
+      --cyan-ink: #1565C0;
 
       /* Palette normalisée conducteurs */
       --wire-12v: #DC2626;
       --wire-5v: #EA580C;
       --wire-3v3: #CA8A04;
-      --wire-gnd: #18181B;
-      --wire-i2c: #2563EB;
-      --wire-sensor: #0891B2;
-      --wire-relay: #16A34A;
+      --wire-gnd: #1E293B;
+      --wire-i2c: #1976D2;
+      --wire-sensor: #0284C7;
+      --wire-relay: #2E7D32;
 
-      --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
       --radius-sm: 8px;
       --radius-md: 12px;
-      --radius-lg: 16px;
-      --shadow-xs: 0 1px 2px rgba(9, 9, 11, 0.05);
-      --shadow-sm: 0 8px 24px -10px rgba(9, 9, 11, 0.14);
+      --radius-lg: 14px;
+      --shadow-xs: 0 1px 3px rgba(15, 23, 42, 0.05);
+      --shadow-sm: 0 4px 14px rgba(15, 23, 42, 0.09);
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
-      --header-h: 62px;
+      --header-h: 56px;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       height: 100%;
@@ -80,7 +91,7 @@
 
     h1, h2, h3, h4 {
       font-family: var(--font-display);
-      letter-spacing: -0.025em;
+      letter-spacing: -0.02em;
     }
 
     .mono {
@@ -97,76 +108,103 @@
     }
 
     /* =========================================================
-       1. EN-TÊTE STUDIO D'INGÉNIERIE
+       1. BARRE SUPÉRIEURE BLANCHE UNIFIÉE (SMART GRID U-AUBEN)
        ========================================================= */
-    .studio-header {
-      height: var(--header-h);
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+    .unified-topbar {
+      min-height: var(--header-h);
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 0 20px;
+      padding: 6px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
+      gap: 10px 16px;
+      flex-wrap: wrap;
       position: relative;
       z-index: 40;
     }
 
-    .brand {
+    .utb-brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
       min-width: 0;
     }
 
-    .brand-logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      border: 1px solid var(--border-strong);
-      background: #FFFFFF;
-      padding: 3px;
+    .utb-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      box-shadow: var(--shadow-xs);
+      overflow: hidden;
     }
 
-    .brand-logo img {
+    .utb-logo img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
     }
 
-    .brand-copy {
+    .utb-title-stack {
       display: flex;
       flex-direction: column;
       min-width: 0;
     }
 
-    .brand-title {
-      font-family: var(--font-display);
-      font-size: 15px;
+    .utb-title {
+      font-size: 14px;
       font-weight: 700;
-      letter-spacing: -0.025em;
+      letter-spacing: -0.015em;
       color: var(--ink);
-      line-height: 1.15;
+      line-height: 1.2;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
 
-    .brand-sub {
-      font-size: 11.5px;
-      font-weight: 500;
+    .utb-sub {
+      font-size: 11px;
       color: var(--muted);
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.25;
+    }
+
+    .utb-nav {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: var(--pill-track);
+      padding: 3px;
+      border-radius: 10px;
+      flex-wrap: wrap;
+    }
+
+    .utb-link {
+      text-decoration: none;
+      color: var(--ink-2);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 6px 13px;
+      border-radius: 7px;
+      transition: background 0.15s ease, color 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .utb-link:hover {
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--ink);
+    }
+
+    .utb-link.active {
+      background: var(--indigo);
+      color: #FFFFFF;
     }
 
     .header-right {
@@ -180,7 +218,7 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      padding: 5px 10px;
+      padding: 5px 11px;
       border-radius: 999px;
       background: var(--surface-alt);
       border: 1px solid var(--border);
@@ -188,6 +226,7 @@
       font-size: 11px;
       font-weight: 600;
       color: var(--ink-2);
+      white-space: nowrap;
     }
 
     .sys-dot {
@@ -201,28 +240,6 @@
 
     .sys-dot.warn { background: var(--warn); }
     .sys-dot.danger { background: var(--danger); }
-
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 7px 12px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--ink-2);
-      font-size: 12px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s var(--ease);
-      white-space: nowrap;
-    }
-
-    .back-link:hover {
-      border-color: var(--ink);
-      color: var(--ink);
-      background: var(--surface-alt);
-    }
 
     /* =========================================================
        2. ESPACE PRINCIPAL : SCÈNE 3D + PANNEAU NARRATIF
@@ -275,9 +292,9 @@
       transform: translate(-50%, -100%);
       padding: 3px 8px;
       border-radius: 6px;
-      background: rgba(9, 9, 11, 0.84);
-      color: #FAFAFA;
-      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(17, 24, 39, 0.88);
+      color: #FFFFFF;
+      border: 1px solid rgba(255, 255, 255, 0.2);
       font-family: var(--font-mono);
       font-size: 10px;
       font-weight: 600;
@@ -285,35 +302,36 @@
       white-space: nowrap;
       pointer-events: auto;
       cursor: pointer;
-      transition: transform 0.18s var(--ease), background 0.18s ease, opacity 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+      transition: transform 0.16s ease, background 0.16s ease, opacity 0.2s ease;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.2);
     }
 
     .pin-3d:hover {
-      background: #EAB308;
-      color: #09090B;
-      border-color: #09090B;
+      background: var(--blue);
+      color: #FFFFFF;
+      border-color: var(--blue-hover);
       transform: translate(-50%, -108%) scale(1.04);
       z-index: 12;
     }
 
     .pin-3d.active-focus {
-      background: #EAB308;
-      color: #09090B;
-      border-color: #09090B;
+      background: var(--blue);
+      color: #FFFFFF;
+      border-color: #FFFFFF;
       z-index: 11;
     }
 
     .stage-wrap.mode-blueprint .pin-3d {
       background: #FFFFFF;
-      color: #09090B;
-      border: 1px solid #09090B;
-      box-shadow: 0 2px 6px rgba(9, 9, 11, 0.08);
+      color: var(--ink);
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
     }
 
     .stage-wrap.mode-blueprint .pin-3d.active-focus {
-      background: #09090B;
+      background: var(--blue);
       color: #FFFFFF;
+      border-color: var(--blue);
     }
 
     /* Barres HUD flottantes sur la scène 3D */
@@ -344,10 +362,8 @@
       display: inline-flex;
       padding: 3px;
       border-radius: 10px;
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(9, 9, 11, 0.14);
+      background: #FFFFFF;
+      border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
       gap: 2px;
     }
@@ -358,18 +374,15 @@
       font-size: 11.5px;
       font-weight: 600;
       color: var(--ink-2);
-      transition: background-color 0.14s ease, transform 0.14s ease;
+      transition: background-color 0.14s ease, color 0.14s ease;
       white-space: nowrap;
     }
 
-    .seg-btn:hover {
-      color: var(--ink);
-    }
+    .seg-btn:hover { color: var(--ink); background: var(--surface-alt); }
 
     .seg-btn.active {
-      background: var(--ink);
+      background: var(--indigo);
       color: #FFFFFF;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
     }
 
     .hud-btn {
@@ -377,28 +390,27 @@
       align-items: center;
       gap: 6px;
       padding: 7px 11px;
-      border-radius: 9px;
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(9, 9, 11, 0.14);
+      border-radius: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
       font-size: 11.5px;
       font-weight: 600;
       color: var(--ink);
       box-shadow: var(--shadow-sm);
-      transition: background-color 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+      transition: background-color 0.14s ease, border-color 0.14s ease, color 0.14s ease;
       white-space: nowrap;
     }
 
     .hud-btn:hover {
-      transform: translateY(-1px);
-      border-color: var(--ink);
+      border-color: var(--blue);
+      color: var(--blue);
+      background: var(--blue-soft);
     }
 
     .hud-btn.active {
-      background: var(--ink);
+      background: var(--blue);
       color: #FFFFFF;
-      border-color: var(--ink);
+      border-color: var(--blue);
     }
 
     /* Surcharges contraste élevé pour le mode Studio sombre */
@@ -406,33 +418,16 @@
     .stage-wrap.mode-studio .hud-btn,
     .stage-wrap.mode-studio .telemetry-strip,
     .stage-wrap.mode-studio .inspector-card {
-      background: rgba(22, 24, 30, 0.92);
+      background: rgba(17, 24, 39, 0.94);
       border-color: rgba(255, 255, 255, 0.16);
-      color: #F4F4F5;
+      color: #F8FAFC;
     }
 
-    .stage-wrap.mode-studio .seg-btn {
-      color: #D4D4D8;
-    }
-
-    .stage-wrap.mode-studio .seg-btn:hover {
-      color: #FFFFFF;
-    }
-
-    .stage-wrap.mode-studio .seg-btn.active {
-      background: var(--accent);
-      color: #09090B;
-    }
-
-    .stage-wrap.mode-studio .hud-btn:hover {
-      border-color: rgba(255, 255, 255, 0.45);
-    }
-
-    .stage-wrap.mode-studio .hud-btn.active {
-      background: var(--accent);
-      color: #09090B;
-      border-color: var(--accent);
-    }
+    .stage-wrap.mode-studio .seg-btn { color: #CBD5E1; }
+    .stage-wrap.mode-studio .seg-btn:hover { color: #FFFFFF; background: rgba(255, 255, 255, 0.08); }
+    .stage-wrap.mode-studio .seg-btn.active { background: var(--blue); color: #FFFFFF; }
+    .stage-wrap.mode-studio .hud-btn:hover { border-color: #93C5FD; color: #FFFFFF; background: rgba(25, 118, 210, 0.25); }
+    .stage-wrap.mode-studio .hud-btn.active { background: var(--blue); color: #FFFFFF; border-color: var(--blue); }
 
     /* Carte inspection composant cliqué en 3D */
     .inspector-card {
@@ -441,20 +436,16 @@
       bottom: 68px;
       z-index: 15;
       width: min(320px, calc(100% - 28px));
-      padding: 12px 14px;
+      padding: 13px 15px;
       border-radius: var(--radius-md);
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(9, 9, 11, 0.14);
+      background: #FFFFFF;
+      border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
       display: none;
-      animation: fadeSlideUp 0.22s var(--ease);
+      animation: fadeSlideUp 0.2s var(--ease);
     }
 
-    .inspector-card.visible {
-      display: block;
-    }
+    .inspector-card.visible { display: block; }
 
     @keyframes fadeSlideUp {
       from { opacity: 0; transform: translateY(8px); }
@@ -475,8 +466,9 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      color: var(--accent-ink);
-      background: var(--accent-soft);
+      color: var(--blue);
+      background: var(--blue-soft);
+      border: 1px solid var(--blue-border);
       padding: 2px 7px;
       border-radius: 5px;
       display: inline-block;
@@ -484,7 +476,6 @@
     }
 
     .inspector-title {
-      font-family: var(--font-display);
       font-size: 13.5px;
       font-weight: 700;
       line-height: 1.25;
@@ -497,16 +488,21 @@
       display: grid;
       place-items: center;
       font-size: 14px;
-      opacity: 0.65;
-      transition: opacity 0.15s ease;
+      font-weight: 700;
+      color: var(--muted);
+      border: 1px solid transparent;
     }
 
-    .inspector-close:hover { opacity: 1; }
+    .inspector-close:hover {
+      background: var(--surface-alt);
+      border-color: var(--border);
+      color: var(--ink);
+    }
 
     .inspector-desc {
       font-size: 12px;
       line-height: 1.48;
-      opacity: 0.85;
+      opacity: 0.88;
       margin-bottom: 7px;
     }
 
@@ -516,12 +512,14 @@
       font-weight: 600;
       padding: 4px 8px;
       border-radius: 6px;
-      background: rgba(9, 9, 11, 0.06);
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
       display: inline-block;
     }
 
     .stage-wrap.mode-studio .inspector-gpio {
       background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
     }
 
     /* Bandeau télémétrie temps réel en bas de la 3D */
@@ -537,10 +535,8 @@
       gap: 10px;
       padding: 8px 14px;
       border-radius: 11px;
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(9, 9, 11, 0.12);
+      background: #FFFFFF;
+      border: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
       overflow-x: auto;
       scrollbar-width: none;
@@ -560,7 +556,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      opacity: 0.62;
+      opacity: 0.68;
     }
 
     .tel-val {
@@ -580,7 +576,7 @@
     .tel-val.ok { color: var(--ok); }
     .tel-val.warn { color: var(--warn); }
     .tel-val.danger { color: var(--danger); }
-    .tel-val.cyan { color: var(--cyan); }
+    .tel-val.cyan { color: var(--blue); }
 
     /* =========================================================
        3. PANNEAU NARRATIF INTERACTIF (6 ÉTAPES)
@@ -598,7 +594,7 @@
 
     /* Rail d'étapes 01..06 */
     .stepper-header {
-      padding: 14px 20px 12px;
+      padding: 14px 18px 12px;
       border-bottom: 1px solid var(--border);
       background: var(--surface);
       flex-shrink: 0;
@@ -625,8 +621,9 @@
       font-family: var(--font-mono);
       font-size: 10.5px;
       font-weight: 600;
-      color: var(--accent-ink);
-      background: var(--accent-soft);
+      color: var(--ok);
+      background: var(--ok-bg);
+      border: 1px solid #BBF7D0;
       padding: 2px 8px;
       border-radius: 999px;
       display: none;
@@ -644,28 +641,28 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       padding: 6px 4px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--ink);
-      transition: background-color 0.14s ease, border-color 0.14s ease;
+      background: var(--surface-alt);
+      color: var(--ink-2);
     }
 
-    .step-node:hover {
-      border-color: var(--ink-2);
-      background: var(--surface);
+    .step-node:hover:not(.active) {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: var(--blue-soft);
     }
 
     .step-node.active {
-      background: var(--ink);
-      border-color: var(--ink);
+      background: var(--indigo);
+      border-color: var(--indigo);
       color: #FFFFFF;
     }
 
     .step-node.completed:not(.active) {
-      border-color: #D4D4D8;
+      border-color: var(--blue-border);
       background: var(--surface);
       color: var(--ink);
     }
@@ -679,7 +676,7 @@
     .step-mini {
       font-size: 9px;
       font-weight: 600;
-      opacity: 0.72;
+      opacity: 0.8;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -689,7 +686,7 @@
     .auto-progress-track {
       height: 3px;
       width: 100%;
-      background: var(--surface-alt);
+      background: var(--pill-track);
       border-radius: 999px;
       margin-top: 10px;
       overflow: hidden;
@@ -698,13 +695,13 @@
     .auto-progress-fill {
       height: 100%;
       width: 16.66%;
-      background: var(--ink);
+      background: var(--indigo);
       border-radius: 999px;
       transition: width 0.35s var(--ease);
     }
 
     .auto-progress-fill.tour-running {
-      background: var(--accent);
+      background: var(--ok);
       transition: width 0.1s linear;
     }
 
@@ -712,14 +709,14 @@
     .chapter-body {
       flex: 1;
       overflow-y: auto;
-      padding: 18px 20px 22px;
+      padding: 18px 18px 22px;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 14px;
     }
 
     .chapter-body::-webkit-scrollbar { width: 6px; }
-    .chapter-body::-webkit-scrollbar-thumb { background: #D4D4D8; border-radius: 999px; }
+    .chapter-body::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 999px; }
 
     .chapter-meta {
       display: flex;
@@ -732,9 +729,9 @@
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 700;
-      color: var(--ink);
-      background: var(--accent-soft);
-      border: 1px solid rgba(202, 138, 4, 0.25);
+      color: var(--blue);
+      background: var(--blue-soft);
+      border: 1px solid var(--blue-border);
       padding: 3px 9px;
       border-radius: 6px;
     }
@@ -746,23 +743,23 @@
     }
 
     .chapter-title {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
-      line-height: 1.2;
+      line-height: 1.24;
       color: var(--ink);
     }
 
     .chapter-lead {
       font-size: 13px;
       color: var(--ink-2);
-      line-height: 1.6;
+      line-height: 1.58;
     }
 
     /* Blocs d'ingénierie dans les chapitres */
     .eng-box {
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
-      background: var(--bg);
+      background: var(--surface-alt);
       padding: 12px 13px;
     }
 
@@ -779,11 +776,7 @@
       justify-content: space-between;
     }
 
-    .spec-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .spec-list { display: flex; flex-direction: column; gap: 8px; }
 
     .spec-row {
       display: flex;
@@ -795,10 +788,7 @@
       font-size: 12px;
     }
 
-    .spec-row:last-child {
-      padding-bottom: 0;
-      border-bottom: none;
-    }
+    .spec-row:last-child { padding-bottom: 0; border-bottom: none; }
 
     .spec-key {
       display: flex;
@@ -826,8 +816,9 @@
     .eng-note {
       padding: 10px 12px;
       border-radius: var(--radius-sm);
-      background: var(--surface-alt);
-      border-left: 3px solid var(--ink);
+      background: var(--blue-soft);
+      border: 1px solid var(--blue-border);
+      border-left: 3px solid var(--blue);
       font-size: 12px;
       color: var(--ink-2);
       line-height: 1.52;
@@ -846,7 +837,6 @@
       line-height: 1.45;
       color: #BAE6FD;
       letter-spacing: 0.04em;
-      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.45);
       white-space: pre;
       overflow-x: auto;
     }
@@ -885,26 +875,19 @@
     }
 
     .relay-state.on { background: var(--ok-bg); color: var(--ok-ink); }
-    .relay-state.off { background: var(--surface-alt); color: var(--muted); }
+    .relay-state.off { background: var(--pill-track); color: var(--muted); }
     .relay-state.trip { background: var(--danger-bg); color: var(--danger-ink); }
 
-    .relay-chip-sub {
-      font-size: 11px;
-      color: var(--muted);
-    }
+    .relay-chip-sub { font-size: 11px; color: var(--muted); }
 
     /* Jauge hystérésis Polytank étape 4 */
-    .hydro-gauge {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .hydro-gauge { display: flex; flex-direction: column; gap: 8px; }
 
     .hydro-bar-wrap {
       position: relative;
       height: 22px;
       border-radius: 6px;
-      background: #E4E4E7;
+      background: var(--pill-track);
       overflow: hidden;
       border: 1px solid var(--border-strong);
     }
@@ -912,7 +895,7 @@
     .hydro-bar-fill {
       height: 100%;
       width: 56%;
-      background: linear-gradient(90deg, #0284C7, #06B6D4);
+      background: var(--blue);
       transition: width 0.2s linear;
     }
 
@@ -924,8 +907,8 @@
       z-index: 2;
     }
 
-    .hydro-mark.low { left: 30%; background: #D97706; }
-    .hydro-mark.high { left: 85%; background: #16A34A; }
+    .hydro-mark.low { left: 30%; background: var(--danger); }
+    .hydro-mark.high { left: 85%; background: var(--ok); }
 
     .hydro-legend {
       display: flex;
@@ -937,19 +920,19 @@
 
     /* Terminal MQTT & Sparkline étape 5 */
     .mqtt-terminal {
-      background: #0B0D12;
-      color: #E4E4E7;
+      background: #0F172A;
+      color: #E2E8F0;
       border-radius: 9px;
       padding: 10px 12px;
       font-family: var(--font-mono);
       font-size: 11px;
       line-height: 1.5;
-      border: 1px solid #27272A;
+      border: 1px solid #334155;
       overflow-x: auto;
     }
 
     .mqtt-topic {
-      color: #FACC15;
+      color: #93C5FD;
       font-weight: 600;
       margin-bottom: 5px;
       display: flex;
@@ -958,7 +941,7 @@
     }
 
     .mqtt-json {
-      color: #A5F3FC;
+      color: #E2E8F0;
       white-space: pre-wrap;
       word-break: break-word;
     }
@@ -972,11 +955,7 @@
       padding: 6px;
     }
 
-    .sparkline-wrap svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+    .sparkline-wrap svg { width: 100%; height: 100%; display: block; }
 
     .scada-mini-actions {
       display: grid;
@@ -988,56 +967,42 @@
     .mini-cmd-btn {
       padding: 7px 10px;
       border-radius: 7px;
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
+      border: 1px solid var(--blue);
+      background: var(--blue);
       font-size: 11.5px;
       font-weight: 600;
-      color: var(--ink);
-      transition: all 0.16s ease;
+      color: #FFFFFF;
+      transition: background 0.15s ease;
     }
 
-    .mini-cmd-btn:hover {
-      border-color: var(--ink);
-      background: var(--surface-alt);
-    }
+    .mini-cmd-btn:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
 
     /* Boutons de tests de validation étape 6 */
-    .test-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .test-grid { display: flex; flex-direction: column; gap: 8px; }
 
     .test-btn {
       width: 100%;
       text-align: left;
       padding: 11px 13px;
-      border-radius: 10px;
+      border-radius: 9px;
       border: 1px solid var(--border-strong);
       background: var(--surface);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      transition: all 0.18s var(--ease);
+      transition: border-color 0.15s ease, background 0.15s ease;
     }
 
-    .test-btn:hover {
-      border-color: var(--ink);
-      transform: translateX(2px);
-    }
+    .test-btn:hover { border-color: var(--blue); background: var(--blue-soft); }
 
     .test-btn.active {
-      background: var(--ink);
-      border-color: var(--ink);
+      background: var(--indigo);
+      border-color: var(--indigo);
       color: #FFFFFF;
     }
 
-    .test-btn-left {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+    .test-btn-left { display: flex; flex-direction: column; gap: 2px; }
 
     .test-code {
       font-family: var(--font-mono);
@@ -1048,14 +1013,8 @@
       color: var(--muted);
     }
 
-    .test-btn.active .test-code {
-      color: var(--accent);
-    }
-
-    .test-name {
-      font-size: 12.5px;
-      font-weight: 700;
-    }
+    .test-btn.active .test-code { color: #C7D2FE; }
+    .test-name { font-size: 12.5px; font-weight: 700; }
 
     .test-pill {
       font-family: var(--font-mono);
@@ -1063,14 +1022,14 @@
       font-weight: 700;
       padding: 3px 7px;
       border-radius: 5px;
-      background: var(--surface-alt);
+      background: var(--pill-track);
       color: var(--ink-2);
       flex-shrink: 0;
     }
 
     .test-btn.active .test-pill {
-      background: var(--accent);
-      color: #09090B;
+      background: rgba(255, 255, 255, 0.22);
+      color: #FFFFFF;
     }
 
     .test-reset-btn {
@@ -1078,11 +1037,10 @@
       padding: 8px 12px;
       border-radius: 8px;
       border: 1px dashed var(--border-strong);
-      background: var(--bg);
+      background: var(--surface-alt);
       font-size: 12px;
       font-weight: 600;
       color: var(--ink-2);
-      transition: all 0.16s ease;
     }
 
     .test-reset-btn:hover {
@@ -1093,7 +1051,7 @@
 
     .diag-card {
       border-radius: 10px;
-      border: 1px solid var(--border-strong);
+      border: 1px solid var(--border);
       background: var(--surface);
       padding: 12px 13px;
       display: flex;
@@ -1101,27 +1059,11 @@
       gap: 8px;
     }
 
-    .diag-card.fault {
-      border-color: #FCA5A5;
-      background: #FFFBFB;
-    }
+    .diag-card.fault { border-color: #FCA5A5; background: #FFFBFB; }
+    .diag-card.secours { border-color: #FCD34D; background: #FFFDF5; }
+    .diag-card.hydro { border-color: var(--blue-border); background: var(--blue-soft); }
 
-    .diag-card.secours {
-      border-color: #FCD34D;
-      background: #FFFDF5;
-    }
-
-    .diag-card.hydro {
-      border-color: #67E8F9;
-      background: #F5FEFF;
-    }
-
-    .diag-row {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      font-size: 12px;
-    }
+    .diag-row { display: flex; flex-direction: column; gap: 2px; font-size: 12px; }
 
     .diag-lbl {
       font-family: var(--font-mono);
@@ -1132,10 +1074,7 @@
       color: var(--muted);
     }
 
-    .diag-val {
-      color: var(--ink);
-      line-height: 1.45;
-    }
+    .diag-val { color: var(--ink); line-height: 1.45; }
 
     /* Barre de navigation inférieure du panneau */
     .panel-footer {
@@ -1154,53 +1093,52 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 9px 13px;
-      border-radius: 9px;
+      padding: 8px 12px;
+      border-radius: 8px;
       font-size: 12px;
       font-weight: 600;
       border: 1px solid var(--border-strong);
       background: var(--surface);
       color: var(--ink);
-      transition: all 0.18s var(--ease);
       white-space: nowrap;
     }
 
     .nav-btn:hover:not(:disabled) {
-      border-color: var(--ink);
-      background: var(--surface-alt);
+      border-color: var(--blue);
+      color: var(--blue);
+      background: var(--blue-soft);
     }
 
-    .nav-btn:disabled {
-      opacity: 0.38;
-      cursor: not-allowed;
-    }
+    .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     .nav-btn.primary {
-      background: var(--ink);
+      background: var(--blue);
       color: #FFFFFF;
-      border-color: var(--ink);
+      border-color: var(--blue);
     }
 
     .nav-btn.primary:hover:not(:disabled) {
-      background: #27272A;
+      background: var(--blue-hover);
+      border-color: var(--blue-hover);
+      color: #FFFFFF;
     }
 
     .nav-btn.autoplay {
-      background: var(--accent-soft);
-      color: var(--accent-ink);
-      border-color: rgba(202, 138, 4, 0.45);
+      background: var(--surface-alt);
+      color: var(--indigo);
+      border-color: var(--border-strong);
     }
 
     .nav-btn.autoplay:hover {
-      background: var(--accent);
-      color: #09090B;
-      border-color: var(--accent);
+      background: var(--indigo-soft);
+      border-color: var(--indigo);
+      color: var(--indigo);
     }
 
     .nav-btn.autoplay.running {
-      background: var(--accent);
-      color: #09090B;
-      border-color: var(--ink);
+      background: var(--ok);
+      color: #FFFFFF;
+      border-color: var(--ok);
     }
 
     /* Fallback WebGL / Three.js */
@@ -1218,7 +1156,7 @@
     }
 
     /* =========================================================
-       4. RESPONSIVE MOBILE & ANDROID
+       4. RESPONSIVE MOBILE & TABLETTE
        ========================================================= */
     @media (max-width: 980px) {
       html, body {
@@ -1226,17 +1164,15 @@
         height: auto;
       }
 
-      .studio-header {
-        padding: 0 12px;
-        height: 56px;
+      .unified-topbar {
+        padding: 8px 12px;
         position: sticky;
         top: 0;
       }
 
-      .brand-title { font-size: 13.5px; }
-      .brand-sub { font-size: 10.5px; }
-      .sys-pill { display: none; }
-      .back-link { padding: 6px 9px; font-size: 11px; }
+      .utb-sub { display: none; }
+      .utb-nav { width: 100%; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; order: 3; }
+      .sys-pill { font-size: 10.5px; padding: 4px 8px; }
 
       .workspace {
         grid-template-columns: 1fr;
@@ -1273,7 +1209,7 @@
         position: sticky;
         bottom: 0;
         padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-        box-shadow: 0 -6px 20px rgba(9, 9, 11, 0.06);
+        box-shadow: 0 -4px 14px rgba(15, 23, 42, 0.06);
       }
 
       .nav-btn { padding: 8px 10px; font-size: 11.5px; }
@@ -1281,36 +1217,35 @@
 
     @media (max-width: 480px) {
       .step-mini { display: none; }
-      .back-link span.back-full { display: none; }
-      .back-link span.back-short { display: inline; }
-    }
-
-    @media (min-width: 481px) {
-      .back-link span.back-short { display: none; }
     }
   </style>
 </head>
 <body>
-  <!-- EN-TÊTE STUDIO -->
-  <header class="studio-header">
-    <div class="brand">
-      <div class="brand-logo">
-        <img src="./logo_club.png" alt="Logo Club U-AUBEN" />
+  <!-- BARRE SUPÉRIEURE BLANCHE UNIFIÉE -->
+  <header class="unified-topbar">
+    <a class="utb-brand" href="./index.html">
+      <div class="utb-logo">
+        <img src="./logo_club.png" alt="Logo CGE U-AUBEN" />
       </div>
-      <div class="brand-copy">
-        <span class="brand-title">Club U-AUBEN — Smart Grid &amp; Polytank (12V DC)</span>
-        <span class="brand-sub">Démonstration technique 3D interactive • De l'architecture aux tests de validation</span>
+      <div class="utb-title-stack">
+        <span class="utb-title">Smart Grid U-AUBEN · CGE</span>
+        <span class="utb-sub">Maquette 3D Interactive 12V DC &amp; Polytank</span>
       </div>
-    </div>
+    </a>
+
+    <nav class="utb-nav" aria-label="Navigation principale">
+      <a class="utb-link" href="./index.html">Accueil</a>
+      <a class="utb-link" href="./simulateur_cablage.html">Simulateur</a>
+      <a class="utb-link" href="./scada_smartgrid.html">SCADA</a>
+      <a class="utb-link active" href="./demo_3d_smartgrid.html" aria-current="page">Maquette 3D</a>
+      <a class="utb-link" href="./motion_9_16.html">Motion 9:16</a>
+    </nav>
+
     <div class="header-right">
       <div class="sys-pill" id="header-sys-pill" title="État global de la maquette simulée">
         <span class="sys-dot" id="header-sys-dot"></span>
-        <span id="header-sys-text">SONABEL • NOMINAL</span>
+        <span id="header-sys-text">SONABEL · NOMINAL</span>
       </div>
-      <a class="back-link" href="./index.html" title="Retourner au portail principal Smart Grid">
-        <span class="back-full">← Retour au portail Smart Grid</span>
-        <span class="back-short">← Portail</span>
-      </a>
     </div>
   </header>
 
@@ -1321,7 +1256,7 @@
       <div id="canvas-host"></div>
       <div class="labels-layer" id="labels-layer"></div>
 
-      <!-- Barre supérieure unifiée (Modes visuels + Utilitaires, sans chevauchement mobile) -->
+      <!-- Barre supérieure flottante sur la scène 3D -->
       <div class="hud-top-bar">
         <div class="hud-top-left">
           <div class="segmented" role="group" aria-label="Mode d'affichage 3D">
@@ -1351,7 +1286,7 @@
             <span class="inspector-tag" id="insp-zone">ZONE</span>
             <div class="inspector-title" id="insp-title">Composant</div>
           </div>
-          <button type="button" class="inspector-close" onclick="closeInspector()" aria-label="Fermer la fiche">✕</button>
+          <button type="button" class="inspector-close" onclick="closeInspector()" aria-label="Fermer la fiche">&times;</button>
         </div>
         <p class="inspector-desc" id="insp-desc"></p>
         <div class="inspector-gpio" id="insp-gpio"></div>
@@ -1386,7 +1321,7 @@
         <div class="tel-sep"></div>
         <div class="tel-item">
           <span class="tel-lbl">Disj. Q1 / Pompe</span>
-          <span class="tel-val ok" id="hud-act">Q1 ON • P OFF</span>
+          <span class="tel-val ok" id="hud-act">Q1 ON · P OFF</span>
         </div>
       </div>
     </section>
@@ -1395,8 +1330,8 @@
     <aside class="narrative-panel" aria-label="Parcours narratif d'ingénierie en 6 étapes">
       <div class="stepper-header">
         <div class="stepper-top">
-          <span class="stepper-kicker">Parcours technique • 6 chapitres</span>
-          <span class="tour-badge" id="tour-badge">● Visite Jury active</span>
+          <span class="stepper-kicker">Parcours technique · 6 chapitres</span>
+          <span class="tour-badge" id="tour-badge">Visite Jury active</span>
         </div>
         <div class="step-rail" id="step-rail">
           <button type="button" class="step-node active" data-step="0" onclick="goToStep(0)">
@@ -1426,9 +1361,9 @@
       <div class="chapter-body" id="chapter-body"></div>
 
       <footer class="panel-footer">
-        <button type="button" class="nav-btn" id="btn-prev" onclick="prevStep()">← Précédent</button>
-        <button type="button" class="nav-btn autoplay" id="btn-autoplay" onclick="toggleAutoPlay()">▶ Lecture Auto (Visite Jury)</button>
-        <button type="button" class="nav-btn primary" id="btn-next" onclick="nextStep()">Suivant →</button>
+        <button type="button" class="nav-btn" id="btn-prev" onclick="prevStep()">Précédent</button>
+        <button type="button" class="nav-btn autoplay" id="btn-autoplay" onclick="toggleAutoPlay()">Lecture Auto (Visite Jury)</button>
+        <button type="button" class="nav-btn primary" id="btn-next" onclick="nextStep()">Suivant</button>
       </footer>
     </aside>
   </main>
@@ -3555,7 +3490,7 @@
         sim.autoPlay = false;
         const btn = document.getElementById("btn-autoplay");
         btn.classList.remove("running");
-        btn.textContent = "▶ Lecture Auto (Visite Jury)";
+        btn.textContent = "Lecture Auto (Visite Jury)";
         document.getElementById("tour-badge").classList.remove("visible");
         const bar = document.getElementById("auto-progress-fill");
         bar.classList.remove("tour-running");
@@ -3574,7 +3509,7 @@
         }
         const btn = document.getElementById("btn-autoplay");
         btn.classList.add("running");
-        btn.textContent = "❚❚ Pause Visite Jury";
+        btn.textContent = "Pause Visite Jury";
         document.getElementById("tour-badge").classList.add("visible");
         document.getElementById("auto-progress-fill").classList.add("tour-running");
       };

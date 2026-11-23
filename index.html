@@ -3,74 +3,88 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Club U-AUBEN — Projet Smart Grid | Dossier Technique &amp; Maquette 3D</title>
-  <meta name="description" content="Dossier technique complet du prototype Smart Grid &amp; Polytank 12V DC sur ESP32 (Club U-AUBEN) : planche de câblage interactive, nomenclature, maquette 3D cotée, spécifications électriques, code ESP32, protocole d'essais jury et supervision SCADA." />
-  <meta name="theme-color" content="#09090B" />
+  <title>Smart Grid U-AUBEN · CGE — Dossier Technique, Câblage &amp; Maquette 3D</title>
+  <meta name="description" content="Portail technique du projet Smart Grid &amp; Polytank 12V DC sur ESP32 (CGE U-AUBEN) : planche de câblage interactive, nomenclature avec photos réelles, maquette 3D cotée, spécifications électriques, firmware ESP32, protocole d'essais jury et supervision SCADA." />
+  <meta name="theme-color" content="#FFFFFF" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     :root {
-      --bg: #FAFAFA;
+      --bg: #F5F7FA;
       --surface: #FFFFFF;
-      --surface-alt: #F4F4F5;
-      --ink: #09090B;
-      --ink-secondary: #3F3F46;
-      --muted: #71717A;
-      --border: #E4E4E7;
-      --border-strong: #D4D4D8;
-      --accent: #EAB308;
-      --accent-soft: #FEF9C3;
-      --accent-ink: #713F12;
-      --ok-bg: #DCFCE7;
-      --ok-ink: #166534;
+      --surface-alt: #F8F9FB;
+      --pill-track: #ECEFF4;
+      --ink: #111827;
+      --ink-secondary: #334155;
+      --muted: #64748B;
+      --border: #E2E6EC;
+      --border-strong: #CBD5E1;
+
+      --blue: #1976D2;
+      --blue-hover: #1565C0;
+      --blue-soft: #EBF3FE;
+      --blue-border: #BFDBFE;
+
+      --indigo: #3F51B5;
+      --indigo-hover: #303F9F;
+      --indigo-soft: #EEF0FB;
+
+      --accent: #1976D2;
+      --accent-soft: #EBF3FE;
+      --accent-ink: #1565C0;
+
+      --green: #2E7D32;
+      --ok-bg: #E8F5E9;
+      --ok-ink: #2E7D32;
+      --ok-border: #BBF7D0;
+
       --danger-bg: #FEF2F2;
       --danger-border: #FECACA;
-      --danger-ink: #991B1B;
+      --danger-ink: #B91C1C;
 
       /* Palette fonctionnelle des conducteurs électriques */
       --wire-12v: #DC2626;
       --wire-5v: #EA580C;
       --wire-3v3: #CA8A04;
-      --wire-gnd: #111827;
-      --wire-i2c: #2563EB;
-      --wire-sensor: #0891B2;
-      --wire-acs: #7C3AED;
-      --wire-relay: #16A34A;
-      --wire-alert: #DB2777;
+      --wire-gnd: #1E293B;
+      --wire-i2c: #1976D2;
+      --wire-sensor: #0284C7;
+      --wire-acs: #3F51B5;
+      --wire-relay: #2E7D32;
+      --wire-alert: #C62828;
 
-      /* Compatibilité variables existantes */
-      --el-yellow: #F2D14F;
-      --el-yellow-hover: #E5C13A;
-      --el-black: #09090B;
+      /* Compatibilité variables JS existantes */
+      --el-yellow: #1976D2;
+      --el-yellow-hover: #1565C0;
+      --el-black: #111827;
       --el-white: #FFFFFF;
-      --el-gray-50: #FAFAFA;
-      --el-gray-100: #F4F4F5;
-      --el-border: #E4E4E7;
-      --el-border-strong: #D4D4D8;
-      --el-muted: #71717A;
-      --el-green-bg: #DCFCE7;
-      --el-green-text: #166534;
+      --el-gray-50: #F8F9FB;
+      --el-gray-100: #ECEFF4;
+      --el-border: #E2E6EC;
+      --el-border-strong: #CBD5E1;
+      --el-muted: #64748B;
+      --el-green-bg: #E8F5E9;
+      --el-green-text: #2E7D32;
 
-      --font-display: 'Space Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
       --radius-sm: 8px;
       --radius-md: 12px;
-      --radius-lg: 16px;
-      --shadow-xs: 0 1px 2px rgba(9, 9, 11, 0.04);
-      --shadow-sm: 0 6px 20px -8px rgba(9, 9, 11, 0.08);
+      --radius-lg: 14px;
+      --shadow-xs: 0 1px 3px rgba(15, 23, 42, 0.05);
+      --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.07);
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
     html, body {
@@ -82,84 +96,112 @@
       line-height: 1.55;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
+      overflow-x: hidden;
     }
 
+    button, input { font-family: inherit; }
     .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
     h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
 
     /* =========================================================
-       1. EN-TÊTE STUDIO (LOGO CLUB + NAVIGATION + EXPORT PDF)
+       1. BARRE SUPÉRIEURE BLANCHE UNIFIÉE (SMART GRID U-AUBEN)
        ========================================================= */
-    .el-header {
-      background: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+    .unified-topbar {
+      background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 10px 28px;
-      min-height: 68px;
+      min-height: 56px;
+      padding: 8px 20px;
       display: flex;
-      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px 18px;
+      gap: 12px 16px;
+      flex-wrap: wrap;
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 60;
     }
 
-    .el-brand {
+    .utb-brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--ink);
       min-width: 0;
     }
 
-    .club-logo-slot {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      border: 1px solid var(--border-strong);
-      background: #FFFFFF;
-      padding: 3px;
+    .utb-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
       flex-shrink: 0;
-      box-shadow: var(--shadow-xs);
+      padding: 2px;
     }
 
-    .club-logo-slot img {
+    .utb-logo img {
       width: 100%;
       height: 100%;
       object-fit: contain;
       display: block;
     }
 
-    .el-brand-text {
+    .utb-title-stack {
       display: flex;
       flex-direction: column;
-      gap: 1px;
       min-width: 0;
     }
 
-    .el-brand-name {
-      font-family: var(--font-display);
-      font-size: 15.5px;
+    .utb-title {
+      font-size: 14px;
       font-weight: 700;
-      letter-spacing: -0.025em;
       color: var(--ink);
-      line-height: 1.15;
+      letter-spacing: -0.015em;
+      white-space: nowrap;
+      line-height: 1.2;
+    }
+
+    .utb-sub {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+      line-height: 1.25;
+    }
+
+    .utb-nav {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      background: var(--pill-track);
+      padding: 3px;
+      border-radius: 10px;
+      flex-wrap: wrap;
+    }
+
+    .utb-link {
+      text-decoration: none;
+      color: var(--ink-secondary);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 6px 13px;
+      border-radius: 7px;
+      transition: background 0.15s ease, color 0.15s ease;
       white-space: nowrap;
     }
 
-    .el-brand-sub {
-      font-size: 11.5px;
-      font-weight: 500;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .utb-link:hover {
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--ink);
+    }
+
+    .utb-link.active {
+      background: var(--indigo);
+      color: #FFFFFF;
     }
 
     .header-actions {
@@ -169,109 +211,12 @@
       flex-wrap: wrap;
     }
 
-    .btn-install-pwa {
-      display: none;
-      background: var(--ink);
-      color: var(--surface);
-      border-color: var(--ink);
-    }
-
-    .btn-install-pwa:hover {
-      background: var(--el-yellow);
-      color: var(--ink);
-      border-color: var(--ink);
-    }
-
-    .btn-install-pwa.visible { display: inline-flex; }
-
-    .el-nav-tabs {
-      display: inline-flex;
-      flex-wrap: wrap;
-      align-items: center;
-      background: var(--surface-alt);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 3px;
-      gap: 2px;
-      max-width: 100%;
-    }
-
-    .el-tab {
-      border: none;
-      background: transparent;
-      color: var(--ink-secondary);
-      font-family: var(--font-ui);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 9px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-      transition: background-color 0.18s var(--ease), color 0.18s var(--ease), box-shadow 0.18s var(--ease);
-    }
-
-    .el-tab:hover:not(.active) {
-      color: var(--ink);
-      background: rgba(9, 9, 11, 0.05);
-    }
-
-    .el-tab.active {
-      background: var(--ink);
-      color: var(--surface);
-      box-shadow: 0 2px 6px rgba(9, 9, 11, 0.18);
-    }
-
-    .el-tab-badge {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 999px;
-      background: var(--el-yellow);
-      color: var(--ink);
-    }
-
-    .el-nav-sep {
-      width: 1px;
-      height: 18px;
-      background: var(--border-strong);
-      margin: 0 4px;
-      flex-shrink: 0;
-    }
-
-    .el-tab-link {
-      border: 1px solid var(--border-strong);
-      background: var(--surface);
-      color: var(--ink);
-      font-family: var(--font-ui);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 5px 11px;
-      border-radius: 9px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      white-space: nowrap;
-      transition: background-color 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
-    }
-
-    .el-tab-link:hover {
-      background: var(--el-yellow);
-      color: var(--ink);
-      border-color: var(--ink);
-    }
-
     .el-btn-outline {
       background: var(--surface);
       color: var(--ink);
       border: 1px solid var(--border-strong);
-      border-radius: 9px;
-      padding: 7px 14px;
-      font-family: var(--font-ui);
+      border-radius: 8px;
+      padding: 6px 13px;
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
@@ -279,34 +224,392 @@
       align-items: center;
       gap: 6px;
       white-space: nowrap;
-      transition: border-color 0.18s var(--ease), background-color 0.18s var(--ease), transform 0.18s var(--ease);
+      transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
     }
 
     .el-btn-outline:hover {
-      border-color: var(--ink);
+      border-color: var(--blue);
+      color: var(--blue);
+      background: var(--blue-soft);
+    }
+
+    .btn-install-pwa {
+      display: none;
+      background: var(--blue);
+      color: #FFFFFF;
+      border-color: var(--blue);
+    }
+
+    .btn-install-pwa:hover {
+      background: var(--blue-hover);
+      color: #FFFFFF;
+      border-color: var(--blue-hover);
+    }
+
+    .btn-install-pwa.visible { display: inline-flex; }
+
+    /* =========================================================
+       2. SECTION PORTAIL SOBRE (STYLE PROGRAMMES CIRKIT)
+       ========================================================= */
+    .portal-shell {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .portal-hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 26px 28px;
+      box-shadow: var(--shadow-xs);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .portal-hero-copy {
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .portal-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--indigo);
+    }
+
+    .portal-hero h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.22;
+      letter-spacing: -0.025em;
+    }
+
+    .portal-hero p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .portal-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn-solid-blue {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--blue);
+      color: #FFFFFF;
+      border: 1px solid var(--blue);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-solid-blue:hover {
+      background: var(--blue-hover);
+      border-color: var(--blue-hover);
+    }
+
+    .btn-solid-indigo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--indigo);
+      color: #FFFFFF;
+      border: 1px solid var(--indigo);
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .btn-solid-indigo:hover {
+      background: var(--indigo-hover);
+      border-color: var(--indigo-hover);
+    }
+
+    .btn-light-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-light-outline:hover {
       background: var(--surface-alt);
-      transform: translateY(-1px);
+      border-color: var(--blue);
+      color: var(--blue);
+    }
+
+    .portal-specs-box {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(120px, 1fr));
+      gap: 10px;
+      min-width: 260px;
+    }
+
+    .portal-spec-stat {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .portal-spec-val {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .portal-spec-lbl {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    /* Grille 3 colonnes de modules (Programmes Cirkit) */
+    .program-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .program-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-xs);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: border-color 0.15s ease;
+    }
+
+    .program-card:hover { border-color: var(--border-strong); }
+
+    .program-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .program-card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.55;
+      flex: 1;
+    }
+
+    .program-card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--blue);
+      text-decoration: none;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+
+    .program-card-link:hover { text-decoration: underline; }
+
+    /* Carte étapes numérotées (style Cirkit 1. / 2. / 3.) */
+    .steps-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 22px 26px;
+      box-shadow: var(--shadow-xs);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .steps-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .steps-card-head h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .numbered-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .numbered-steps li {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+    }
+
+    .step-ordinal {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--blue);
+      padding-top: 1px;
+    }
+
+    .step-copy strong {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 2px;
+    }
+
+    .step-copy span {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
     }
 
     /* =========================================================
-       TRANSITIONS DE VUES & ANIMATIONS AU DÉFILEMENT
+       3. SOUS-BARRE D'ONGLETS DU DOSSIER TECHNIQUE
+       ========================================================= */
+    .dossier-subbar {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .el-nav-tabs {
+      width: 100%;
+      max-width: 1380px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .el-tab {
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--ink-secondary);
+      font-family: var(--font-ui);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 7px 13px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .el-tab:hover:not(.active) {
+      color: var(--ink);
+      background: var(--surface-alt);
+    }
+
+    .el-tab.active {
+      background: var(--blue-soft);
+      border-color: var(--blue-border);
+      color: var(--blue);
+    }
+
+    .el-tab-badge {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 999px;
+      background: var(--pill-track);
+      color: var(--ink-secondary);
+    }
+
+    .el-tab.active .el-tab-badge {
+      background: var(--blue);
+      color: #FFFFFF;
+    }
+
+    /* =========================================================
+       4. TRANSITIONS DE VUES & EN-TÊTES DE SECTION
        ========================================================= */
     .view-panel { display: none; }
     .view-panel.active {
       display: block;
-      animation: panelFadeIn 0.28s var(--ease);
+      animation: panelFadeIn 0.22s var(--ease);
     }
 
     @keyframes panelFadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+      from { opacity: 0; transform: translateY(4px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     .reveal-item {
       opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.42s var(--ease), transform 0.42s var(--ease);
+      transform: translateY(8px);
+      transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
     }
+
     .reveal-item.is-visible {
       opacity: 1;
       transform: translateY(0);
@@ -317,64 +620,61 @@
       .reveal-item { opacity: 1; transform: none; transition: none; }
     }
 
-    /* =========================================================
-       EN-TÊTES DE SECTION ÉDITORIAUX (STYLE STUDIO INGÉNIERIE)
-       ========================================================= */
     .section-wrap, .gallery-wrap {
-      max-width: 1460px;
+      max-width: 1380px;
       margin: 0 auto;
-      padding: 24px 28px 28px;
+      padding: 20px 20px 28px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
     }
 
     .section-head-block {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 22px 26px;
+      padding: 20px 24px;
       display: flex;
       flex-wrap: wrap;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 16px;
+      gap: 14px;
       box-shadow: var(--shadow-xs);
     }
 
     .section-kicker {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 600;
-      color: var(--muted);
+      color: var(--indigo);
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
     .section-kicker-dot {
-      width: 7px;
-      height: 7px;
+      width: 6px;
+      height: 6px;
       border-radius: 2px;
-      background: var(--accent);
+      background: var(--blue);
       display: inline-block;
     }
 
     .section-head-block h1,
     .section-head-block h2 {
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       color: var(--ink);
-      line-height: 1.2;
+      line-height: 1.25;
     }
 
     .section-head-block p {
       font-size: 13px;
       color: var(--muted);
-      margin-top: 6px;
+      margin-top: 5px;
       max-width: 740px;
       line-height: 1.55;
     }
@@ -392,12 +692,23 @@
     }
 
     /* =========================================================
-       BARRE FILTRES & MODE PAS À PAS (ONGLET SCHÉMA)
+       5. BARRE FILTRES & MODE PAS À PAS (ONGLET SCHÉMA)
        ========================================================= */
     .filter-strip {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 11px 28px;
+      padding: 10px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .filter-strip-inner {
+      width: 100%;
+      max-width: 1380px;
+      margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -422,14 +733,14 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.16s var(--ease);
+      transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
     }
 
-    .el-pill:hover { border-color: var(--ink); color: var(--ink); }
+    .el-pill:hover { border-color: var(--blue); color: var(--blue); }
     .el-pill.active {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: var(--surface);
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #FFFFFF;
     }
 
     .wire-legend {
@@ -446,7 +757,7 @@
     .wl-swatch { width: 15px; height: 4px; border-radius: 2px; display: inline-block; }
 
     .wizard-bar {
-      max-width: 1404px;
+      max-width: 1340px;
       margin: 16px auto 0;
       padding: 12px 16px;
       background: var(--surface);
@@ -461,8 +772,8 @@
     }
 
     .wizard-bar.active-mode {
-      background: #FEFCE8;
-      border-color: var(--accent);
+      background: var(--blue-soft);
+      border-color: var(--blue-border);
     }
 
     .wizard-left {
@@ -474,23 +785,24 @@
     }
 
     .wizard-toggle {
-      padding: 7px 13px;
+      padding: 7px 14px;
       border-radius: 8px;
-      border: 1px solid var(--ink);
-      background: var(--el-yellow);
-      color: var(--ink);
+      border: 1px solid var(--blue);
+      background: var(--blue);
+      color: #FFFFFF;
       font-family: var(--font-ui);
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.16s var(--ease);
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
-    .wizard-toggle:hover { background: var(--el-yellow-hover); }
+    .wizard-toggle:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
     .wizard-toggle.on {
-      background: var(--ink);
-      color: var(--el-yellow);
+      background: var(--indigo);
+      border-color: var(--indigo);
+      color: #FFFFFF;
     }
 
     .wizard-text { display: flex; flex-direction: column; gap: 1px; }
@@ -509,17 +821,17 @@
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s var(--ease);
+      transition: background 0.15s ease, border-color 0.15s ease;
     }
 
-    .step-btn:hover:not(:disabled) { border-color: var(--ink); background: var(--surface-alt); }
-    .step-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .step-btn:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); }
+    .step-btn:disabled { opacity: 0.42; cursor: not-allowed; }
     .step-btn.primary {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: var(--surface);
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #FFFFFF;
     }
-    .step-btn.primary:hover:not(:disabled) { background: #27272A; }
+    .step-btn.primary:hover:not(:disabled) { background: var(--blue-hover); border-color: var(--blue-hover); color: #FFFFFF; }
 
     .step-counter {
       font-family: var(--font-mono);
@@ -532,14 +844,14 @@
     }
 
     /* =========================================================
-       PLANCHE CIRKIT DESIGNER + FICHE COMPOSANT
+       6. PLANCHE INTERACTIVE + FICHE COMPOSANT
        ========================================================= */
     .workbench-grid {
-      max-width: 1460px;
+      max-width: 1380px;
       margin: 0 auto;
-      padding: 16px 28px 22px;
+      padding: 16px 20px 24px;
       display: grid;
-      grid-template-columns: minmax(0, 1.85fr) minmax(350px, 0.9fr);
+      grid-template-columns: minmax(0, 1.85fr) minmax(340px, 0.9fr);
       gap: 18px;
       align-items: start;
     }
@@ -583,10 +895,9 @@
       font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s var(--ease);
     }
 
-    .zoom-btn:hover { background: var(--surface-alt); border-color: var(--ink); }
+    .zoom-btn:hover { background: var(--blue-soft); border-color: var(--blue-border); color: var(--blue); }
 
     .zoom-readout {
       font-family: var(--font-mono);
@@ -600,10 +911,10 @@
     .cirkit-viewport {
       position: relative;
       width: 100%;
-      height: 700px;
+      height: 680px;
       overflow: hidden;
-      background-color: #FAFAFA;
-      background-image: radial-gradient(#D4D4D8 1px, transparent 1px);
+      background-color: #F8FAFC;
+      background-image: radial-gradient(#CBD5E1 1px, transparent 1px);
       background-size: 20px 20px;
       cursor: grab;
       user-select: none;
@@ -624,18 +935,18 @@
       position: fixed;
       z-index: 999;
       pointer-events: none;
-      background: var(--ink);
-      color: var(--surface);
+      background: #1E293B;
+      color: #FFFFFF;
       padding: 7px 12px;
       border-radius: 8px;
       font-size: 11.5px;
       font-weight: 600;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.22);
       display: none;
       align-items: center;
       gap: 8px;
       max-width: 350px;
-      border: 1px solid rgba(250, 204, 21, 0.5);
+      border: 1px solid #475569;
     }
 
     .wire-tooltip-dot {
@@ -648,10 +959,10 @@
 
     .comp-node { cursor: pointer; transition: opacity 0.2s ease; }
     .comp-node .mod-frame { transition: stroke 0.18s ease, stroke-width 0.18s ease; }
-    .comp-node:hover .mod-frame { stroke: var(--ink); stroke-width: 2.2; }
+    .comp-node:hover .mod-frame { stroke: var(--blue); stroke-width: 2.2; }
 
     .wire-hit { fill: none; stroke: transparent; stroke-width: 13; cursor: pointer; }
-    .wire-halo { fill: none; stroke: #FAFAFA; stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; transition: opacity 0.2s ease; }
+    .wire-halo { fill: none; stroke: #F8FAFC; stroke-width: 5.5; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; transition: opacity 0.2s ease; }
     .wire-path { fill: none; stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; transition: opacity 0.2s ease, stroke-width 0.18s ease; }
     .wire-group:hover .wire-path { stroke-width: 4.8; }
     .esp-pin { transition: opacity 0.2s ease; }
@@ -660,17 +971,16 @@
     .has-focus .wire-group:not(.is-active) .wire-path,
     .has-focus .wire-group:not(.is-active) .wire-halo { opacity: 0.12; }
     .has-focus .wire-group.is-active .wire-path { opacity: 1; stroke-width: 3.8; }
-    .has-focus .comp-node.is-active .mod-frame { stroke: var(--ink); stroke-width: 2.5; }
+    .has-focus .comp-node.is-active .mod-frame { stroke: var(--blue); stroke-width: 2.5; }
     .has-focus .esp-pin:not(.is-active) { opacity: 0.25; }
-    .has-focus .esp-pin.is-active rect.pin-bg { fill: #FDE047; stroke: #09090B; stroke-width: 1.5; }
-    .has-focus .esp-pin.is-active text { fill: #09090B !important; font-weight: 700; }
+    .has-focus .esp-pin.is-active rect.pin-bg { fill: #DBEAFE; stroke: #1976D2; stroke-width: 1.5; }
+    .has-focus .esp-pin.is-active text { fill: #111827 !important; font-weight: 700; }
 
-    /* Colonne droite inspecteur */
     .right-col { display: flex; flex-direction: column; gap: 16px; }
     .inspector-body { padding: 16px; display: flex; flex-direction: column; gap: 11px; }
 
     .inspector-photo-well {
-      background: var(--bg);
+      background: var(--surface-alt);
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 12px;
@@ -696,8 +1006,8 @@
       border-radius: 6px;
     }
 
-    .inspector-title { font-family: var(--font-display); font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.3; }
-    .inspector-price { font-family: var(--font-mono); font-size: 13.5px; font-weight: 700; color: var(--ink); }
+    .inspector-title { font-size: 14.5px; font-weight: 700; color: var(--ink); line-height: 1.3; }
+    .inspector-price { font-family: var(--font-mono); font-size: 13.5px; font-weight: 700; color: var(--blue); }
     .inspector-role { font-size: 12.5px; color: var(--muted); }
 
     .inspector-warn {
@@ -721,8 +1031,8 @@
     table.pin-table th { position: sticky; top: 0; background: var(--surface-alt); color: var(--muted); font-size: 10px; text-transform: uppercase; text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
     table.pin-table td { padding: 7px 12px; border-bottom: 1px solid var(--surface-alt); }
     table.pin-table tbody tr { cursor: pointer; transition: background-color 0.14s ease; }
-    table.pin-table tbody tr:hover { background: var(--bg); }
-    table.pin-table tbody tr.is-active { background: #FEFCE8; }
+    table.pin-table tbody tr:hover { background: var(--surface-alt); }
+    table.pin-table tbody tr.is-active { background: var(--blue-soft); }
     .has-focus table.pin-table tbody tr:not(.is-active) { opacity: 0.4; }
 
     .gpio-chip {
@@ -738,14 +1048,14 @@
     }
 
     /* =========================================================
-       ONGLET NOMENCLATURE & BUDGET
+       7. ONGLET NOMENCLATURE & BUDGET (20 PHOTOS RÉELLES BASE64)
        ========================================================= */
     .cat-section { display: flex; flex-direction: column; gap: 12px; }
     .cat-bar {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 0; border-bottom: 1.5px solid var(--ink);
+      padding: 8px 0; border-bottom: 1.5px solid var(--border-strong);
     }
-    .cat-bar h3 { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+    .cat-bar h3 { font-size: 13.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink); }
     .cat-bar span { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--muted); }
 
     .prod-grid {
@@ -761,26 +1071,27 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+      box-shadow: var(--shadow-xs);
+      transition: border-color 0.16s ease, box-shadow 0.16s ease;
     }
 
     .prod-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--border-strong);
+      border-color: var(--blue-border);
       box-shadow: var(--shadow-sm);
     }
-    .prod-card.checked { border-color: #16A34A; background: #F7FDF9; }
+
+    .prod-card.checked { border-color: var(--green); background: #F7FCF8; }
 
     .prod-img-well {
       height: 160px;
-      background: var(--bg);
+      background: #FFFFFF;
       padding: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
       position: relative;
-      border-bottom: 1px solid var(--surface-alt);
+      border-bottom: 1px solid var(--border);
     }
 
     .prod-img-well img { max-width: 100%; max-height: 100%; object-fit: contain; }
@@ -791,44 +1102,44 @@
     .prod-badge-tl {
       position: absolute; top: 10px; left: 10px;
       background: var(--ok-bg); color: var(--ok-ink);
+      border: 1px solid var(--ok-border);
       font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
     }
 
     .prod-qty-tr {
       position: absolute; top: 10px; right: 10px;
-      background: var(--ink); color: var(--surface);
+      background: var(--indigo); color: #FFFFFF;
       font-family: var(--font-mono); font-size: 10.5px; font-weight: 700;
       padding: 2px 7px; border-radius: 6px;
     }
 
     .prod-body { padding: 14px 15px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
     .prod-check { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
-    .prod-check input { width: 16px; height: 16px; margin-top: 2px; accent-color: #16A34A; cursor: pointer; flex-shrink: 0; }
+    .prod-check input { width: 16px; height: 16px; margin-top: 2px; accent-color: var(--green); cursor: pointer; flex-shrink: 0; }
     .prod-name { font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.35; }
     .prod-desc { font-size: 12px; color: var(--muted); flex: 1; }
 
     .prod-foot {
-      padding-top: 10px; margin-top: 4px; border-top: 1px solid var(--surface-alt);
+      padding-top: 10px; margin-top: 4px; border-top: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
     }
 
-    .prod-price { font-family: var(--font-mono); font-size: 13.5px; font-weight: 700; color: var(--ink); }
+    .prod-price { font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--ink); }
 
     .prod-go-btn {
-      background: var(--surface-alt);
-      color: var(--ink);
-      border: 1px solid var(--border-strong);
-      border-radius: 8px;
+      background: var(--blue-soft);
+      color: var(--blue);
+      border: 1px solid var(--blue-border);
+      border-radius: 7px;
       padding: 5px 11px;
       font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s var(--ease);
     }
-    .prod-go-btn:hover { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+    .prod-go-btn:hover { background: var(--blue); color: #FFFFFF; border-color: var(--blue); }
 
     /* =========================================================
-       ONGLET 3 : MAQUETTE 3D + EMPLACEMENT + NOMENCLATURE
+       8. ONGLET MAQUETTE 3D INTÉGRÉE
        ========================================================= */
     .maquette-layout {
       display: grid;
@@ -840,7 +1151,7 @@
     .viewport-3d-wrap {
       position: relative;
       width: 100%;
-      height: 550px;
+      height: 540px;
       background: #F1F5F9;
       overflow: hidden;
       touch-action: none;
@@ -859,7 +1170,7 @@
       position: absolute;
       bottom: 12px;
       left: 12px;
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.94);
       border: 1px solid var(--border-strong);
       border-radius: 8px;
       padding: 5px 10px;
@@ -873,19 +1184,20 @@
       position: absolute;
       top: 12px;
       right: 12px;
-      background: rgba(9, 9, 11, 0.88);
-      color: var(--surface);
+      background: #FFFFFF;
+      color: var(--ink);
+      border: 1px solid var(--border-strong);
       border-radius: 8px;
       padding: 5px 10px;
       font-family: var(--font-mono);
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       pointer-events: none;
     }
 
     .controls-3d-bar {
       padding: 12px 16px;
-      background: var(--bg);
+      background: var(--surface-alt);
       border-top: 1px solid var(--border);
       display: flex;
       flex-wrap: wrap;
@@ -902,18 +1214,15 @@
       border: 1px solid var(--border-strong);
       background: var(--surface);
       color: var(--ink);
-      font-family: var(--font-ui);
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.16s var(--ease);
     }
 
-    .btn-3d:hover { border-color: var(--ink); background: var(--surface-alt); }
-    .btn-3d.active { background: var(--ink); border-color: var(--ink); color: var(--surface); }
-    .btn-3d.accent.active { background: var(--el-yellow); border-color: var(--ink); color: var(--ink); }
+    .btn-3d:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); }
+    .btn-3d.active { background: var(--blue); border-color: var(--blue); color: #FFFFFF; }
+    .btn-3d.accent.active { background: var(--indigo); border-color: var(--indigo); color: #FFFFFF; }
 
-    /* Panneau latéral Emplacement des composants 3D */
     .locator-list {
       padding: 12px;
       display: flex;
@@ -928,42 +1237,20 @@
       text-align: left;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 9px;
       padding: 10px 12px;
       cursor: pointer;
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 10px;
-      font-family: var(--font-ui);
-      transition: all 0.16s var(--ease);
     }
 
-    .locator-item:hover {
-      border-color: var(--ink);
-      background: var(--bg);
-      transform: translateX(2px);
-    }
+    .locator-item:hover { border-color: var(--blue); background: var(--blue-soft); }
+    .locator-item.active { background: var(--indigo); border-color: var(--indigo); color: #FFFFFF; }
 
-    .locator-item.active {
-      background: var(--ink);
-      border-color: var(--ink);
-      color: var(--surface);
-    }
-
-    .locator-title {
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--ink);
-      display: block;
-    }
-
-    .locator-sub {
-      font-size: 11px;
-      color: var(--muted);
-      display: block;
-      margin-top: 2px;
-    }
+    .locator-title { font-size: 12.5px; font-weight: 700; color: var(--ink); display: block; }
+    .locator-sub { font-size: 11px; color: var(--muted); display: block; margin-top: 2px; }
 
     .locator-tag {
       font-family: var(--font-mono);
@@ -977,14 +1264,14 @@
       flex-shrink: 0;
     }
 
-    .locator-item.active .locator-title { color: var(--surface); }
-    .locator-item.active .locator-sub { color: #D4D4D8; }
-    .locator-item.active .locator-tag { background: var(--el-yellow); color: var(--ink); }
+    .locator-item.active .locator-title { color: #FFFFFF; }
+    .locator-item.active .locator-sub { color: #E0E7FF; }
+    .locator-item.active .locator-tag { background: rgba(255, 255, 255, 0.2); color: #FFFFFF; }
 
     .locator-detail-box {
       padding: 13px 15px;
       border-top: 1px solid var(--border);
-      background: var(--bg);
+      background: var(--surface-alt);
       font-size: 12px;
       color: var(--ink-secondary);
       line-height: 1.5;
@@ -993,7 +1280,7 @@
     .locator-detail-box strong { color: var(--ink); display: block; margin-bottom: 3px; font-size: 12.5px; }
 
     /* =========================================================
-       ONGLET 4 : CONNEXIONS (FORMAT DOC TECHNIQUE / CIRKIT PDF)
+       9. ONGLET CONNEXIONS, CODE ESP32, DÉFAUTS & SCADA
        ========================================================= */
     .arch-grid {
       display: grid;
@@ -1009,18 +1296,10 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      transition: border-color 0.18s var(--ease), transform 0.18s var(--ease);
+      box-shadow: var(--shadow-xs);
     }
 
-    .arch-card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
-
-    .arch-card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
+    .arch-card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .arch-card h3 { font-size: 14px; font-weight: 700; color: var(--ink); }
     .arch-card p { font-size: 12.5px; color: var(--muted); line-height: 1.5; }
 
@@ -1031,18 +1310,14 @@
       flex-wrap: wrap;
       gap: 10px;
       padding-bottom: 8px;
-      border-bottom: 1.5px solid var(--ink);
+      border-bottom: 1.5px solid var(--border-strong);
     }
 
-    .doc-subsection-title h3 {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--ink);
-    }
+    .doc-subsection-title h3 { font-size: 15px; font-weight: 700; color: var(--ink); }
 
     .conn-toolbar {
       padding: 12px 16px;
-      background: var(--bg);
+      background: var(--surface-alt);
       border-bottom: 1px solid var(--border);
       display: flex;
       flex-wrap: wrap;
@@ -1063,19 +1338,17 @@
     .conn-search-input {
       width: 100%;
       padding: 8px 13px;
-      border-radius: 9px;
+      border-radius: 8px;
       border: 1px solid var(--border-strong);
       background: var(--surface);
       color: var(--ink);
-      font-family: var(--font-ui);
       font-size: 12.5px;
       outline: none;
-      transition: border-color 0.16s var(--ease), box-shadow 0.16s var(--ease);
     }
 
     .conn-search-input:focus {
-      border-color: var(--ink);
-      box-shadow: 0 0 0 3px rgba(9, 9, 11, 0.06);
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
     }
 
     .conn-count {
@@ -1100,7 +1373,7 @@
     }
 
     table.spec-table thead th {
-      background: var(--bg);
+      background: var(--surface-alt);
       color: var(--muted);
       font-size: 10.5px;
       font-weight: 700;
@@ -1108,7 +1381,7 @@
       letter-spacing: 0.05em;
       text-align: left;
       padding: 10px 14px;
-      border-bottom: 1.5px solid var(--ink);
+      border-bottom: 1.5px solid var(--border-strong);
       white-space: nowrap;
     }
 
@@ -1119,7 +1392,7 @@
       line-height: 1.5;
     }
 
-    table.spec-table tbody tr:hover { background: #FAFAFA; }
+    table.spec-table tbody tr:hover { background: var(--surface-alt); }
 
     .rail-badge {
       display: inline-block;
@@ -1135,9 +1408,8 @@
     .rail-12v { background: #FEE2E2; color: #991B1B; border-color: #FCA5A5; }
     .rail-5v  { background: #FFEDD5; color: #9A3412; border-color: #FDBA74; }
     .rail-3v3 { background: #FEF9C3; color: #854D0E; border-color: #FDE047; }
-    .rail-gnd { background: #F4F4F5; color: #18181B; border-color: #D4D4D8; }
+    .rail-gnd { background: var(--pill-track); color: #1E293B; border-color: var(--border-strong); }
 
-    /* Fiches de câblage détaillées composant par composant (style Cirkit Designer PDF) */
     .wiring-cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(430px, 1fr));
@@ -1151,17 +1423,12 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: border-color 0.18s var(--ease), box-shadow 0.18s var(--ease);
-    }
-
-    .wiring-doc-card:hover {
-      border-color: var(--border-strong);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-xs);
     }
 
     .wiring-doc-head {
       padding: 13px 16px;
-      background: var(--bg);
+      background: var(--surface-alt);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: flex-start;
@@ -1180,41 +1447,22 @@
       flex: 1;
     }
 
-    .wiring-pin-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
+    .wiring-pin-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
     .wiring-pin-list li {
       display: flex;
       align-items: baseline;
       gap: 8px;
       font-size: 12px;
       padding: 5px 8px;
-      background: var(--bg);
-      border: 1px solid var(--surface-alt);
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
       border-radius: 7px;
     }
 
-    .wiring-pin-from {
-      font-family: var(--font-mono);
-      font-weight: 700;
-      color: var(--ink);
-      white-space: nowrap;
-    }
-
+    .wiring-pin-from { font-family: var(--font-mono); font-weight: 700; color: var(--ink); white-space: nowrap; }
     .wiring-pin-arrow { color: var(--muted); font-family: var(--font-mono); }
     .wiring-pin-to { color: var(--ink-secondary); }
-
-    .wiring-unused {
-      font-size: 11.5px;
-      color: var(--muted);
-      padding-top: 6px;
-      border-top: 1px dashed var(--border);
-    }
-
+    .wiring-unused { font-size: 11.5px; color: var(--muted); padding-top: 6px; border-top: 1px dashed var(--border); }
     .wiring-unused strong { color: var(--ink-secondary); }
 
     .wiring-note {
@@ -1232,12 +1480,9 @@
       font-weight: 500;
     }
 
-    /* =========================================================
-       ONGLET 5 : CODE ESP32
-       ========================================================= */
     .code-meta-strip {
       padding: 11px 16px;
-      background: var(--bg);
+      background: var(--surface-alt);
       border-bottom: 1px solid var(--border);
       display: flex;
       flex-wrap: wrap;
@@ -1249,12 +1494,11 @@
     .code-libs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-secondary); }
 
     .btn-primary-dark {
-      background: var(--ink);
-      color: var(--surface);
-      border: 1px solid var(--ink);
-      border-radius: 9px;
+      background: var(--blue);
+      color: #FFFFFF;
+      border: 1px solid var(--blue);
+      border-radius: 8px;
       padding: 8px 16px;
-      font-family: var(--font-ui);
       font-size: 12.5px;
       font-weight: 600;
       cursor: pointer;
@@ -1262,25 +1506,17 @@
       align-items: center;
       gap: 7px;
       text-decoration: none;
-      transition: all 0.18s var(--ease);
     }
 
-    .btn-primary-dark:hover {
-      background: #27272A;
-      transform: translateY(-1px);
-    }
-
-    .btn-primary-dark.copied {
-      background: #166534;
-      border-color: #166534;
-    }
+    .btn-primary-dark:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
+    .btn-primary-dark.copied { background: var(--green); border-color: var(--green); }
 
     .code-pre-wrap {
-      background: #0B0F19;
+      background: #0F172A;
       color: #E2E8F0;
       padding: 18px 20px;
       overflow-x: auto;
-      max-height: 660px;
+      max-height: 640px;
       overflow-y: auto;
       font-family: var(--font-mono);
       font-size: 12px;
@@ -1290,9 +1526,6 @@
 
     .code-pre-wrap code { font-family: var(--font-mono); white-space: pre; }
 
-    /* =========================================================
-       ONGLET 6 : SIMULATION DES DÉFAUTS (DÉMO JURY)
-       ========================================================= */
     .jury-prep-bar {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -1328,22 +1561,14 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+      box-shadow: var(--shadow-xs);
     }
 
-    .scenario-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--border-strong);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .scenario-card.validated {
-      border-color: #16A34A;
-    }
+    .scenario-card.validated { border-color: var(--green); }
 
     .scenario-head {
       padding: 16px 20px;
-      background: var(--bg);
+      background: var(--surface-alt);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: flex-start;
@@ -1355,15 +1580,15 @@
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 700;
-      color: var(--ink);
-      background: var(--el-yellow);
+      color: #FFFFFF;
+      background: var(--indigo);
       padding: 2px 8px;
       border-radius: 5px;
       display: inline-block;
       margin-bottom: 6px;
     }
 
-    .scenario-head h3 { font-size: 16px; font-weight: 700; color: var(--ink); }
+    .scenario-head h3 { font-size: 15.5px; font-weight: 700; color: var(--ink); }
 
     .scenario-check {
       display: inline-flex;
@@ -1380,7 +1605,7 @@
       background: var(--surface);
     }
 
-    .scenario-check input { accent-color: #16A34A; cursor: pointer; }
+    .scenario-check input { accent-color: var(--green); cursor: pointer; }
 
     .scenario-steps {
       padding: 16px 20px;
@@ -1401,27 +1626,15 @@
     }
 
     .scenario-step-row:last-child { border-bottom: none; padding-bottom: 0; }
-
-    .scenario-step-label {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding-top: 2px;
-    }
-
+    .scenario-step-label { font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
     .scenario-step-val { color: var(--ink-secondary); }
     .scenario-step-val strong { color: var(--ink); }
 
-    /* =========================================================
-       ONGLET 7 : SUPERVISION SCADA
-       ========================================================= */
     .scada-hero {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 26px 28px;
+      padding: 24px 26px;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
@@ -1431,7 +1644,7 @@
     }
 
     .scada-hero-copy { max-width: 700px; display: flex; flex-direction: column; gap: 8px; }
-    .scada-hero-copy h3 { font-size: 21px; font-weight: 700; color: var(--ink); }
+    .scada-hero-copy h3 { font-size: 20px; font-weight: 700; color: var(--ink); }
     .scada-hero-copy p { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
 
     .scada-cta-btn {
@@ -1439,24 +1652,18 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: var(--ink);
-      color: var(--surface);
+      background: var(--blue);
+      color: #FFFFFF;
       text-decoration: none;
-      border: 1.5px solid var(--ink);
-      border-radius: 10px;
-      padding: 13px 22px;
-      font-family: var(--font-ui);
+      border: 1px solid var(--blue);
+      border-radius: 8px;
+      padding: 12px 20px;
       font-size: 13.5px;
       font-weight: 600;
       white-space: nowrap;
-      transition: all 0.18s var(--ease);
     }
 
-    .scada-cta-btn:hover {
-      background: var(--el-yellow);
-      color: var(--ink);
-      transform: translateY(-1px);
-    }
+    .scada-cta-btn:hover { background: var(--blue-hover); border-color: var(--blue-hover); }
 
     .scada-grid {
       display: grid;
@@ -1472,10 +1679,9 @@
       display: flex;
       flex-direction: column;
       gap: 7px;
-      transition: transform 0.18s var(--ease), border-color 0.18s var(--ease);
+      box-shadow: var(--shadow-xs);
     }
 
-    .scada-metric-card:hover { transform: translateY(-2px); border-color: var(--border-strong); }
     .scada-metric-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .scada-metric-head h4 { font-size: 14px; font-weight: 700; color: var(--ink); }
     .scada-metric-card p { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
@@ -1513,121 +1719,67 @@
     }
 
     /* =========================================================
-       NOTES D'ATELIER & PIED DE PAGE (TON HUMAIN INGÉNIEUR)
+       10. PIED DE PAGE CLAIR & UNIFIÉ
        ========================================================= */
-    .workshop-notes {
-      max-width: 1460px;
-      margin: 8px auto 24px;
-      padding: 0 28px;
-    }
-
-    .workshop-notes-inner {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px 24px;
-    }
-
-    .workshop-notes-head {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 8px;
-      padding-bottom: 12px;
-      margin-bottom: 14px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .workshop-notes-head h3 { font-size: 14.5px; font-weight: 700; color: var(--ink); }
-    .workshop-notes-head span { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
-
-    .notes-cols {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 18px;
-    }
-
-    .note-col h4 {
-      font-size: 12.5px;
-      font-weight: 700;
-      color: var(--ink);
-      margin-bottom: 4px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .note-idx {
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 700;
-      padding: 1px 6px;
-      border-radius: 4px;
-      background: var(--surface-alt);
-      border: 1px solid var(--border);
-      color: var(--ink-secondary);
-    }
-
-    .note-col p {
-      font-size: 12.5px;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-
     .site-footer {
-      background: var(--ink);
-      color: #D4D4D8;
-      padding: 26px 28px;
-      border-top: 1px solid #18181B;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 20px 20px;
+      margin-top: 12px;
     }
 
     .footer-inner {
-      max-width: 1404px;
+      max-width: 1380px;
       margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
+      gap: 14px;
     }
 
-    .footer-brand h3 { font-size: 14.5px; font-weight: 700; color: #FFFFFF; margin-bottom: 4px; }
-    .footer-brand p { font-size: 12px; color: #A1A1AA; max-width: 540px; }
+    .footer-brand h3 { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+    .footer-brand p { font-size: 12px; color: var(--muted); max-width: 540px; }
 
-    .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+    .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 
     .footer-link {
-      background: none;
-      border: none;
-      color: #D4D4D8;
-      font-family: var(--font-ui);
-      font-size: 12px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--ink-secondary);
+      border-radius: 7px;
+      padding: 5px 10px;
+      font-size: 11.5px;
       font-weight: 600;
       cursor: pointer;
-      padding: 3px 0;
       text-decoration: none;
-      border-bottom: 1px solid transparent;
-      transition: color 0.15s ease, border-color 0.15s ease;
     }
 
-    .footer-link-ext { color: var(--el-yellow); }
-
-    .footer-link:hover { color: var(--el-yellow); border-bottom-color: var(--el-yellow); }
+    .footer-link-ext { color: var(--blue); border-color: var(--blue-border); background: var(--blue-soft); }
+    .footer-link:hover { background: var(--blue); color: #FFFFFF; border-color: var(--blue); }
 
     @media (max-width: 1180px) {
       .workbench-grid, .maquette-layout { grid-template-columns: 1fr; }
-      .cirkit-viewport { height: 560px; }
+      .cirkit-viewport { height: 540px; }
     }
 
-    @media (max-width: 760px) {
-      .el-header { padding: 10px 14px; }
-      .el-nav-sep { display: none; }
-      .section-wrap, .gallery-wrap, .workbench-grid { padding: 14px; }
-      .workshop-notes { padding: 0 14px; }
+    @media (max-width: 960px) {
+      .program-cards-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 720px) {
+      .unified-topbar, .portal-shell, .dossier-subbar, .section-wrap, .gallery-wrap, .workbench-grid, .filter-strip, .site-footer {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+      .utb-sub { display: none; }
+      .utb-nav { width: 100%; justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
+      .portal-hero { padding: 18px; }
+      .portal-hero h1 { font-size: 21px; }
+      .portal-specs-box { width: 100%; }
+      .steps-card { padding: 18px; }
       .wizard-bar { margin: 12px 14px 0; }
-      .filter-strip { padding: 10px 14px; }
-      .viewport-3d-wrap { height: 400px; }
+      .viewport-3d-wrap { height: 390px; }
       .wiring-cards-grid, .scenario-grid { grid-template-columns: 1fr; }
       .scenario-step-row { grid-template-columns: 1fr; gap: 3px; }
       .scada-hero { padding: 18px; }
@@ -1636,8 +1788,7 @@
     @media print {
       @page { size: A4 landscape; margin: 8mm; }
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      .el-nav-tabs, .el-btn-outline, .btn-install-pwa, .filter-strip, .wizard-bar, .zoom-controls, .prod-go-btn, .site-footer, .controls-3d-bar, .conn-toolbar, .btn-primary-dark { display: none !important; }
-      .el-header { position: static; background: #FFFFFF; }
+      .unified-topbar, .portal-shell, .dossier-subbar, .el-btn-outline, .btn-install-pwa, .filter-strip, .wizard-bar, .zoom-controls, .prod-go-btn, .site-footer, .controls-3d-bar, .conn-toolbar, .btn-primary-dark { display: none !important; }
       .workbench-grid { grid-template-columns: 1.75fr 1fr; padding: 8px 0; }
       .cirkit-viewport { height: 540px; }
       .has-focus .comp-node, .has-focus .wire-group .wire-path, .has-focus .esp-pin { opacity: 1 !important; }
@@ -1647,64 +1798,164 @@
 </head>
 <body>
   <div id="page-root">
-    <!-- EN-TÊTE STUDIO AVEC LOGO OFFICIEL DU CLUB -->
-    <header class="el-header">
-      <div class="el-brand">
-        <div class="club-logo-slot">
-          <img src="./logo_club.png" alt="Logo officiel Club U-AUBEN" />
+    <!-- BARRE SUPÉRIEURE BLANCHE UNIFIÉE -->
+    <header class="unified-topbar">
+      <a class="utb-brand" href="./index.html">
+        <div class="utb-logo">
+          <img src="./logo_club.png" alt="Logo CGE U-AUBEN" />
         </div>
-        <div class="el-brand-text">
-          <span class="el-brand-name">Club U-AUBEN — Projet Smart Grid</span>
-          <span class="el-brand-sub">Dossier technique 12V DC • Câblage ESP32, maquette 3D et supervision SCADA</span>
+        <div class="utb-title-stack">
+          <span class="utb-title">Smart Grid U-AUBEN · CGE</span>
+          <span class="utb-sub">Dossier technique 12V DC &amp; Supervision Polytank</span>
         </div>
-      </div>
+      </a>
 
-      <nav class="el-nav-tabs" role="tablist" aria-label="Sections du dossier technique">
-        <button class="el-tab active" data-tab="schema" onclick="switchTab('schema')">Schéma de câblage</button>
-        <button class="el-tab" data-tab="galerie" onclick="switchTab('galerie')">
-          <span>Nomenclature</span>
-          <span id="tab-check-count" class="el-tab-badge">0/17</span>
-        </button>
-        <button class="el-tab" data-tab="maquette" onclick="switchTab('maquette')">Maquette 3D</button>
-        <button class="el-tab" data-tab="connexions" onclick="switchTab('connexions')">Connexions</button>
-        <button class="el-tab" data-tab="code" onclick="switchTab('code')">Code ESP32</button>
-        <button class="el-tab" data-tab="defauts" onclick="switchTab('defauts')">Simulation Défauts</button>
-        <button class="el-tab" data-tab="scada" onclick="switchTab('scada')">Supervision SCADA</button>
-        <span class="el-nav-sep" aria-hidden="true"></span>
-        <a class="el-tab-link" href="./demo_3d_smartgrid.html">Démo 3D Jury →</a>
-        <a class="el-tab-link" href="./motion_9_16.html">Motion 9:16 →</a>
-        <a class="el-tab-link" href="./simulateur_cablage.html">Simulateur Câblage →</a>
+      <nav class="utb-nav" aria-label="Navigation principale">
+        <a class="utb-link active" href="./index.html" aria-current="page">Accueil</a>
+        <a class="utb-link" href="./simulateur_cablage.html">Simulateur</a>
+        <a class="utb-link" href="./scada_smartgrid.html">SCADA</a>
+        <a class="utb-link" href="./demo_3d_smartgrid.html">Maquette 3D</a>
+        <a class="utb-link" href="./motion_9_16.html">Motion 9:16</a>
       </nav>
 
       <div class="header-actions">
-        <button id="btn-install-pwa" class="el-btn-outline btn-install-pwa" type="button" onclick="installPWA()">Installer l'application</button>
+        <button id="btn-install-pwa" class="el-btn-outline btn-install-pwa" type="button" onclick="installPWA()">Installer PWA</button>
         <button class="el-btn-outline" type="button" onclick="window.print()">Exporter PDF</button>
       </div>
     </header>
+
+    <!-- PORTAIL SOBRE STYLE PROGRAMMES CIRKIT (CARTES BLANCHES + ÉTAPES NUMÉROTÉES) -->
+    <section class="portal-shell" aria-label="Présentation du projet Smart Grid U-AUBEN">
+      <div class="portal-hero">
+        <div class="portal-hero-copy">
+          <span class="portal-kicker">Club du Génie Électrique · Université Aube Nouvelle</span>
+          <h1>Prototype Smart Grid Hybride 12V DC &amp; Supervision Polytank sur ESP32</h1>
+          <p>Environnement complet d'ingénierie pour la conception du câblage 12V / 5V / 3,3V, le contrôle de la nomenclature matérielle, l'implantation 3D cotée et le pilotage SCADA temps réel sur MQTT HiveMQ.</p>
+          <div class="portal-cta-row">
+            <a class="btn-solid-blue" href="./simulateur_cablage.html">Ouvrir le Simulateur de Câblage</a>
+            <a class="btn-solid-indigo" href="./scada_smartgrid.html">Supervision SCADA HMI</a>
+            <a class="btn-light-outline" href="./demo_3d_smartgrid.html">Démo Maquette 3D</a>
+          </div>
+        </div>
+
+        <div class="portal-specs-box" aria-label="Caractéristiques clés du banc">
+          <div class="portal-spec-stat">
+            <span class="portal-spec-val">12V / 5V</span>
+            <span class="portal-spec-lbl">Bus DC + Buck LM2596</span>
+          </div>
+          <div class="portal-spec-stat">
+            <span class="portal-spec-val">17 Modules</span>
+            <span class="portal-spec-lbl">20 photos réelles atelier</span>
+          </div>
+          <div class="portal-spec-stat">
+            <span class="portal-spec-val">4 Relais</span>
+            <span class="portal-spec-lbl">ATS, Disj. Q1 &amp; Pompe</span>
+          </div>
+          <div class="portal-spec-stat">
+            <span class="portal-spec-val">MQTT WSS</span>
+            <span class="portal-spec-lbl">HiveMQ + Alertes Agent</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 CARTES BLANCHES AÉRÉES -->
+      <div class="program-cards-grid">
+        <article class="program-card">
+          <h3>Simulateur &amp; Câblage ESP32</h3>
+          <p>Schéma précâblé 100 % complet en routage orthogonal 90°, vérification des alimentations 12V/5V/3,3V, simulation des capteurs et firmware Arduino C++ généré.</p>
+          <a class="program-card-link" href="./simulateur_cablage.html">Accéder au simulateur</a>
+        </article>
+
+        <article class="program-card">
+          <h3>Pupitre SCADA &amp; Alertes</h3>
+          <p>Interface opérateur temps réel : conduite Manuel/Auto, commande pompe et délestage, jauge DS18B20, réservoir Polytank HC-SR04 et alertes WhatsApp / Telegram.</p>
+          <a class="program-card-link" href="./scada_smartgrid.html">Ouvrir le pupitre SCADA</a>
+        </article>
+
+        <article class="program-card">
+          <h3>Nomenclature &amp; Maquette 3D</h3>
+          <p>Inventaire pointable des 17 modules avec photos atelier réelles, cotes du socle 60 x 40 cm et visite guidée 3D interactive des 6 étapes de validation jury.</p>
+          <button class="program-card-link" type="button" onclick="switchTab('galerie'); document.getElementById('dossier-anchor').scrollIntoView({behavior:'smooth'});">Consulter la nomenclature</button>
+        </article>
+      </div>
+
+      <!-- ÉTAPES NUMÉROTÉES DE MISE EN SERVICE ATELIER -->
+      <div class="steps-card">
+        <div class="steps-card-head">
+          <h2>Procédure de montage et vérifications avant mise sous tension</h2>
+          <span class="meta-pill">CGE U-AUBEN · Contrôle atelier</span>
+        </div>
+        <ol class="numbered-steps">
+          <li>
+            <span class="step-ordinal">1.</span>
+            <div class="step-copy">
+              <strong>Calibrer le convertisseur Buck LM2596 à vide à 5,00 V</strong>
+              <span>Alimenter le module LM2596 seul en 12V et ajuster le potentiomètre laiton au multimètre jusqu'à 5,00 V exacts avant de relier le rail 5V à la broche VIN de l'ESP32.</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-ordinal">2.</span>
+            <div class="step-copy">
+              <strong>Vérifier le pont diviseur 10 kΩ / 10 kΩ sur HC-SR04 ECHO et la pull-up DS18B20</strong>
+              <span>La broche ECHO du capteur ultrason sort en 5V alors que GPIO 18 opère en 3,3V : les deux résistances 10 kΩ ramènent le signal à 2,5V. La sonde DS18B20 est alimentée en 3,3V avec pull-up 4,7 kΩ.</span>
+            </div>
+          </li>
+          <li>
+            <span class="step-ordinal">3.</span>
+            <div class="step-copy">
+              <strong>Rassembler la masse commune GND et valider les essais à vide</strong>
+              <span>Relier tous les conducteurs noirs (SONABEL 12V, BMS 3S P-, LM2596, module 4 relais, capteurs et ESP32) sur le même rail GND, puis valider l'affichage LCD 2004 et la liaison MQTT avant de connecter pompe et lampes.</span>
+            </div>
+          </li>
+        </ol>
+        <div class="portal-cta-row">
+          <button class="btn-solid-blue" type="button" onclick="switchTab('schema'); document.getElementById('dossier-anchor').scrollIntoView({behavior:'smooth'});">Explorer la planche interactive</button>
+          <button class="btn-light-outline" type="button" onclick="switchTab('connexions'); document.getElementById('dossier-anchor').scrollIntoView({behavior:'smooth'});">Table des connexions GPIO</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOUS-BARRE D'ONGLETS DU DOSSIER TECHNIQUE -->
+    <div id="dossier-anchor" class="dossier-subbar">
+      <nav class="el-nav-tabs" role="tablist" aria-label="Sections du dossier technique">
+        <button class="el-tab active" data-tab="schema" type="button" onclick="switchTab('schema')">Schéma de câblage</button>
+        <button class="el-tab" data-tab="galerie" type="button" onclick="switchTab('galerie')">
+          <span>Nomenclature</span>
+          <span id="tab-check-count" class="el-tab-badge">0/17</span>
+        </button>
+        <button class="el-tab" data-tab="maquette" type="button" onclick="switchTab('maquette')">Maquette 3D</button>
+        <button class="el-tab" data-tab="connexions" type="button" onclick="switchTab('connexions')">Connexions</button>
+        <button class="el-tab" data-tab="code" type="button" onclick="switchTab('code')">Code ESP32</button>
+        <button class="el-tab" data-tab="defauts" type="button" onclick="switchTab('defauts')">Simulation Défauts</button>
+        <button class="el-tab" data-tab="scada" type="button" onclick="switchTab('scada')">Supervision SCADA</button>
+      </nav>
+    </div>
 
     <!-- =========================================================
          ONGLET 1 : PLANCHE DE CÂBLAGE INTERACTIVE
          ========================================================= -->
     <div id="view-schema" class="view-panel active">
       <div class="filter-strip">
-        <div class="pill-group">
-          <button class="el-pill active" data-filter="all" onclick="setFilter('all')">Tout voir</button>
-          <button class="el-pill" data-filter="power" onclick="setFilter('power')">Alimentation 12V/5V</button>
-          <button class="el-pill" data-filter="sensors" onclick="setFilter('sensors')">Capteurs</button>
-          <button class="el-pill" data-filter="relays" onclick="setFilter('relays')">Relais &amp; Pompe</button>
-          <button class="el-pill" data-filter="display" onclick="setFilter('display')">Affichage &amp; Alertes</button>
-        </div>
+        <div class="filter-strip-inner">
+          <div class="pill-group">
+            <button class="el-pill active" data-filter="all" type="button" onclick="setFilter('all')">Tout voir</button>
+            <button class="el-pill" data-filter="power" type="button" onclick="setFilter('power')">Alimentation 12V/5V</button>
+            <button class="el-pill" data-filter="sensors" type="button" onclick="setFilter('sensors')">Capteurs</button>
+            <button class="el-pill" data-filter="relays" type="button" onclick="setFilter('relays')">Relais &amp; Pompe</button>
+            <button class="el-pill" data-filter="display" type="button" onclick="setFilter('display')">Affichage &amp; Alertes</button>
+          </div>
 
-        <div class="wire-legend">
-          <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-12v);"></span>12V</span>
-          <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-5v);"></span>5V</span>
-          <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-3v3);"></span>3.3V</span>
-          <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-gnd);"></span>GND</span>
-          <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-i2c);"></span>I2C / Tension</span>
-          <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-acs);"></span>Courant ACS</span>
-          <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-sensor);"></span>Ultrason / Temp</span>
-          <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-relay);"></span>Relais</span>
-          <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-alert);"></span>LED / Buzzer</span>
+          <div class="wire-legend">
+            <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-12v);"></span>12V</span>
+            <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-5v);"></span>5V</span>
+            <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-3v3);"></span>3.3V</span>
+            <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-gnd);"></span>GND</span>
+            <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-i2c);"></span>I2C / Tension</span>
+            <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-acs);"></span>Courant ACS</span>
+            <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-sensor);"></span>Ultrason / Temp</span>
+            <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-relay);"></span>Relais</span>
+            <span class="wl-item"><span class="wl-swatch" style="background:var(--wire-alert);"></span>LED / Buzzer</span>
+          </div>
         </div>
       </div>
 
@@ -1717,9 +1968,9 @@
           </div>
         </div>
         <div class="wizard-controls">
-          <button id="btn-prev-step" class="step-btn" type="button" onclick="stepWizard(-1)" disabled>← Précédent</button>
+          <button id="btn-prev-step" class="step-btn" type="button" onclick="stepWizard(-1)" disabled>Précédent</button>
           <span id="wizard-counter" class="step-counter">0 / 9</span>
-          <button id="btn-next-step" class="step-btn primary" type="button" onclick="stepWizard(1)">Démarrer →</button>
+          <button id="btn-next-step" class="step-btn primary" type="button" onclick="stepWizard(1)">Démarrer</button>
         </div>
       </div>
 
@@ -1775,7 +2026,7 @@
           <div>
             <div class="section-kicker"><span class="section-kicker-dot"></span>01 / Inventaire matériel</div>
             <h2>Nomenclature &amp; Budget — Projet Smart Grid</h2>
-            <p>Articles pointés en atelier : <strong id="bom-checked-stat">0 / 17</strong> • Budget estimatif global : <strong id="bom-total-fcfa">0 FCFA</strong></p>
+            <p>Articles pointés en atelier : <strong id="bom-checked-stat">0 / 17</strong> · Budget estimatif global : <strong id="bom-total-fcfa">0 FCFA</strong></p>
           </div>
           <div class="pill-group">
             <button class="el-btn-outline" type="button" onclick="toggleAllBom(true)">Tout cocher</button>
@@ -1796,9 +2047,9 @@
           <div>
             <div class="section-kicker"><span class="section-kicker-dot"></span>02 / Maquette physique à l'échelle</div>
             <h2>Maquette 3D Interactive &amp; Cotes d'Implantation</h2>
-            <p>Socle contreplaqué 60 × 40 cm (ép. 10 mm), coffret imprimé en 3D PLA 24 × 18 × 12 cm à façade inclinée, support solaire 30°, charges de test 12V et ensemble hydraulique Polytank Ø 14 × 22 cm.</p>
+            <p>Socle contreplaqué 60 x 40 cm (ép. 10 mm), coffret imprimé en 3D PLA 24 x 18 x 12 cm à façade inclinée, support solaire 30°, charges de test 12V et ensemble hydraulique Polytank Ø 14 x 22 cm.</p>
           </div>
-          <span class="meta-pill">WebGL Three.js • Souris &amp; Tactile Android</span>
+          <span class="meta-pill">WebGL Three.js · Souris &amp; Tactile</span>
         </div>
 
         <div class="maquette-layout">
@@ -1816,13 +2067,13 @@
 
             <div id="maquette-3d-container" class="viewport-3d-wrap">
               <div id="maquette-3d-mode-badge" class="viewport-3d-badge">COFFRET : OPAQUE</div>
-              <div class="viewport-3d-hint">Glisser : rotation • Molette / Pincer : zoom • Clic droit / 2 doigts : panoramique</div>
+              <div class="viewport-3d-hint">Glisser : rotation · Molette / Pincer : zoom · Clic droit / 2 doigts : panoramique</div>
             </div>
 
             <div class="controls-3d-bar">
               <div class="controls-3d-btns">
                 <button id="btn-3d-normal" class="btn-3d active" type="button" onclick="setMaquetteTransparency(false)">Vue normale</button>
-                <button id="btn-3d-transparent" class="btn-3d accent" type="button" onclick="setMaquetteTransparency(true)">Mode Transparence (voir le câblage interne)</button>
+                <button id="btn-3d-transparent" class="btn-3d accent" type="button" onclick="setMaquetteTransparency(true)">Mode Transparence (câblage interne)</button>
                 <button id="btn-3d-dims" class="btn-3d active" type="button" onclick="toggleMaquetteDimensions()">Cotes 3D : ON</button>
                 <button id="btn-3d-reset" class="btn-3d" type="button" onclick="resetMaquetteCamera()">Réinitialiser la caméra</button>
               </div>
@@ -1836,13 +2087,12 @@
             </div>
             <div id="maquette-locator-list" class="locator-list"></div>
             <div id="maquette-locator-detail" class="locator-detail-box">
-              <strong>Vue d'ensemble (60 × 40 cm)</strong>
+              <strong>Vue d'ensemble (60 x 40 cm)</strong>
               Sélectionnez un composant ci-dessus pour centrer la caméra dessus et mettre en évidence son emplacement exact dans la maquette.
             </div>
           </aside>
         </div>
 
-        <!-- NOMENCLATURE DE LA MAQUETTE -->
         <section class="el-card reveal-item">
           <div class="el-card-head">
             <h2>Nomenclature de la Maquette (Structure, Impression 3D &amp; Hydraulique)</h2>
@@ -1863,63 +2113,63 @@
                 <tr>
                   <td><strong>Socle principal</strong></td>
                   <td>Contreplaqué bouleau / okoumé ép. 10 mm</td>
-                  <td class="mono">60 × 40 × 1,0 cm</td>
+                  <td class="mono">60 x 40 x 1,0 cm</td>
                   <td class="mono">1</td>
                   <td>Découpe droite, bords poncés, 4 patins caoutchouc vissés dessous pour protéger la table et passer les vis.</td>
                 </tr>
                 <tr>
                   <td><strong>Coffret technique principal</strong></td>
                   <td>Impression 3D — PLA mat anthracite (paroi 2,4 mm)</td>
-                  <td class="mono">24 × 18 × 12 cm</td>
+                  <td class="mono">24 x 18 x 12 cm</td>
                   <td class="mono">1</td>
                   <td>Façade avant inclinée avec découpes LCD 2004, feu tricolore, buzzer et 2 boutons. Couvercle vissé M3 pour accès maintenance.</td>
                 </tr>
                 <tr>
                   <td><strong>Support panneaux solaires</strong></td>
                   <td>Impression 3D — PLA gris technique</td>
-                  <td class="mono">16 × 11 × 7 cm (angle 30°)</td>
+                  <td class="mono">16 x 11 x 7 cm (angle 30°)</td>
                   <td class="mono">1</td>
                   <td>Maintien rigide des 2 mini-panneaux 5,5V côte à côte avec goulotte arrière pour les fils série (+ / -).</td>
                 </tr>
                 <tr>
                   <td><strong>Socle charges de test 12V</strong></td>
                   <td>Impression 3D — PLA gris foncé</td>
-                  <td class="mono">16 × 10 × 2 cm</td>
+                  <td class="mono">16 x 10 x 2 cm</td>
                   <td class="mono">1</td>
-                  <td>Supporte les 2 douilles LED 12V et le berceau vertical du mini-ventilateur 40 × 40 mm face au public.</td>
+                  <td>Supporte les 2 douilles LED 12V et le berceau vertical du mini-ventilateur 40 x 40 mm face au public.</td>
                 </tr>
                 <tr>
                   <td><strong>Réservoir Polytank (cuve haute)</strong></td>
                   <td>Cylindre acrylique / PVC transparent + socle PLA</td>
-                  <td class="mono">Ø 14 × 22 cm (~3,4 L)</td>
+                  <td class="mono">Ø 14 x 22 cm (~3,4 L)</td>
                   <td class="mono">1</td>
                   <td>Posé sur réhausse PLA Ø 15 cm ; graduation visuelle 30% / 85% au marqueur fin sur la face avant.</td>
                 </tr>
                 <tr>
                   <td><strong>Bride capteur ultrason HC-SR04</strong></td>
                   <td>Impression 3D — PLA noir</td>
-                  <td class="mono">15 × 2,4 × 1,2 cm</td>
+                  <td class="mono">15 x 2,4 x 1,2 cm</td>
                   <td class="mono">1</td>
                   <td>Pontet clipsé sur le rebord supérieur du Polytank, transducteurs orientés verticalement vers la surface d'eau.</td>
                 </tr>
                 <tr>
                   <td><strong>Bac bas de puisage</strong></td>
                   <td>Cuve plastique / acrylique transparente</td>
-                  <td class="mono">16 × 12 × 9 cm (~1,7 L)</td>
+                  <td class="mono">16 x 12 x 9 cm (~1,7 L)</td>
                   <td class="mono">1</td>
                   <td>Accueille la mini-pompe submersible 12V AD20P-1230C (ventouses au fond) et le retour de vidange manuelle.</td>
                 </tr>
                 <tr>
                   <td><strong>Tuyauterie de refoulement</strong></td>
                   <td>Tuyau souple PVC cristal alimentaire</td>
-                  <td class="mono">Ø 8 mm int. × L 65 cm</td>
+                  <td class="mono">Ø 8 mm int. x L 65 cm</td>
                   <td class="mono">1</td>
                   <td>Emmanché directement sur la sortie verticale de la pompe et guidé par un collier PLA jusqu'au haut du Polytank.</td>
                 </tr>
                 <tr>
                   <td><strong>Quincaillerie &amp; passe-câbles</strong></td>
                   <td>Visserie M3/bois, entretoises nylon, serre-câbles</td>
-                  <td class="mono">M3 × 10 mm / Ø 3,5 mm</td>
+                  <td class="mono">M3 x 10 mm / Ø 3,5 mm</td>
                   <td class="mono">1 lot</td>
                   <td>Fixation des PCB sur entretoises nylon dans le coffret (aucun contact direct avec les vis métalliques).</td>
                 </tr>
@@ -1931,7 +2181,7 @@
     </section>
 
     <!-- =========================================================
-         ONGLET 4 : CONNEXIONS (FORMAT FICHE TECHNIQUE PDF / CIRKIT)
+         ONGLET 4 : CONNEXIONS (FORMAT FICHE TECHNIQUE)
          ========================================================= -->
     <section id="view-connexions" class="view-panel" aria-label="Documentation technique des connexions électriques">
       <div class="section-wrap">
@@ -1941,10 +2191,9 @@
             <h2>Dossier de Connexions — Format Fiche Technique</h2>
             <p>Architecture d'alimentation à trois domaines isolés (12V puissance, 5,0V logique régulé, 3,3V ESP32) sur masse commune GND, inventaire complet et table de câblage broche par broche.</p>
           </div>
-          <span class="meta-pill">17 composants • 17 GPIO actifs • 0 conflit ADC</span>
+          <span class="meta-pill">17 composants · 17 GPIO actifs · 0 conflit ADC</span>
         </div>
 
-        <!-- 1. RÉSUMÉ DE L'ARCHITECTURE DU CIRCUIT -->
         <div class="doc-subsection-title">
           <h3>1. Résumé de l'architecture du circuit</h3>
           <span class="sku-pill">Séparation 12V / 5V / 3.3V + GND commun</span>
@@ -1956,7 +2205,7 @@
               <h3>Rail 12V Puissance</h3>
               <span class="rail-badge rail-12v">12V DC</span>
             </div>
-            <p>Deux sources commutées par l'ATS : adaptateur secteur 12V 5A (SONABEL) et pack 3S 18650 / BMS 40A (10,5–12,6V) maintenu par 2× PV 5,5V en série via diode anti-retour. Alimente le LM2596, les contacts COM/NO des 4 relais, les charges 12V et la pompe.</p>
+            <p>Deux sources commutées par l'ATS : adaptateur secteur 12V 5A (SONABEL) et pack 3S 18650 / BMS 40A (10,5–12,6V) maintenu par 2x PV 5,5V en série via diode anti-retour. Alimente le LM2596, les contacts COM/NO des 4 relais, les charges 12V et la pompe.</p>
           </article>
           <article class="arch-card">
             <div class="arch-card-head">
@@ -1981,7 +2230,6 @@
           </article>
         </div>
 
-        <!-- BARRE DE RECHERCHE UNIFIÉE -->
         <section class="el-card">
           <div class="conn-toolbar">
             <div class="conn-search-box">
@@ -1991,7 +2239,6 @@
             <span id="conn-row-count" class="conn-count">17 / 17 composants</span>
           </div>
 
-          <!-- 2. INVENTAIRE DES COMPOSANTS ET RÔLE DANS LE SYSTÈME -->
           <div class="el-card-head">
             <h2>2. Inventaire complet des composants et rôle dans le système</h2>
             <span class="sku-pill">Référence complète</span>
@@ -2011,7 +2258,6 @@
           </div>
         </section>
 
-        <!-- 3. DÉTAILS DU CÂBLAGE COMPOSANT PAR COMPOSANT -->
         <div class="doc-subsection-title">
           <h3>3. Détails du câblage composant par composant (broche à broche)</h3>
           <span class="sku-pill">Inclut les broches non utilisées / réservées</span>
@@ -2051,7 +2297,7 @@
               <span class="gpio-chip">OneWire</span>
               <span class="gpio-chip">DallasTemperature</span>
             </div>
-            <span class="sku-pill">broker.hivemq.com • cge/uauben/david/smartgrid</span>
+            <span class="sku-pill">broker.hivemq.com · cge/uauben/david/smartgrid</span>
           </div>
           <pre class="code-pre-wrap"><code id="esp32-code-block"></code></pre>
         </section>
@@ -2071,7 +2317,7 @@
           </div>
           <div class="pill-group">
             <span id="jury-progress-pill" class="meta-pill">0 / 4 scénarios validés</span>
-            <a class="btn-primary-dark" href="./scada_smartgrid.html">Ouvrir le SCADA →</a>
+            <a class="btn-primary-dark" href="./scada_smartgrid.html">Ouvrir le SCADA</a>
           </div>
         </div>
 
@@ -2080,7 +2326,7 @@
             <span><strong>Avant de lancer la démo :</strong></span>
             <span>1. Vérifier 5,00 V en sortie LM2596 et affichage stable sur le LCD 2004.</span>
             <span>2. Remplir le Polytank vers ~50% et le bac bas aux 2/3 (pompe immergée).</span>
-            <span>3. Ouvrir <span class="mono">./scada_smartgrid.html</span> sur l'écran projeté et vérifier l'état « Connecté en direct (MQTT) ».</span>
+            <span>3. Ouvrir <span class="mono">./scada_smartgrid.html</span> sur l'écran projeté et vérifier l'état « En ligne — HiveMQ ».</span>
           </div>
         </div>
 
@@ -2096,26 +2342,26 @@
         <div class="section-head-block reveal-item">
           <div>
             <div class="section-kicker"><span class="section-kicker-dot"></span>06 / Supervision web temps réel</div>
-            <h2>Supervision SCADA — Tableau de Bord MQTT</h2>
-            <p>Interface opérateur reliée directement à l'ESP32 via le broker HiveMQ pour suivre l'état du micro-réseau hybride SONABEL / Solaire, les alarmes et le niveau Polytank.</p>
+            <h2>Supervision SCADA — Pupitre HMI &amp; MQTT</h2>
+            <p>Interface opérateur reliée directement à l'ESP32 via le broker HiveMQ pour suivre l'état du micro-réseau hybride SONABEL / Solaire, les alarmes, les seuils configurables et le niveau Polytank.</p>
           </div>
-          <span class="meta-pill">MQTT over WSS • broker.hivemq.com</span>
+          <span class="meta-pill">MQTT over WSS · broker.hivemq.com</span>
         </div>
 
         <div class="scada-hero reveal-item">
           <div class="scada-hero-copy">
             <span class="sku-pill" style="align-self:flex-start;">Topic : cge/uauben/david/smartgrid</span>
-            <h3>Tableau de bord temps réel Smart Grid &amp; Polytank</h3>
-            <p>Le tableau de bord reçoit les mesures JSON toutes les 2 secondes, met à jour le synoptique électrique P&amp;ID (commutateur ATS, disjoncteur Q1, flux actifs), anime le remplissage du Polytank et consigne chaque défaut dans le journal d'événements.</p>
+            <h3>Pupitre industriel temps réel Smart Grid &amp; Polytank</h3>
+            <p>Le tableau de bord reçoit les mesures JSON toutes les 2 secondes, met à jour les jauges HMI (DS18B20 et Polytank), le synoptique électrique P&amp;ID, pilote les 4 relais et déclenche les alertes Agent WhatsApp / Telegram.</p>
           </div>
-          <a class="scada-cta-btn" href="./scada_smartgrid.html">Ouvrir le tableau de bord SCADA →</a>
+          <a class="scada-cta-btn" href="./scada_smartgrid.html">Ouvrir le pupitre SCADA</a>
         </div>
 
         <div class="scada-grid reveal-item">
           <article class="scada-metric-card">
             <div class="scada-metric-head">
               <h4>Tensions SONABEL / Batterie</h4>
-              <span class="gpio-chip">GPIO 34 • 32</span>
+              <span class="gpio-chip">GPIO 34 · 32</span>
             </div>
             <p>Lecture simultanée de la source secteur simulée 12V et du pack 3S 18650 (10,5–12,6V) via les deux ponts diviseurs 0–25V. Suivi de la source active et de la jauge batterie en pourcentage.</p>
           </article>
@@ -2123,7 +2369,7 @@
           <article class="scada-metric-card">
             <div class="scada-metric-head">
               <h4>Courants Charge &amp; Solaire</h4>
-              <span class="gpio-chip">GPIO 35 • 33</span>
+              <span class="gpio-chip">GPIO 35 · 33</span>
             </div>
             <p>Mesure par les deux modules à effet Hall ACS712, calcul instantané de la puissance (W), historique graphique glissant et détection de surcharge.</p>
           </article>
@@ -2133,23 +2379,23 @@
               <h4>Température Transformateur</h4>
               <span class="gpio-chip">GPIO 4 (OneWire)</span>
             </div>
-            <p>Acquisition numérique par sonde étanche DS18B20 alimentée en 3,3V. Alarme thermique immédiate et ouverture du disjoncteur au-delà de 60°C.</p>
+            <p>Acquisition numérique par sonde étanche DS18B20 alimentée en 3,3V. Jauge semi-circulaire 0–80 °C avec seuil haut configurable et alarme thermique immédiate.</p>
           </article>
 
           <article class="scada-metric-card">
             <div class="scada-metric-head">
               <h4>Niveau Polytank</h4>
-              <span class="gpio-chip">GPIO 5 • 18</span>
+              <span class="gpio-chip">GPIO 5 · 18</span>
             </div>
-            <p>Conversion ultrasonore HC-SR04 (ECHO protégé par 10 kΩ / 10 kΩ) affichée de 0 à 100% sur la cuve P&amp;ID avec signalisation niveau bas (&lt; 30%) et plein (≥ 85%).</p>
+            <p>Conversion ultrasonore HC-SR04 (ECHO protégé par 10 kΩ / 10 kΩ) affichée de 0 à 100% sur la cuve HMI et le synoptique P&amp;ID avec seuils bas et haut enregistrables.</p>
           </article>
 
           <article class="scada-metric-card">
             <div class="scada-metric-head">
               <h4>Pilotage Charges &amp; Disjoncteur</h4>
-              <span class="gpio-chip">GPIO 26 • 27 • 14</span>
+              <span class="gpio-chip">GPIO 26 · 27 · 14</span>
             </div>
-            <p>État en direct des relais ATS (SONABEL / Solaire) et du disjoncteur Q1 protégeant les 2 lampes LED 12V et le mini-ventilateur.</p>
+            <p>État en direct des relais ATS (SONABEL / Solaire) et du disjoncteur Q1 protégeant les 2 lampes LED 12V et le mini-ventilateur, avec délestage manuel à distance.</p>
           </article>
 
           <article class="scada-metric-card">
@@ -2157,46 +2403,22 @@
               <h4>Pilotage de la Pompe</h4>
               <span class="gpio-chip">GPIO 12 (IN4)</span>
             </div>
-            <p>Suivi de marche/arrêt de la mini-pompe 12V AD20P-1230C pilotée en hystérésis entre 30% et 85% avec animation de la conduite hydraulique.</p>
+            <p>Suivi marche/arrêt et commande directe de la mini-pompe 12V AD20P-1230C pilotée en hystérésis automatique ou en mode manuel opérateur.</p>
           </article>
         </div>
 
         <div class="scada-arch-bar reveal-item">
           <div>
-            <strong>Liaison temps réel :</strong> l'ESP32 publie en TCP (port 1883) vers HiveMQ et la page web s'y abonne en WebSocket sécurisé (WSS port 8884).
+            <strong>Liaison temps réel :</strong> l'ESP32 publie en TCP (port 1883) vers HiveMQ et l'interface web s'y abonne en WebSocket sécurisé (WSS port 8884).
           </div>
           <div class="scada-arch-flow">
             <span class="scada-node">ESP32 + Capteurs</span>
-            <span>→</span>
+            <span>-&gt;</span>
             <span class="scada-node">MQTT 1883</span>
-            <span>→</span>
+            <span>-&gt;</span>
             <span class="scada-node">broker.hivemq.com</span>
-            <span>→</span>
+            <span>-&gt;</span>
             <span class="scada-node">./scada_smartgrid.html</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- NOTES TECHNIQUES D'ATELIER (TON SOBRE ET DIRECT) -->
-    <section class="workshop-notes" aria-label="Remarques d'atelier et vérifications avant mise sous tension">
-      <div class="workshop-notes-inner">
-        <div class="workshop-notes-head">
-          <h3>Points de contrôle en atelier avant mise sous tension</h3>
-          <span>Club U-AUBEN • Vérifications de montage</span>
-        </div>
-        <div class="notes-cols">
-          <div class="note-col">
-            <h4><span class="note-idx">01</span> Réglage du LM2596 à vide</h4>
-            <p>Alimenter le module LM2596 seul en 12V et régler la vis du potentiomètre au multimètre jusqu'à lire 5,00 V exacts avant de relier le fil orange à la broche VIN de l'ESP32. En sortie d'usine le module est souvent calé autour de 9 à 10 V.</p>
-          </div>
-          <div class="note-col">
-            <h4><span class="note-idx">02</span> Pont diviseur sur HC-SR04 ECHO</h4>
-            <p>La broche ECHO du capteur ultrason sort en 5V alors que GPIO 18 travaille en 3,3V. Deux résistances de 10 kΩ (une en série depuis ECHO, l'autre entre GPIO 18 et GND) ramènent le signal à 2,5V sans fausser la mesure.</p>
-          </div>
-          <div class="note-col">
-            <h4><span class="note-idx">03</span> Masse commune et premier essai</h4>
-            <p>Rassembler tous les conducteurs noirs (adaptateur 12V, BMS 3S P-, LM2596, relais, capteurs et ESP32) sur le même rail GND. Lors de la première mise sous tension, valider la commutation des relais et l'affichage LCD avant de brancher la pompe et les lampes.</p>
           </div>
         </div>
       </div>
@@ -2206,20 +2428,20 @@
     <footer class="site-footer">
       <div class="footer-inner">
         <div class="footer-brand">
-          <h3>Club U-AUBEN — Projet Smart Grid</h3>
+          <h3>Smart Grid U-AUBEN · CGE</h3>
           <p>Dossier technique du prototype hybride SONABEL / Solaire 12V DC et gestion hydraulique Polytank sur ESP32.</p>
         </div>
         <nav class="footer-links" aria-label="Accès rapide">
-          <button class="footer-link" type="button" onclick="switchTab('schema'); window.scrollTo({top:0, behavior:'smooth'});">Schéma</button>
-          <button class="footer-link" type="button" onclick="switchTab('galerie'); window.scrollTo({top:0, behavior:'smooth'});">Nomenclature</button>
-          <button class="footer-link" type="button" onclick="switchTab('maquette'); window.scrollTo({top:0, behavior:'smooth'});">Maquette 3D</button>
-          <button class="footer-link" type="button" onclick="switchTab('connexions'); window.scrollTo({top:0, behavior:'smooth'});">Connexions</button>
-          <button class="footer-link" type="button" onclick="switchTab('code'); window.scrollTo({top:0, behavior:'smooth'});">Code ESP32</button>
-          <button class="footer-link" type="button" onclick="switchTab('defauts'); window.scrollTo({top:0, behavior:'smooth'});">Simulation Défauts</button>
-          <button class="footer-link" type="button" onclick="switchTab('scada'); window.scrollTo({top:0, behavior:'smooth'});">SCADA</button>
-          <a class="footer-link footer-link-ext" href="./demo_3d_smartgrid.html">Démo 3D Jury →</a>
-          <a class="footer-link footer-link-ext" href="./motion_9_16.html">Motion 9:16 →</a>
-          <a class="footer-link footer-link-ext" href="./simulateur_cablage.html">Simulateur Câblage →</a>
+          <button class="footer-link" type="button" onclick="switchTab('schema'); document.getElementById('dossier-anchor').scrollIntoView({behavior:'smooth'});">Schéma</button>
+          <button class="footer-link" type="button" onclick="switchTab('galerie'); document.getElementById('dossier-anchor').scrollIntoView({behavior:'smooth'});">Nomenclature</button>
+          <button class="footer-link" type="button" onclick="switchTab('maquette'); document.getElementById('dossier-anchor').scrollIntoView({behavior:'smooth'});">Maquette 3D</button>
+          <button class="footer-link" type="button" onclick="switchTab('connexions'); document.getElementById('dossier-anchor').scrollIntoView({behavior:'smooth'});">Connexions</button>
+          <button class="footer-link" type="button" onclick="switchTab('code'); document.getElementById('dossier-anchor').scrollIntoView({behavior:'smooth'});">Code ESP32</button>
+          <button class="footer-link" type="button" onclick="switchTab('defauts'); document.getElementById('dossier-anchor').scrollIntoView({behavior:'smooth'});">Simulation Défauts</button>
+          <a class="footer-link footer-link-ext" href="./simulateur_cablage.html">Simulateur</a>
+          <a class="footer-link footer-link-ext" href="./scada_smartgrid.html">SCADA</a>
+          <a class="footer-link footer-link-ext" href="./demo_3d_smartgrid.html">Maquette 3D</a>
+          <a class="footer-link footer-link-ext" href="./motion_9_16.html">Motion 9:16</a>
           <button class="footer-link" type="button" onclick="window.print()">Imprimer</button>
         </nav>
       </div>
