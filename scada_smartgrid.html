@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Supervision Smart Grid" />
   <title>Supervision Smart Grid · U-AUBEN</title>
-  <meta name="description" content="Application de supervision industrielle temps réel Smart Grid 12V DC &amp; Polytank (U-AUBEN) : mesures réseau et batterie, température, niveau d'eau, commandes directes et journal d'alarmes horodaté." />
+  <meta name="description" content="Application de supervision industrielle temps réel Smart Grid 12V DC &amp; Polytank (U-AUBEN) : mesures réseau et batterie, température, niveau d'eau, commandes directes et schéma synoptique temps réel." />
   <meta name="theme-color" content="#FFFFFF" />
   <link rel="icon" type="image/png" href="./favicon.png" />
   <link rel="apple-touch-icon" href="./icon-192.png" />
@@ -524,7 +524,7 @@
       box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.14);
     }
 
-    .btn-primary, .btn-secondary, .btn-outline, .btn-danger-soft {
+    .btn-primary, .btn-secondary, .btn-outline {
       min-height: 44px;
       padding: 0 12px;
       border-radius: var(--radius-sm);
@@ -560,13 +560,6 @@
       color: var(--ink);
     }
     .btn-outline:hover { background: var(--surface-alt); border-color: var(--ink-2); }
-
-    .btn-danger-soft {
-      background: var(--red-soft);
-      border-color: var(--red-border);
-      color: var(--red);
-    }
-    .btn-danger-soft:hover { background: #FECACA; }
 
     button:disabled { opacity: 0.45; cursor: not-allowed; }
 
@@ -710,12 +703,9 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 7px;
     }
-    .cmd-btn-row.cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
 
     /* =========================================================
-       3. LIGNE 3 : JOURNAL D'ALARMES HORODATÉ
+       3. LIGNE 3 : SCHÉMA SYNOPTIQUE · FLUX D'ÉNERGIE TEMPS RÉEL
        ========================================================= */
     .row-bottom {
       display: grid;
@@ -724,55 +714,97 @@
       align-items: start;
     }
 
-    .alarm-strip {
+    .synoptic-scroll {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: var(--radius-sm);
+    }
+
+    .synoptic-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    @keyframes synFlowDash {
+      from { stroke-dashoffset: 28; }
+      to   { stroke-dashoffset: 0; }
+    }
+    @keyframes synRotorSpin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .syn-wire-base {
+      fill: none;
+      stroke: #CBD5E1;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .syn-wire-flow {
+      fill: none;
+      stroke: #16A34A;
+      stroke-width: 4;
+      stroke-dasharray: 8 6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .syn-wire-flow.is-active {
+      opacity: 1;
+      animation: synFlowDash 0.72s linear infinite;
+    }
+    .syn-wire-flow.is-water {
+      stroke: #1976D2;
+    }
+    .syn-wire-flow.is-fault {
+      stroke: #DC2626;
+      stroke-dasharray: none;
+      animation: none;
+      opacity: 1;
+    }
+    .syn-spin-active {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: synRotorSpin 1.05s linear infinite;
+    }
+
+    .synoptic-legend {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px 14px;
+      font-size: 11px;
+      color: var(--muted);
     }
-
-    .alarm-chip {
+    .synoptic-legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 14px;
+    }
+    .syn-leg-item {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      padding: 4px 8px;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--surface-alt);
-      font-size: 11px;
-      color: var(--ink-2);
-    }
-    .alarm-chip strong {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--ink);
-    }
-
-    .log-list {
-      height: 158px;
-      overflow-y: auto;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      background: var(--surface-alt);
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
       gap: 5px;
+      white-space: nowrap;
     }
-
-    .log-item {
-      font-family: var(--font-mono);
-      font-size: 11.5px;
-      line-height: 1.4;
-      color: var(--ink-2);
-      padding: 5px 8px;
-      border-radius: 6px;
-      background: var(--surface);
-      border-left: 3px solid var(--border-strong);
-      word-break: break-word;
+    .syn-leg-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
-    .log-item.ok   { border-left-color: var(--green-toggle); color: #166534; }
-    .log-item.warn { border-left-color: #D97706; color: #92400E; }
-    .log-item.err  { border-left-color: var(--red-bright); color: #991B1B; background: #FEF2F2; }
+    .syn-leg-hint {
+      display: none;
+      font-size: 10.5px;
+      color: var(--muted);
+    }
 
     /* =========================================================
        4. RESPONSIVE MOBILE (CHROME ANDROID & SAFARI iOS 360px/390px)
@@ -835,13 +867,14 @@
         min-height: 44px;
       }
 
-      .btn-primary, .btn-secondary, .btn-outline, .btn-danger-soft {
+      .btn-primary, .btn-secondary, .btn-outline {
         min-height: 44px;
         padding: 0 10px;
         font-size: 12.5px;
       }
 
-      .log-list { height: 150px; }
+      .synoptic-svg { min-width: 640px; }
+      .syn-leg-hint { display: inline; }
     }
 
     @media (max-width: 420px) {
@@ -854,7 +887,6 @@
       .status-pill { padding: 4px 8px; font-size: 11px; }
       .btn-install-pwa { padding: 0 8px; font-size: 11px; }
       .kpi-num { font-size: 17px; }
-      .cmd-btn-row.cols-3 { gap: 5px; }
       .btn-primary, .btn-secondary, .btn-outline { padding: 0 7px; font-size: 11.5px; }
     }
   </style>
@@ -1100,8 +1132,8 @@
                 <span id="hmi-lumiere-badge" class="hmi-status-pill">K2 : ATTENTE</span>
               </div>
               <div class="cmd-btn-row">
-                <button id="btn-hmi-lumiere-on" class="btn-primary" type="button" onclick="sendHmiCommand('IN2', 27, 'ON', 'Lumière ON')">Allumer</button>
-                <button id="btn-hmi-lumiere-off" class="btn-outline" type="button" onclick="sendHmiCommand('IN2', 27, 'OFF', 'Lumière OFF')">Éteindre</button>
+                <button id="btn-hmi-lumiere-on" class="btn-primary" type="button" onclick="sendHmiCommand('IN2', 27, 'ON', 'Lumière ON')">ON</button>
+                <button id="btn-hmi-lumiere-off" class="btn-outline" type="button" onclick="sendHmiCommand('IN2', 27, 'OFF', 'Lumière OFF')">OFF</button>
               </div>
             </div>
 
@@ -1111,10 +1143,9 @@
                 <span class="cmd-group-name">Ventilateur (K3)</span>
                 <span id="hmi-ventilo-badge" class="hmi-status-pill">K3 : ATTENTE</span>
               </div>
-              <div class="cmd-btn-row cols-3">
-                <button id="btn-hmi-ventilo-on" class="btn-primary" type="button" onclick="sendHmiCommand('IN3', 14, 'ON', 'Ventilateur ON')">Marche</button>
-                <button id="btn-hmi-ventilo-off" class="btn-outline" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Ventilateur OFF')">Arrêt</button>
-                <button id="btn-hmi-delestage" class="btn-danger-soft" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Délestage Q1')">Délestage</button>
+              <div class="cmd-btn-row">
+                <button id="btn-hmi-ventilo-on" class="btn-primary" type="button" onclick="sendHmiCommand('IN3', 14, 'ON', 'Ventilateur ON')">ON</button>
+                <button id="btn-hmi-ventilo-off" class="btn-outline" type="button" onclick="sendHmiCommand('IN3', 14, 'OFF', 'Ventilateur OFF')">OFF</button>
               </div>
             </div>
 
@@ -1125,8 +1156,8 @@
                 <span id="hmi-pompe-badge" class="hmi-status-pill">K4 : ATTENTE</span>
               </div>
               <div class="cmd-btn-row">
-                <button id="btn-hmi-pompe-on" class="btn-primary" type="button" onclick="sendHmiCommand('IN4', 12, 'ON', 'Pompe ON')">Pompe ON</button>
-                <button id="btn-hmi-pompe-off" class="btn-outline" type="button" onclick="sendHmiCommand('IN4', 12, 'OFF', 'Pompe OFF')">Pompe OFF</button>
+                <button id="btn-hmi-pompe-on" class="btn-primary" type="button" onclick="sendHmiCommand('IN4', 12, 'ON', 'Pompe ON')">ON</button>
+                <button id="btn-hmi-pompe-off" class="btn-outline" type="button" onclick="sendHmiCommand('IN4', 12, 'OFF', 'Pompe OFF')">OFF</button>
               </div>
             </div>
           </div>
@@ -1135,25 +1166,202 @@
     </section>
 
     <!-- =========================================================
-         LIGNE 3 : JOURNAL D'ALARMES HORODATÉ
+         LIGNE 3 : SCHÉMA SYNOPTIQUE · FLUX D'ÉNERGIE TEMPS RÉEL
          ========================================================= -->
-    <section class="row-bottom" aria-label="Journal d'alarmes">
-      <article class="panel-card" aria-label="Journal d'alarmes">
+    <section class="row-bottom" aria-label="Schéma Synoptique Flux d'énergie">
+      <article class="panel-card" aria-label="Schéma Synoptique · Flux d'énergie">
         <div class="panel-head">
-          <h2 class="panel-title">Journal d'alarmes</h2>
-          <span id="alarm-view-badge" class="badge bg-green">0 ALARME ACTIVE</span>
+          <h2 class="panel-title">Schéma Synoptique · Flux d'énergie</h2>
+          <span id="syn-status-badge" class="badge bg-gray">ATTENTE</span>
         </div>
 
-        <div class="alarm-strip" aria-label="État des protections">
-          <span class="alarm-chip">Q1 <strong id="al-val-disj">--</strong> <span id="al-st-disj" class="badge bg-gray">ATTENTE</span></span>
-          <span class="alarm-chip">Courant <strong id="al-val-i">-- A</strong> <span id="al-st-i" class="badge bg-gray">ATTENTE</span></span>
-          <span class="alarm-chip">Temp. <strong id="al-val-t">-- °C</strong> <span id="al-st-t" class="badge bg-gray">ATTENTE</span></span>
-          <span class="alarm-chip">Cuve <strong id="al-val-eau">-- %</strong> <span id="al-st-eau" class="badge bg-gray">ATTENTE</span></span>
-          <span class="alarm-chip">Réseau <strong id="al-val-src">--</strong> <span id="al-st-src" class="badge bg-gray">ATTENTE</span></span>
+        <div class="synoptic-scroll">
+          <svg id="synoptic-svg" class="synoptic-svg" viewBox="0 0 920 250" role="img" aria-label="Schéma synoptique temps réel des flux d'énergie Smart Grid 12V DC">
+            <defs>
+              <pattern id="syn-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#E2E8F0" stroke-width="0.65" opacity="0.65" />
+              </pattern>
+              <clipPath id="syn-bus-head-clip">
+                <rect x="432" y="56" width="174" height="142" rx="10" />
+              </clipPath>
+              <clipPath id="syn-tank-clip">
+                <rect x="851" y="175" width="52" height="58" rx="5" />
+              </clipPath>
+            </defs>
+
+            <!-- Fond grille technique sobre -->
+            <rect x="1" y="1" width="918" height="248" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2" />
+            <rect x="1" y="1" width="918" height="248" rx="10" fill="url(#syn-grid)" />
+
+            <!-- ===== COUCHE 1 : LIGNES DE BASE GRISES (TOUJOURS SOUS LES FLUX ACTIFS) ===== -->
+            <g aria-hidden="true">
+              <!-- SONABEL -> ATS (NC) -->
+              <path class="syn-wire-base" d="M 196 62 L 224 62 L 224 110 L 252 110" />
+              <!-- SOLAIRE / BATTERIE -> ATS (NO) -->
+              <path class="syn-wire-base" d="M 196 188 L 224 188 L 224 144 L 252 144" />
+              <!-- ATS (COM) -> BUS 12V DC -->
+              <path class="syn-wire-base" d="M 386 127 L 432 127" />
+              <!-- BUS 12V DC -> NOEUD DE DISTRIBUTION -->
+              <path class="syn-wire-base" d="M 606 127 L 638 127" />
+              <!-- DISTRIBUTION -> K2 (Lumière) -->
+              <path class="syn-wire-base" d="M 638 127 L 638 48 L 668 48" />
+              <!-- DISTRIBUTION -> K3 (Ventilateur) -->
+              <path class="syn-wire-base" d="M 638 127 L 668 127" />
+              <!-- DISTRIBUTION -> K4 (Pompe) -->
+              <path class="syn-wire-base" d="M 638 127 L 638 204 L 668 204" />
+              <!-- POMPE K4 -> CUVE POLYTANK (HYDRAULIQUE) -->
+              <path class="syn-wire-base" d="M 812 204 L 848 204" />
+            </g>
+
+            <!-- ===== COUCHE 2 : FLUX ANIMÉS AU-DESSUS DES LIGNES DE BASE ===== -->
+            <g aria-hidden="true">
+              <path id="syn-flow-sonabel" class="syn-wire-flow" d="M 196 62 L 224 62 L 224 110 L 252 110" />
+              <path id="syn-flow-solar" class="syn-wire-flow" d="M 196 188 L 224 188 L 224 144 L 252 144" />
+              <path id="syn-flow-bus" class="syn-wire-flow" d="M 386 127 L 432 127" />
+              <path id="syn-flow-trunk" class="syn-wire-flow" d="M 606 127 L 638 127" />
+              <path id="syn-flow-k2" class="syn-wire-flow" d="M 638 127 L 638 48 L 668 48" />
+              <path id="syn-flow-k3" class="syn-wire-flow" d="M 638 127 L 668 127" />
+              <path id="syn-flow-k4" class="syn-wire-flow" d="M 638 127 L 638 204 L 668 204" />
+              <path id="syn-flow-water" class="syn-wire-flow is-water" d="M 812 204 L 848 204" />
+            </g>
+
+            <!-- Noeud de distribution -->
+            <circle cx="638" cy="127" r="4" fill="#64748B" id="syn-dist-node" />
+
+            <!-- ===== GAUCHE : SOURCES (SONABEL & SOLAIRE/BATTERIE) ===== -->
+            <!-- Source 1 : Réseau SONABEL -->
+            <g aria-label="Source Réseau SONABEL">
+              <rect id="syn-box-sonabel" x="16" y="20" width="180" height="84" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-led-sonabel" cx="34" cy="41" r="5" fill="#94A3B8" />
+              <text x="46" y="45" fill="#0F172A" font-family="Inter, sans-serif" font-size="12.5" font-weight="700">Réseau SONABEL</text>
+              <line x1="28" y1="56" x2="184" y2="56" stroke="#E2E8F0" stroke-width="1" />
+              <text id="syn-v-sonabel" x="28" y="83" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="17" font-weight="700">--.- V</text>
+              <text id="syn-st-sonabel" x="184" y="81" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="end">ATTENTE</text>
+              <circle cx="196" cy="62" r="3.5" fill="#64748B" />
+            </g>
+
+            <!-- Source 2 : Solaire / Batterie -->
+            <g aria-label="Source Solaire et Batterie">
+              <rect id="syn-box-solar" x="16" y="146" width="180" height="84" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-led-solar" cx="34" cy="167" r="5" fill="#94A3B8" />
+              <text x="46" y="171" fill="#0F172A" font-family="Inter, sans-serif" font-size="12.5" font-weight="700">Solaire / Batterie</text>
+              <line x1="28" y1="182" x2="184" y2="182" stroke="#E2E8F0" stroke-width="1" />
+              <text id="syn-v-solar" x="28" y="209" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="14.5" font-weight="700">--.- V · --%</text>
+              <text id="syn-st-solar" x="184" y="208" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="end">ATTENTE</text>
+              <circle cx="196" cy="188" r="3.5" fill="#64748B" />
+            </g>
+
+            <!-- ===== MILIEU-GAUCHE : BASCULE ATS (K1) ===== -->
+            <g aria-label="Bascule ATS K1">
+              <rect id="syn-box-ats" x="252" y="68" width="134" height="118" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <text x="319" y="87" fill="#0F172A" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" text-anchor="middle">Bascule ATS (K1)</text>
+              <line x1="264" y1="95" x2="374" y2="95" stroke="#E2E8F0" stroke-width="1" />
+              <!-- Contacts internes NC / NO / COM -->
+              <text x="260" y="113" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700">NC</text>
+              <circle id="syn-ats-nc" cx="284" cy="110" r="4" fill="#94A3B8" />
+              <text x="260" y="147" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700">NO</text>
+              <circle id="syn-ats-no" cx="284" cy="144" r="4" fill="#94A3B8" />
+              <circle id="syn-ats-com" cx="350" cy="127" r="4.5" fill="#334155" />
+              <text x="358" y="115" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700" text-anchor="middle">COM</text>
+              <!-- Lame mobile ATS -->
+              <line id="syn-ats-arm" x1="350" y1="127" x2="296" y2="127" stroke="#64748B" stroke-width="3.6" stroke-linecap="round" />
+              <!-- Étiquette source active -->
+              <rect id="syn-ats-pill-bg" x="271" y="159" width="96" height="19" rx="9.5" fill="#ECEFF4" />
+              <text id="syn-ats-label" x="319" y="172" fill="#334155" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" text-anchor="middle">ATTENTE</text>
+              <circle cx="252" cy="110" r="3" fill="#64748B" />
+              <circle cx="252" cy="144" r="3" fill="#64748B" />
+              <circle cx="386" cy="127" r="3.5" fill="#64748B" />
+            </g>
+
+            <!-- ===== CENTRE : BUS 12V DC / ESP32 ===== -->
+            <g aria-label="Bus 12V DC et ESP32">
+              <rect id="syn-box-bus" x="432" y="56" width="174" height="142" rx="10" fill="#FFFFFF" stroke="#1976D2" stroke-width="2" />
+              <g clip-path="url(#syn-bus-head-clip)">
+                <rect id="syn-bus-hdr" x="432" y="56" width="174" height="28" fill="#0F172A" />
+              </g>
+              <text x="519" y="74" fill="#FFFFFF" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">BUS 12V DC · ESP32</text>
+              <text id="syn-bus-v" x="519" y="116" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="22" font-weight="700" text-anchor="middle">--.- V</text>
+              <text id="syn-bus-i" x="519" y="144" fill="#3F51B5" font-family="IBM Plex Mono, monospace" font-size="17" font-weight="700" text-anchor="middle">--.-- A</text>
+              <line x1="448" y1="158" x2="590" y2="158" stroke="#E2E8F0" stroke-width="1" />
+              <text id="syn-bus-meta" x="519" y="180" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" text-anchor="middle">Q1 : -- · 0 W</text>
+              <circle cx="432" cy="127" r="3.5" fill="#1976D2" />
+              <circle cx="606" cy="127" r="3.5" fill="#1976D2" />
+            </g>
+
+            <!-- ===== DROITE : 3 SORTIES DISTINCTES (K2, K3, K4 + CUVE) ===== -->
+            <!-- Sortie 1 : Lumière (K2) -->
+            <g aria-label="Sortie Lumière K2">
+              <rect id="syn-box-k2" x="668" y="16" width="238" height="64" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-ico-k2-bg" cx="694" cy="48" r="14" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2" />
+              <g transform="translate(682,36)" fill="none" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" id="syn-ico-k2">
+                <path d="M9 18h6M10 21h4M12 3a5 5 0 0 0-3 9c.7.6 1 1.4 1 2.2V15h4v-.8c0-.8.3-1.6 1-2.2a5 5 0 0 0-3-9z" />
+              </g>
+              <text x="717" y="43" fill="#0F172A" font-family="Inter, sans-serif" font-size="12" font-weight="700">Lumière (K2)</text>
+              <text x="717" y="59" fill="#64748B" font-family="Inter, sans-serif" font-size="10">Charge prioritaire</text>
+              <rect id="syn-pill-k2" x="836" y="36" width="60" height="24" rx="12" fill="#ECEFF4" />
+              <text id="syn-st-k2" x="866" y="52" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="middle">ATTENTE</text>
+              <circle cx="668" cy="48" r="3.5" fill="#64748B" />
+            </g>
+
+            <!-- Sortie 2 : Ventilateur (K3) -->
+            <g aria-label="Sortie Ventilateur K3">
+              <rect id="syn-box-k3" x="668" y="95" width="238" height="64" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-ico-k3-bg" cx="694" cy="127" r="14" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2" />
+              <g transform="translate(694,127)">
+                <g id="syn-fan-blades" fill="#64748B">
+                  <path d="M0,-2 C2,-9 8,-8 6,-2 C5,0 2,0 0,-2 Z" />
+                  <path d="M0,-2 C2,-9 8,-8 6,-2 C5,0 2,0 0,-2 Z" transform="rotate(120)" />
+                  <path d="M0,-2 C2,-9 8,-8 6,-2 C5,0 2,0 0,-2 Z" transform="rotate(240)" />
+                  <circle cx="0" cy="0" r="2.5" fill="#334155" />
+                </g>
+              </g>
+              <text x="717" y="122" fill="#0F172A" font-family="Inter, sans-serif" font-size="12" font-weight="700">Ventilateur (K3)</text>
+              <text x="717" y="138" fill="#64748B" font-family="Inter, sans-serif" font-size="10">Charge non-prio</text>
+              <rect id="syn-pill-k3" x="836" y="115" width="60" height="24" rx="12" fill="#ECEFF4" />
+              <text id="syn-st-k3" x="866" y="131" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="middle">ATTENTE</text>
+              <!-- Indicateur Délesté affiché uniquement en surcharge automatique -->
+              <g id="syn-k3-shed" style="display:none;">
+                <rect x="826" y="115" width="70" height="24" rx="12" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.2" />
+                <text x="861" y="131" fill="#B45309" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="middle">Délesté</text>
+              </g>
+              <circle cx="668" cy="127" r="3.5" fill="#64748B" />
+            </g>
+
+            <!-- Sortie 3 : Pompe Polytank (K4) + Cuve reliée -->
+            <g aria-label="Sortie Pompe Polytank K4 et Cuve">
+              <rect id="syn-box-k4" x="668" y="172" width="144" height="64" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-ico-k4-bg" cx="692" cy="204" r="13" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2" />
+              <g transform="translate(692,204)">
+                <g id="syn-pump-blades" stroke="#64748B" stroke-width="2" stroke-linecap="round">
+                  <line x1="0" y1="-7" x2="0" y2="7" />
+                  <line x1="-7" y1="0" x2="7" y2="0" />
+                  <circle cx="0" cy="0" r="2.5" fill="#334155" stroke="none" />
+                </g>
+              </g>
+              <text x="713" y="199" fill="#0F172A" font-family="Inter, sans-serif" font-size="12" font-weight="700">Pompe (K4)</text>
+              <text id="syn-st-k4" x="713" y="218" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700">ATTENTE</text>
+              <circle cx="668" cy="204" r="3.5" fill="#64748B" />
+              <circle cx="812" cy="204" r="3" fill="#1976D2" />
+
+              <!-- Mini Cuve Polytank reliée -->
+              <rect id="syn-tank-box" x="848" y="172" width="58" height="64" rx="7" fill="#FFFFFF" stroke="#334155" stroke-width="1.8" />
+              <g clip-path="url(#syn-tank-clip)">
+                <rect id="syn-tank-water" x="851" y="233" width="52" height="0" fill="#1976D2" style="transition: y 0.45s ease, height 0.45s ease;" />
+              </g>
+              <text x="877" y="187" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700" text-anchor="middle">CUVE</text>
+              <rect x="856" y="198" width="42" height="17" rx="4" fill="rgba(255,255,255,0.88)" />
+              <text id="syn-tank-pct" x="877" y="210" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">--%</text>
+            </g>
+          </svg>
         </div>
 
-        <div id="event-log" class="log-list" aria-live="polite">
-          <div class="log-item">Initialisation de la supervision en cours...</div>
+        <div class="synoptic-legend">
+          <div class="synoptic-legend-items">
+            <span class="syn-leg-item"><span class="syn-leg-dot" style="background:#16A34A;"></span>Flux électrique actif</span>
+            <span class="syn-leg-item"><span class="syn-leg-dot" style="background:#CBD5E1;"></span>Circuit inactif</span>
+            <span class="syn-leg-item"><span class="syn-leg-dot" style="background:#1976D2;"></span>Débit hydraulique (K4)</span>
+          </div>
+          <span class="syn-leg-hint">Glisser pour parcourir le synoptique</span>
         </div>
       </article>
     </section>
@@ -1359,45 +1567,33 @@
     function saveTempHighLimit() {
       const inp = document.getElementById("input-temp-high");
       const val = Number(inp ? inp.value : 60);
-      if (Number.isNaN(val) || val < 20 || val > 80) {
-        ajouterLog("Consigne température invalide (20 à 80 °C).", "warn");
-        return;
-      }
+      if (Number.isNaN(val) || val < 20 || val > 80) return;
       scadaLimits.tempHigh = Math.round(val * 10) / 10;
       persistScadaLimits();
       syncLimitsUI();
       publishLimitsConfig();
-      ajouterLog(`Seuil température enregistré : ${scadaLimits.tempHigh} °C.`, "ok");
       if (lastTelemetry) refreshThresholdDrivenStates(lastTelemetry);
     }
 
     function saveTankLowLimit() {
       const inp = document.getElementById("input-tank-low");
       const val = Math.round(Number(inp ? inp.value : 30));
-      if (Number.isNaN(val) || val < 5 || val >= scadaLimits.tankHigh) {
-        ajouterLog(`Seuil bas invalide (entre 5% et ${scadaLimits.tankHigh - 1}%).`, "warn");
-        return;
-      }
+      if (Number.isNaN(val) || val < 5 || val >= scadaLimits.tankHigh) return;
       scadaLimits.tankLow = val;
       persistScadaLimits();
       syncLimitsUI();
       publishLimitsConfig();
-      ajouterLog(`Seuil bas Polytank enregistré : ${scadaLimits.tankLow}%.`, "ok");
       if (lastTelemetry) refreshThresholdDrivenStates(lastTelemetry);
     }
 
     function saveTankHighLimit() {
       const inp = document.getElementById("input-tank-high");
       const val = Math.round(Number(inp ? inp.value : 85));
-      if (Number.isNaN(val) || val <= scadaLimits.tankLow || val > 100) {
-        ajouterLog(`Seuil haut invalide (entre ${scadaLimits.tankLow + 1}% et 100%).`, "warn");
-        return;
-      }
+      if (Number.isNaN(val) || val <= scadaLimits.tankLow || val > 100) return;
       scadaLimits.tankHigh = val;
       persistScadaLimits();
       syncLimitsUI();
       publishLimitsConfig();
-      ajouterLog(`Seuil haut Polytank enregistré : ${scadaLimits.tankHigh}%.`, "ok");
       if (lastTelemetry) refreshThresholdDrivenStates(lastTelemetry);
     }
 
@@ -1423,31 +1619,45 @@
         } else if (typeof scadaBus !== "undefined" && scadaBus) {
           try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
         }
-        ajouterLog("Mode de conduite basculé en MANUEL.", "warn");
       }
     }
 
-    function updateLocalChargeBadges(relayId, isOn, label) {
+    function updateLocalChargeBadges(relayId, isOn) {
       if (relayId === "IN1") {
         majBadgeRelais("rel-st-1", isOn, "SONABEL", "SOLAIRE", "bg-green", "bg-yellow");
+        if (lastTelemetry) {
+          lastTelemetry.src = isOn ? "SONABEL" : "SOLAIRE";
+          updateSynoptic(lastTelemetry);
+        }
       } else if (relayId === "IN2") {
         const b = document.getElementById("hmi-lumiere-badge");
         if (b) {
           b.textContent = isOn ? "K2 : ALLUMÉE" : "K2 : ÉTEINTE";
           b.className = "hmi-status-pill " + (isOn ? "is-running" : "");
         }
+        if (lastTelemetry) {
+          lastTelemetry.lumiere = isOn ? 1 : 0;
+          updateSynoptic(lastTelemetry);
+        }
       } else if (relayId === "IN3") {
-        const isShed = !isOn && label === "Délestage Q1";
         const b = document.getElementById("hmi-ventilo-badge");
         if (b) {
-          b.textContent = isOn ? "K3 : MARCHE" : (isShed ? "K3 : DÉLESTÉ" : "K3 : ARRÊT");
-          b.className = "hmi-status-pill " + (isOn ? "is-running" : (isShed ? "is-manual" : ""));
+          b.textContent = isOn ? "K3 : MARCHE" : "K3 : ARRÊT";
+          b.className = "hmi-status-pill " + (isOn ? "is-running" : "");
+        }
+        if (lastTelemetry) {
+          lastTelemetry.ventilo = isOn ? 1 : 0;
+          updateSynoptic(lastTelemetry);
         }
       } else if (relayId === "IN4") {
         const b = document.getElementById("hmi-pompe-badge");
         if (b) {
           b.textContent = isOn ? "K4 : MARCHE" : "K4 : ARRÊT";
           b.className = "hmi-status-pill " + (isOn ? "is-running" : "");
+        }
+        if (lastTelemetry) {
+          lastTelemetry.pompe = isOn ? 1 : 0;
+          updateSynoptic(lastTelemetry);
         }
       }
     }
@@ -1458,17 +1668,219 @@
     }
 
     // =========================================================
-    // 3. JOURNAL D'ALARMES HORODATÉ
+    // 3. SCHÉMA SYNOPTIQUE TEMPS RÉEL (FLUX D'ÉNERGIE SVG)
     // =========================================================
-    function ajouterLog(msg, type = "") {
-      const list = document.getElementById("event-log");
-      if (!list) return;
-      const item = document.createElement("div");
-      item.className = "log-item " + type;
-      const heure = new Date().toLocaleTimeString();
-      item.textContent = `[${heure}] ${msg}`;
-      list.prepend(item);
-      if (list.children.length > 30) list.removeChild(list.lastChild);
+    function setSvgFlow(id, active, isFault = false) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle("is-active", Boolean(active) && !isFault);
+      el.classList.toggle("is-fault", Boolean(isFault));
+    }
+
+    function updateSynoptic(m) {
+      if (!m) return;
+      const isSonabel = (m.src === "SONABEL");
+      const isSolar   = (m.src === "SOLAIRE");
+      const isBlackout = (m.src === "COUPURE");
+      const hasBusPower = isSonabel || isSolar;
+
+      const vSonDisp = m.vSonabel !== null ? m.vSonabel : (isSonabel ? m.v : 0);
+      const battVoltage = m.vBatt !== null ? m.vBatt : (10.5 + (m.batt / 100) * 2.1);
+      const powerW = Math.round(m.v * m.i);
+      const isOverload = Boolean(alarmState.acs.active || m.i > CURRENT_OVERLOAD_LIMIT);
+      const isBusFault = Boolean(isBlackout || alarmState.temp.active || isOverload);
+
+      // Badge d'en-tête synoptique
+      const synBadge = document.getElementById("syn-status-badge");
+      if (synBadge) {
+        if (isSonabel) {
+          synBadge.textContent = "FLUX ACTIF · SONABEL";
+          synBadge.className = "badge bg-green";
+        } else if (isSolar) {
+          synBadge.textContent = "FLUX ACTIF · SOLAIRE";
+          synBadge.className = "badge bg-yellow";
+        } else {
+          synBadge.textContent = "COUPURE RÉSEAU";
+          synBadge.className = "badge bg-red";
+        }
+      }
+
+      // 1. Lignes de flux Sources -> ATS -> Bus 12V
+      setSvgFlow("syn-flow-sonabel", isSonabel, false);
+      setSvgFlow("syn-flow-solar", isSolar, false);
+      setSvgFlow("syn-flow-bus", hasBusPower, isBlackout);
+
+      // 2. Source Réseau SONABEL
+      const boxSon = document.getElementById("syn-box-sonabel");
+      const ledSon = document.getElementById("syn-led-sonabel");
+      const vSonEl = document.getElementById("syn-v-sonabel");
+      const stSonEl = document.getElementById("syn-st-sonabel");
+      const sonLow = vSonDisp < SONABEL_LOW_LIMIT;
+      if (boxSon) {
+        boxSon.setAttribute("stroke", isSonabel ? "#16A34A" : (sonLow ? "#DC2626" : "#CBD5E1"));
+        boxSon.setAttribute("fill", isSonabel ? "#F0FDF4" : (sonLow ? "#FEF2F2" : "#FFFFFF"));
+      }
+      if (ledSon) ledSon.setAttribute("fill", isSonabel ? "#16A34A" : (sonLow ? "#DC2626" : "#94A3B8"));
+      if (vSonEl) vSonEl.textContent = `${vSonDisp.toFixed(1)} V`;
+      if (stSonEl) {
+        stSonEl.textContent = isSonabel ? "ACTIF" : (sonLow ? "COUPURE" : "VEILLE");
+        stSonEl.setAttribute("fill", isSonabel ? "#15803D" : (sonLow ? "#DC2626" : "#64748B"));
+      }
+
+      // 3. Source Solaire / Batterie
+      const boxSol = document.getElementById("syn-box-solar");
+      const ledSol = document.getElementById("syn-led-solar");
+      const vSolEl = document.getElementById("syn-v-solar");
+      const stSolEl = document.getElementById("syn-st-solar");
+      if (boxSol) {
+        boxSol.setAttribute("stroke", isSolar ? "#16A34A" : "#CBD5E1");
+        boxSol.setAttribute("fill", isSolar ? "#F0FDF4" : "#FFFFFF");
+      }
+      if (ledSol) ledSol.setAttribute("fill", isSolar ? "#16A34A" : "#94A3B8");
+      if (vSolEl) vSolEl.textContent = `${battVoltage.toFixed(1)} V · ${m.batt}%`;
+      if (stSolEl) {
+        stSolEl.textContent = isSolar ? "ACTIF" : "VEILLE";
+        stSolEl.setAttribute("fill", isSolar ? "#15803D" : "#64748B");
+      }
+
+      // 4. Bascule ATS (K1)
+      const boxAts = document.getElementById("syn-box-ats");
+      const atsArm = document.getElementById("syn-ats-arm");
+      const atsNc = document.getElementById("syn-ats-nc");
+      const atsNo = document.getElementById("syn-ats-no");
+      const atsPillBg = document.getElementById("syn-ats-pill-bg");
+      const atsLbl = document.getElementById("syn-ats-label");
+      if (boxAts) boxAts.setAttribute("stroke", hasBusPower ? "#16A34A" : "#DC2626");
+      if (atsNc) atsNc.setAttribute("fill", isSonabel ? "#16A34A" : "#94A3B8");
+      if (atsNo) atsNo.setAttribute("fill", isSolar ? "#16A34A" : "#94A3B8");
+      if (atsArm) {
+        if (isSonabel) {
+          atsArm.setAttribute("x2", "284"); atsArm.setAttribute("y2", "110"); atsArm.setAttribute("stroke", "#16A34A");
+        } else if (isSolar) {
+          atsArm.setAttribute("x2", "284"); atsArm.setAttribute("y2", "144"); atsArm.setAttribute("stroke", "#16A34A");
+        } else {
+          atsArm.setAttribute("x2", "296"); atsArm.setAttribute("y2", "127"); atsArm.setAttribute("stroke", "#DC2626");
+        }
+      }
+      if (atsPillBg) atsPillBg.setAttribute("fill", isSonabel ? "#E8F5E9" : (isSolar ? "#FFFBEB" : "#FEE2E2"));
+      if (atsLbl) {
+        atsLbl.textContent = m.src;
+        atsLbl.setAttribute("fill", isSonabel ? "#15803D" : (isSolar ? "#B45309" : "#C62828"));
+      }
+
+      // 5. Centre : Bus 12V DC / ESP32
+      const boxBus = document.getElementById("syn-box-bus");
+      const busV = document.getElementById("syn-bus-v");
+      const busI = document.getElementById("syn-bus-i");
+      const busMeta = document.getElementById("syn-bus-meta");
+      const distNode = document.getElementById("syn-dist-node");
+      if (boxBus) boxBus.setAttribute("stroke", isBusFault ? "#DC2626" : (hasBusPower ? "#16A34A" : "#1976D2"));
+      if (busV) busV.textContent = `${m.v.toFixed(1)} V`;
+      if (busI) {
+        busI.textContent = `${m.i.toFixed(2)} A`;
+        busI.setAttribute("fill", isOverload ? "#DC2626" : "#3F51B5");
+      }
+      if (busMeta) {
+        busMeta.textContent = `Q1 : ${m.disj === 1 ? "FERMÉ" : "OUVERT"} · ${powerW} W`;
+        busMeta.setAttribute("fill", m.disj === 1 ? "#334155" : "#C62828");
+      }
+
+      // 6. Sortie K2 : Lumière
+      const k2On = Boolean(hasBusPower && m.lumiere === 1);
+      setSvgFlow("syn-flow-k2", k2On, false);
+      const boxK2 = document.getElementById("syn-box-k2");
+      const icoK2Bg = document.getElementById("syn-ico-k2-bg");
+      const icoK2 = document.getElementById("syn-ico-k2");
+      const pillK2 = document.getElementById("syn-pill-k2");
+      const stK2 = document.getElementById("syn-st-k2");
+      if (boxK2) {
+        boxK2.setAttribute("stroke", k2On ? "#16A34A" : "#CBD5E1");
+        boxK2.setAttribute("fill", k2On ? "#F0FDF4" : "#FFFFFF");
+      }
+      if (icoK2Bg) {
+        icoK2Bg.setAttribute("fill", k2On ? "#FEF3C7" : "#F1F5F9");
+        icoK2Bg.setAttribute("stroke", k2On ? "#F59E0B" : "#CBD5E1");
+      }
+      if (icoK2) icoK2.setAttribute("stroke", k2On ? "#D97706" : "#64748B");
+      if (pillK2) pillK2.setAttribute("fill", k2On ? "#DCFCE7" : "#ECEFF4");
+      if (stK2) {
+        stK2.textContent = k2On ? "ON" : "OFF";
+        stK2.setAttribute("fill", k2On ? "#15803D" : "#64748B");
+      }
+
+      // 7. Sortie K3 : Ventilateur (indicateur "Délesté" uniquement en surcharge automatique)
+      const k3Shed = Boolean(hasBusPower && !m.ventilo && isOverload);
+      const k3On = Boolean(hasBusPower && m.ventilo === 1 && !k3Shed);
+      setSvgFlow("syn-flow-k3", k3On, false);
+      const boxK3 = document.getElementById("syn-box-k3");
+      const icoK3Bg = document.getElementById("syn-ico-k3-bg");
+      const fanBlades = document.getElementById("syn-fan-blades");
+      const pillK3 = document.getElementById("syn-pill-k3");
+      const stK3 = document.getElementById("syn-st-k3");
+      const shedGrp = document.getElementById("syn-k3-shed");
+      if (boxK3) {
+        boxK3.setAttribute("stroke", k3Shed ? "#F59E0B" : (k3On ? "#16A34A" : "#CBD5E1"));
+        boxK3.setAttribute("fill", k3Shed ? "#FFFBEB" : (k3On ? "#F0FDF4" : "#FFFFFF"));
+      }
+      if (icoK3Bg) {
+        icoK3Bg.setAttribute("fill", k3On ? "#DCFCE7" : "#F1F5F9");
+        icoK3Bg.setAttribute("stroke", k3On ? "#16A34A" : "#CBD5E1");
+      }
+      if (fanBlades) {
+        fanBlades.classList.toggle("syn-spin-active", k3On);
+        fanBlades.setAttribute("fill", k3On ? "#15803D" : "#64748B");
+      }
+      if (shedGrp) shedGrp.style.display = k3Shed ? "inline" : "none";
+      if (pillK3) {
+        pillK3.style.display = k3Shed ? "none" : "inline";
+        pillK3.setAttribute("fill", k3On ? "#DCFCE7" : "#ECEFF4");
+      }
+      if (stK3) {
+        stK3.style.display = k3Shed ? "none" : "inline";
+        stK3.textContent = k3On ? "ON" : "OFF";
+        stK3.setAttribute("fill", k3On ? "#15803D" : "#64748B");
+      }
+
+      // 8. Sortie K4 : Pompe Polytank + mini cuve reliée
+      const k4On = Boolean(hasBusPower && m.pompe === 1);
+      setSvgFlow("syn-flow-k4", k4On, false);
+      setSvgFlow("syn-flow-water", k4On, false);
+      const anyLoadOn = k2On || k3On || k4On;
+      setSvgFlow("syn-flow-trunk", anyLoadOn, false);
+      if (distNode) distNode.setAttribute("fill", anyLoadOn ? "#16A34A" : "#64748B");
+      const boxK4 = document.getElementById("syn-box-k4");
+      const icoK4Bg = document.getElementById("syn-ico-k4-bg");
+      const pumpBlades = document.getElementById("syn-pump-blades");
+      const stK4 = document.getElementById("syn-st-k4");
+      if (boxK4) {
+        boxK4.setAttribute("stroke", k4On ? "#1976D2" : "#CBD5E1");
+        boxK4.setAttribute("fill", k4On ? "#EBF3FE" : "#FFFFFF");
+      }
+      if (icoK4Bg) {
+        icoK4Bg.setAttribute("fill", k4On ? "#DBEAFE" : "#F1F5F9");
+        icoK4Bg.setAttribute("stroke", k4On ? "#1976D2" : "#CBD5E1");
+      }
+      if (pumpBlades) {
+        pumpBlades.classList.toggle("syn-spin-active", k4On);
+        pumpBlades.setAttribute("stroke", k4On ? "#1976D2" : "#64748B");
+      }
+      if (stK4) {
+        stK4.textContent = k4On ? "MARCHE" : "ARRÊT";
+        stK4.setAttribute("fill", k4On ? "#1976D2" : "#64748B");
+      }
+
+      const clampedEau = Math.max(0, Math.min(100, Math.round(m.eau)));
+      const tankWater = document.getElementById("syn-tank-water");
+      const tankPct = document.getElementById("syn-tank-pct");
+      const tankBox = document.getElementById("syn-tank-box");
+      if (tankWater) {
+        const h = (clampedEau / 100) * 58;
+        tankWater.setAttribute("y", (233 - h).toFixed(1));
+        tankWater.setAttribute("height", h.toFixed(1));
+        tankWater.setAttribute("fill", alarmState.eau.active ? "#DC2626" : "#1976D2");
+      }
+      if (tankPct) tankPct.textContent = `${clampedEau}%`;
+      if (tankBox) tankBox.setAttribute("stroke", alarmState.eau.active ? "#DC2626" : "#334155");
     }
 
     // =========================================================
@@ -1495,7 +1907,6 @@
     let receivedCount = 0;
     let rejectedFrames = 0;
     let dispatchedAlertsCount = 0;
-    let prevSrc = null, prevDisj = null, prevPompe = null;
 
     const alarmState = {
       sonabel: { active: false, faultStreak: 0, normalStreak: 0, lastAlertAt: 0, lastRecoveryAt: 0 },
@@ -1568,7 +1979,6 @@
         setConnectionUI("online");
         stopDemoGenerator();
         client.subscribe(TELEMETRY_TOPIC, { qos: 0 });
-        ajouterLog("Connexion établie. Supervision temps réel active.", "ok");
       });
 
       client.on("reconnect", () => {
@@ -1577,7 +1987,6 @@
 
       client.on("offline", () => {
         setConnectionUI("offline");
-        ajouterLog("Liaison interrompue — reconnexion automatique en cours.", "warn");
       });
 
       client.on("error", () => {
@@ -1598,7 +2007,6 @@
       });
     } else {
       setConnectionUI("offline");
-      ajouterLog("Mode hors ligne détecté.", "warn");
     }
 
     const scadaBus = (typeof BroadcastChannel !== "undefined") ? new BroadcastChannel("cge_uauben_smartgrid_bus") : null;
@@ -1618,17 +2026,15 @@
         gpio: gpio,
         cmd: cmd,
         label: label || `${relayId} ${cmd}`,
-        action: label === "Délestage Q1" ? "SHED" : undefined,
         ts: Date.now()
       };
       updateDriveModeUI(false);
-      updateLocalChargeBadges(relayId, cmd === "ON", label);
+      updateLocalChargeBadges(relayId, cmd === "ON");
       if (client && linkOnline) {
         client.publish(COMMAND_TOPIC, JSON.stringify(cmdObj), { qos: 0 });
       } else if (scadaBus) {
         try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
       }
-      ajouterLog(`Commande envoyée : ${label || relayId} (${cmd}).`, cmd === "ON" ? "ok" : "warn");
     }
 
     function sendAutoModeCommand() {
@@ -1639,7 +2045,6 @@
       } else if (scadaBus) {
         try { scadaBus.postMessage({ topic: COMMAND_TOPIC, payload: cmdObj }); } catch (_) {}
       }
-      ajouterLog("Retour en régulation automatique.", "ok");
     }
 
     function majBadgeRelais(elId, isOn, onTxt, offTxt, onCls, offCls = "bg-gray") {
@@ -1650,7 +2055,7 @@
     }
 
     function refreshThresholdDrivenStates(m) {
-      const { t, eau, i, disj, src } = m;
+      const { t, eau, i, src } = m;
 
       const valTEl = document.getElementById("val-t");
       const valTState = document.getElementById("val-t-state");
@@ -1686,17 +2091,12 @@
       const alarmCount = activeAlarms.length;
       const countEl = document.getElementById("kpi-alarm-count");
       const detailEl = document.getElementById("kpi-alarm-detail");
-      const viewBadge = document.getElementById("alarm-view-badge");
       const banner = document.getElementById("alert-banner");
 
       if (countEl) countEl.textContent = alarmCount;
       if (detailEl) {
         detailEl.textContent = alarmCount > 0 ? activeAlarms[0] : "Nominal";
         detailEl.style.color = alarmCount > 0 ? "var(--red)" : "var(--green)";
-      }
-      if (viewBadge) {
-        viewBadge.textContent = alarmCount > 0 ? `${alarmCount} ALARME${alarmCount > 1 ? "S" : ""} ACTIVE${alarmCount > 1 ? "S" : ""}` : "0 ALARME ACTIVE";
-        viewBadge.className = "badge " + (alarmCount > 0 ? "bg-red" : "bg-green");
       }
 
       if (banner) {
@@ -1708,25 +2108,14 @@
         }
       }
 
-      document.getElementById("al-val-disj").textContent = disj === 1 ? "FERMÉ" : "OUVERT";
-      document.getElementById("al-st-disj").textContent = alarmState.disj.active ? "ALARME" : "OK";
-      document.getElementById("al-st-disj").className = alarmState.disj.active ? "badge bg-red" : "badge bg-green";
+      const hmiFanBadge = document.getElementById("hmi-ventilo-badge");
+      if (hmiFanBadge) {
+        const autoShed = Boolean(src !== "COUPURE" && !m.ventilo && (alarmState.acs.active || i > CURRENT_OVERLOAD_LIMIT));
+        hmiFanBadge.textContent = m.ventilo === 1 ? "K3 : MARCHE" : (autoShed ? "K3 : DÉLESTÉ" : "K3 : ARRÊT");
+        hmiFanBadge.className = "hmi-status-pill " + (m.ventilo === 1 ? "is-running" : (autoShed ? "is-manual" : ""));
+      }
 
-      document.getElementById("al-val-i").textContent = i.toFixed(2) + " A";
-      document.getElementById("al-st-i").textContent = alarmState.acs.active ? "SURCHARGE" : "OK";
-      document.getElementById("al-st-i").className = alarmState.acs.active ? "badge bg-red" : "badge bg-green";
-
-      document.getElementById("al-val-t").textContent = t.toFixed(1) + " °C";
-      document.getElementById("al-st-t").textContent = alarmState.temp.active ? "SURCHAUFFE" : "OK";
-      document.getElementById("al-st-t").className = alarmState.temp.active ? "badge bg-red" : "badge bg-green";
-
-      document.getElementById("al-val-eau").textContent = eau + " %";
-      document.getElementById("al-st-eau").textContent = alarmState.eau.active ? "BAS" : "OK";
-      document.getElementById("al-st-eau").className = alarmState.eau.active ? "badge bg-red" : "badge bg-green";
-
-      document.getElementById("al-val-src").textContent = src;
-      document.getElementById("al-st-src").textContent = alarmState.sonabel.active ? (src === "SOLAIRE" ? "SECOURS" : "COUPURE") : "OK";
-      document.getElementById("al-st-src").className = alarmState.sonabel.active ? (src === "SOLAIRE" ? "badge bg-yellow" : "badge bg-red") : "badge bg-green";
+      updateSynoptic(m);
     }
 
     function traiterTrameMQTT(d, origin = "live") {
@@ -1835,11 +2224,6 @@
         hmiLumBadge.textContent = lumiere === 1 ? "K2 : ALLUMÉE" : "K2 : ÉTEINTE";
         hmiLumBadge.className = "hmi-status-pill " + (lumiere === 1 ? "is-running" : "");
       }
-      const hmiFanBadge = document.getElementById("hmi-ventilo-badge");
-      if (hmiFanBadge) {
-        hmiFanBadge.textContent = ventilo === 1 ? "K3 : MARCHE" : (disj === 0 ? "K3 : DÉLESTÉ" : "K3 : ARRÊT");
-        hmiFanBadge.className = "hmi-status-pill " + (ventilo === 1 ? "is-running" : (disj === 0 ? "is-manual" : ""));
-      }
       const hmiPompeBadge = document.getElementById("hmi-pompe-badge");
       if (hmiPompeBadge) {
         hmiPompeBadge.textContent = pompe === 1 ? "K4 : MARCHE" : "K4 : ARRÊT";
@@ -1851,36 +2235,16 @@
         pompeEl.className = "badge " + (pompe === 1 ? "bg-blue" : "bg-gray");
       }
 
-      // Évaluation anti-rebond (2 mesures consécutives) + hystérésis + cooldown 60s
+      // Évaluation anti-rebond (2 mesures consécutives) + hystérésis + mise à jour synoptique
       evaluateAlarms(lastTelemetry);
       refreshThresholdDrivenStates(lastTelemetry);
-
-      // Journalisation des transitions d'état
-      if (prevSrc !== null && prevSrc !== src) {
-        ajouterLog(`Bascule source : ${prevSrc} -> ${src}.`, src === "SONABEL" ? "ok" : (src === "SOLAIRE" ? "warn" : "err"));
-      }
-      if (prevDisj !== null && prevDisj !== disj) {
-        ajouterLog(disj === 0 ? "Ouverture disjoncteur Q1." : "Disjoncteur Q1 réarmé.", disj === 0 ? "err" : "ok");
-      }
-      if (prevPompe !== null && prevPompe !== pompe) {
-        ajouterLog(pompe === 1 ? `Pompe démarrée (cuve ${eau}%).` : `Pompe arrêtée (cuve ${eau}%).`, "ok");
-      }
-      prevSrc = src; prevDisj = disj; prevPompe = pompe;
 
       return true;
     }
 
     // =========================================================================
-    // 5. SURVEILLANCE D'ALARMES LOCALES (ANTI-REBOND, HYSTÉRÉSIS, JOURNAL)
+    // 5. SURVEILLANCE D'ALARMES LOCALES (ANTI-REBOND & HYSTÉRÉSIS)
     // =========================================================================
-    function recordAlarmJournal(title, detail, isRecovery = false) {
-      dispatchedAlertsCount += 1;
-      ajouterLog(
-        `${isRecovery ? "Retour normal" : "Alarme confirmée"} [${title}] — ${detail}`,
-        isRecovery ? "ok" : "err"
-      );
-    }
-
     function stepAlarmMachine(key, rawFault, rawClear, nowMs) {
       const st = alarmState[key];
       if (!st.active) {
@@ -1893,6 +2257,7 @@
             const canNotify = (nowMs - st.lastAlertAt) >= ALARM_COOLDOWN_MS;
             if (canNotify) {
               st.lastAlertAt = nowMs;
+              dispatchedAlertsCount += 1;
               return "TRIGGER_NOTIFY";
             }
             return "TRIGGER_COOLDOWN";
@@ -1945,34 +2310,10 @@
       const eauClear  = (m.eau >= Math.min(100, scadaLimits.tankLow + TANK_HYSTERESIS_PCT));
 
       stepAlarmMachine("disj", disjFault, disjClear, nowMs);
-
-      const evSonabel = stepAlarmMachine("sonabel", sonabelFault, sonabelClear, nowMs);
-      if (evSonabel === "TRIGGER_NOTIFY") {
-        recordAlarmJournal("Coupure SONABEL", `source ${m.src} (${m.v.toFixed(1)} V, batterie ${m.batt}%).`, false);
-      } else if (evSonabel === "CLEAR_NOTIFY") {
-        recordAlarmJournal("SONABEL rétabli", `alimentation principale rétablie (${m.v.toFixed(1)} V).`, true);
-      }
-
-      const evAcs = stepAlarmMachine("acs", acsFault, acsClear, nowMs);
-      if (evAcs === "TRIGGER_NOTIFY") {
-        recordAlarmJournal("Surcharge courant", `${m.i.toFixed(2)} A (> ${CURRENT_OVERLOAD_LIMIT.toFixed(1)} A), Q1 ${m.disj ? "FERMÉ" : "OUVERT"}.`, false);
-      } else if (evAcs === "CLEAR_NOTIFY") {
-        recordAlarmJournal("Courant nominal", `stabilisé à ${m.i.toFixed(2)} A, Q1 ${m.disj ? "FERMÉ" : "OUVERT"}.`, true);
-      }
-
-      const evTemp = stepAlarmMachine("temp", tempFault, tempClear, nowMs);
-      if (evTemp === "TRIGGER_NOTIFY") {
-        recordAlarmJournal("Surchauffe", `${m.t.toFixed(1)} °C (> ${scadaLimits.tempHigh} °C).`, false);
-      } else if (evTemp === "CLEAR_NOTIFY") {
-        recordAlarmJournal("Température nominale", `redescendue à ${m.t.toFixed(1)} °C.`, true);
-      }
-
-      const evEau = stepAlarmMachine("eau", eauFault, eauClear, nowMs);
-      if (evEau === "TRIGGER_NOTIFY") {
-        recordAlarmJournal("Polytank niveau bas", `${m.eau}% (< ${scadaLimits.tankLow}%), pompe ${m.pompe ? "ON" : "OFF"}.`, false);
-      } else if (evEau === "CLEAR_NOTIFY") {
-        recordAlarmJournal("Polytank rétabli", `niveau d'eau rétabli à ${m.eau}%.`, true);
-      }
+      stepAlarmMachine("sonabel", sonabelFault, sonabelClear, nowMs);
+      stepAlarmMachine("acs", acsFault, acsClear, nowMs);
+      stepAlarmMachine("temp", tempFault, tempClear, nowMs);
+      stepAlarmMachine("eau", eauFault, eauClear, nowMs);
     }
 
     window.getScadaAlarmDebug = () => ({
