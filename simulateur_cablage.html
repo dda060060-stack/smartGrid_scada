@@ -1040,7 +1040,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      flex-wrap: wrap;
+      gap: 4px 8px;
       min-width: 0;
     }
     .slider-label {
@@ -1048,18 +1049,19 @@
       font-weight: 600;
       color: var(--ink);
       min-width: 0;
-      flex: 1;
+      flex: 1 1 auto;
       overflow-wrap: anywhere;
     }
     .slider-val {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10.8px;
       font-weight: 700;
       padding: 2px 7px;
       border-radius: 4px;
       background: var(--bg-pills);
       color: var(--ink);
       flex-shrink: 0;
+      max-width: 100%;
       white-space: nowrap;
     }
     .slider-val.alert { background: var(--err-bg); color: var(--err); }
@@ -2509,11 +2511,20 @@
         <div id="sim-controls" class="sim-controls is-disabled">
           <div class="slider-row">
             <div class="slider-top">
-              <label class="slider-label" for="slider-v">Tension SONABEL (GPIO 32)</label>
-              <span id="val-slider-v" class="slider-val">12.2 V</span>
+              <label class="slider-label" for="slider-v">Tension SONABEL · 12V DC (GPIO 32)</label>
+              <span id="val-slider-v" class="slider-val">12.2 V DC (équiv. 230 V AC)</span>
             </div>
-            <input id="slider-v" class="cirkit-slider" type="range" min="0" max="14" step="0.1" value="12.2" />
-            <div class="slider-scale"><span>0 V (Coupure)</span><span>Seuil ATS 9,5 V · Sas 20s</span><span>14 V</span></div>
+            <input id="slider-v" class="cirkit-slider" type="range" min="0" max="15" step="0.1" value="12.2" />
+            <div class="slider-scale"><span>0 V</span><span>Nom. 10,5–13,5 V (190–240 V AC)</span><span>15 V</span></div>
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-top">
+              <label class="slider-label" for="slider-vbatt">Tension Batterie · 12V DC (GPIO 33)</label>
+              <span id="val-slider-vbatt" class="slider-val">12.3 V DC (86%)</span>
+            </div>
+            <input id="slider-vbatt" class="cirkit-slider" type="range" min="10.5" max="12.6" step="0.1" value="12.3" />
+            <div class="slider-scale"><span>10,5 V</span><span>Délestage R3 &lt; 11,8 V DC</span><span>12,6 V</span></div>
           </div>
 
           <div class="slider-row">
@@ -3706,9 +3717,9 @@
 
       const COMP_META = {
         esp32:            { spec: "ESP-WROOM-32 · 30 broches · 240 MHz · Wi-Fi / BLE · 3,3V logique (VIN 5V)", role: "Unité centrale d'acquisition ADC1/I2C/OneWire, régulation ATS/délestage et liaison MQTT HiveMQ." },
-        psu_sonabel:      { spec: "Alimentation AC/DC 230V -> 12V DC · 5 A régulée", role: "Simule la source principale secteur SONABEL 12V DC." },
+        psu_sonabel:      { spec: "Alimentation AC/DC 230V → 12V DC · 5 A (Maquette 10,5–13,5V DC = équiv. 190–240V AC)", role: "Simule la source secteur SONABEL sur maquette 12V DC (plage 0–15V DC, nominale 10,5–13,5V DC = équiv. 190–240V AC)." },
         solar_panel:      { spec: "Module photovoltaïque monocristallin 12V DC (×2 en parallèle)", role: "Production solaire locale alimentant le bus secours via ACS712 #2." },
-        battery_12v:      { spec: "Pack Li-Ion 3S 18650 (11,1V - 12,6V · 2200 mAh) + BMS 3S 20A", role: "Stockage secours 12V DC prenant le relais lors d'une coupure SONABEL (< 9,5V)." },
+        battery_12v:      { spec: "Pack Li-Ion 3S 18650 (10,5V – 12,6V · 2200 mAh) + BMS 3S 20A", role: "Stockage secours 12V DC prenant le relais hors plage SONABEL (10,5–13,5V DC) avec délestage Confort < 11,8V DC." },
         bus_12v:          { spec: "Bornier de répartition 12V DC / GND commun", role: "Distribution puissance +12V issue du relais ATS K1 vers Buck LM2596 et ACS712 Charge." },
         lm2596:           { spec: "Convertisseur DC-DC Buck abaisseur 12V -> 5,00V · 3 A + voltmètre 7 segments", role: "Génère un rail +5,00V propre et isolé pour l'ESP32 (VIN), les relais, le LCD, le HC-SR04 et les ACS712." },
         rail_5v:          { spec: "Bornier rail logique +5,0V / GND commun", role: "Répartition propre de l'alimentation logique 5V et de la référence de masse commune." },
@@ -4467,27 +4478,47 @@
         URGENCE_THERMIQUE: { label: "5 · URGENCE THERMIQUE",  lcd: "URGENCE", cls: "st-urgence" }
       };
 
+      const SONABEL_DC_MIN = 10.5;  // Maquette 12V DC (équiv. 190 V AC)
+      const SONABEL_DC_MAX = 13.5;  // Maquette 12V DC (équiv. 240 V AC)
+      const BATT_SHED_DC   = 11.8;  // Délestage Confort (R3) si Batterie < 11,8 V DC
+
+      function sonabelDcToAc(v) {
+        const val = Math.max(0, Number(v) || 0);
+        if (val <= 0) return 0;
+        if (val <= 10.5) return Math.round((val / 10.5) * 190);
+        if (val <= 12.2) return Math.round(190 + ((val - 10.5) / 1.7) * 40);
+        if (val <= 13.5) return Math.round(230 + ((val - 12.2) / 1.3) * 10);
+        return Math.round(240 + ((val - 13.5) / 1.5) * 30);
+      }
+
       function computeSim() {
         const a = state.analysis, active = state.powered && a && a.valid, s = state.sim;
         const rtcStr = formatRtcTime(s.rtcHour, s.rtcSec);
         if (!active) {
           return {
-            active: false, vSonabel: 0, vActive: 0, vBatt: 0, battPct: 0, iCharge: 0, iScada: 0, iSolaire: 0,
+            active: false, vSonabel: 0, vSonabelEquivAc: 0, vActive: 0, vBatt: 0, battPct: 0, iCharge: 0, iScada: 0, iSolaire: 0,
             temp: 25, eau: 0, source: "ARRET", fsmState: "ARRET", sasRemaining: 0, rtcStr, nexusPeak: false,
-            zeroCloud: state.zeroCloud, disj: 0,
+            zeroCloud: state.zeroCloud, disj: 0, isBattLow: false,
             r1Sonabel: false, r2Solaire: false, r3Confort: false, r4Pump: false, r5Vitale: false,
             k1Solar: false, k2Prio: false, k3NonPrio: false, k4Pump: false,
             shedding: false, ledG: false, ledY: false, ledR: false, buzzer: false
           };
         }
-        const vSon = s.vSonabel, vBatt = 12.3, battPct = 86, iLoad = s.iCharge;
+        const vSon = s.vSonabel;
+        const vBatt = +finiteOr(s.vBatt, 12.3).toFixed(1);
+        const battPct = Math.max(0, Math.min(100, Math.round(((vBatt - 10.5) / 2.1) * 100)));
+        s.battPct = battPct;
+        const iLoad = s.iCharge;
         const iScada = state.acsScale4x ? +(iLoad * 4).toFixed(2) : +iLoad.toFixed(2);
         const temp = s.temp, eau = Math.round(s.eau);
+        const isSonabelStable = (vSon >= SONABEL_DC_MIN && vSon <= SONABEL_DC_MAX);
+        const isBattLow = (vBatt < BATT_SHED_DC);
         const isOverload = iLoad > 3.5, isOverheat = temp > 60.0;
+        const isShedCondition = isOverload || isBattLow || s.manualShed;
 
-        // 1. Gestion ATS + Sas anti-surtension 20 s (FSM États 1, 2 & 3)
+        // 1. Gestion ATS + Sas anti-surtension 20 s (plage nominale maquette 10,5–13,5 V DC = équiv. 190–240 V AC)
         if (!s.manualSource) {
-          if (vSon < 9.5) {
+          if (!isSonabelStable) {
             s.sasRemaining = 0;
             if (a.hasBatt) {
               s.source = "SOLAIRE";
@@ -4497,9 +4528,9 @@
               s.wasOnSolar = true;
             }
           } else {
-            // Tension SONABEL >= 9,5 V
+            // Tension SONABEL stable dans 10,5–13,5 V DC (équiv. 190–240 V AC)
             if (s.wasOnSolar && s.sasRemaining <= 0) {
-              // Retour SONABEL après coupure : enclenchement du Sas anti-surtension 20 s !
+              // Retour SONABEL stable après défaut : enclenchement du Sas anti-surtension 20 s !
               s.sasRemaining = 20;
               s.wasOnSolar = false;
             }
@@ -4513,24 +4544,25 @@
         }
 
         const isBlackout = s.source === "COUPURE";
-        const inSas = Boolean(s.sasRemaining > 0 && vSon >= 9.5 && !isBlackout);
+        const inSas = Boolean(s.sasRemaining > 0 && isSonabelStable && !isBlackout);
 
         // 2. Détermination de l'état de la FSM à 5 états
         let fsmState = "NOMINAL_SONABEL";
         if (isOverheat || isBlackout) fsmState = "URGENCE_THERMIQUE";
-        else if (isOverload || s.manualShed) fsmState = "DELESTAGE_CRITIQUE";
+        else if (isShedCondition) fsmState = "DELESTAGE_CRITIQUE";
         else if (inSas) fsmState = "SAS_STABILISATION";
         else if (s.source === "SOLAIRE") fsmState = "SECOURS_SOLAIRE";
         else fsmState = "NOMINAL_SONABEL";
         s.fsmState = fsmState;
 
         // 3. Délestage sélectif : R5 Ligne Vitale (GPIO 19) vs R3 Ligne Confort (GPIO 27)
+        // Délestage Confort actif si surcharge (> 3,5 A), batterie basse (< 11,8 V DC) ou ordre manuel
         s.k2Prio = (s.wantLamp && !isBlackout && !isOverheat) ? 1 : 0;
-        s.k3NonPrio = (s.wantFan && !isBlackout && !isOverheat && !isOverload && !s.manualShed) ? 1 : 0;
-        s.disj = (!isBlackout && !isOverheat && !isOverload && !s.manualShed) ? 1 : 0;
+        s.k3NonPrio = (s.wantFan && !isBlackout && !isOverheat && !isShedCondition) ? 1 : 0;
+        s.disj = (!isBlackout && !isOverheat && !isShedCondition) ? 1 : 0;
 
         // 4. Nexus Eau-Énergie (Pic Solaire 11h00–14h00 piloté par RTC DS3231)
-        const nexusPeak = Boolean(a.hasRtc && s.rtcHour >= 11 && s.rtcHour < 14 && !isBlackout && !isOverheat && !isOverload);
+        const nexusPeak = Boolean(a.hasRtc && s.rtcHour >= 11 && s.rtcHour < 14 && !isBlackout && !isOverheat && !isOverload && !isBattLow);
         if (isBlackout || isOverheat) {
           s.pompe = 0;
         } else if (!s.manualMode) {
@@ -4550,10 +4582,11 @@
         const r3Confort = (s.k3NonPrio === 1) && a.pins.rel3 !== null;
         const r4Pump    = (s.pompe === 1) && a.pins.rel4 !== null;
         const r5Vitale  = (s.k2Prio === 1) && (a.pins.rel5 !== null || a.pins.rel2 !== null);
-        const shedding  = (isOverload || s.manualShed) && !isOverheat && !isBlackout;
+        const shedding  = isShedCondition && !isOverheat && !isBlackout;
 
         return {
-          active: true, vSonabel: +vSon.toFixed(1), vActive: +vActive.toFixed(1), vBatt, battPct,
+          active: true, vSonabel: +vSon.toFixed(1), vSonabelEquivAc: sonabelDcToAc(vSon),
+          vActive: +vActive.toFixed(1), vBatt, battPct, isBattLow,
           iCharge: +iLoad.toFixed(2), iScada,
           iSolaire: s.source === "SOLAIRE" ? +(Math.max(0.5, iLoad)).toFixed(2) : (nexusPeak ? 1.85 : 0.65),
           temp: +temp.toFixed(1), eau, source: s.source, fsmState, sasRemaining: s.sasRemaining,
@@ -4580,10 +4613,10 @@
         simClockTimer = setInterval(() => {
           if (!state.powered) { stopSimClock(); return; }
           state.sim.rtcSec = (state.sim.rtcSec + 1) % 60;
-          if (state.sim.sasRemaining > 0 && state.sim.vSonabel >= 9.5) {
+          if (state.sim.sasRemaining > 0 && state.sim.vSonabel >= SONABEL_DC_MIN && state.sim.vSonabel <= SONABEL_DC_MAX) {
             state.sim.sasRemaining = Math.max(0, state.sim.sasRemaining - 1);
             if (state.sim.sasRemaining === 0) {
-              showToast("Sas anti-surtension 20 s validé : reconnexion sécurisée sur SONABEL (R1)");
+              showToast("Sas anti-surtension 20 s validé (10,5–13,5 V DC / équiv. 190–240 V AC) : reconnexion sécurisée sur SONABEL (R1)");
             }
           }
           updateLiveVisuals();
@@ -4665,14 +4698,16 @@
           defLine("PIN_LED_ROUGE",     p.ledR,      p.ledR === null ? "Non cable" : "Feu Tricolore Rouge (Defaut / Delestage)"),
           defLine("PIN_BUZZER",        p.buzzer,    p.buzzer === null ? "Non cable" : "Buzzer Actif 5V"),
           codeLine(""),
-          codeLine("// --- 2. SEUILS DE PROTECTION & CONSTANTES TEMPS REEL ---"),
-          codeLine("#define SEUIL_V_SONABEL_MIN  9.5f   // Basculement ATS vers Solaire si V < 9.5 V"),
-          codeLine("#define SEUIL_I_SURCHARGE    3.5f   // Delestage auto Ventilateur (K3) si I > 3.5 A"),
+          codeLine("// --- 2. SEUILS DE PROTECTION & CONSTANTES TEMPS REEL (MAQUETTE 12V DC / EQUIV. 230V AC) ---"),
+          codeLine("#define SEUIL_V_SONABEL_MIN  10.5f  // Maquette 12V DC (equiv. 190 V AC)"),
+          codeLine("#define SEUIL_V_SONABEL_MAX  13.5f  // Maquette 12V DC (equiv. 240 V AC)"),
+          codeLine("#define SEUIL_V_BATT_DELEST  11.8f  // Delestage Confort (R3) si Batterie < 11.8 V DC"),
+          codeLine("#define SEUIL_I_SURCHARGE    3.5f   // Delestage auto Ventilateur (R3) si I > 3.5 A"),
           codeLine("#define SEUIL_TEMP_MAX       60.0f  // Coupure thermique d'urgence si T > 60.0 C"),
-          codeLine("#define SEUIL_EAU_BAS        30     // Demarrage auto Pompe K4 si niveau < 30 %"),
-          codeLine("#define SEUIL_EAU_HAUT       85     // Arret auto Pompe K4 si niveau >= 85 %"),
+          codeLine("#define SEUIL_EAU_BAS        30     // Demarrage auto Pompe R4 si niveau < 30 %"),
+          codeLine("#define SEUIL_EAU_HAUT       85     // Arret auto Pompe R4 si niveau >= 85 %"),
           codeLine("#define DEBOUNCE_MS          45UL   // Anti-rebond logiciel boutons poussoirs"),
-          codeLine("#define SAS_STABILISATION_MS 20000UL // Sas anti-surtension 20 s au retour SONABEL"),
+          codeLine("#define SAS_STABILISATION_MS 20000UL // Sas anti-surtension 20 s au retour SONABEL (10.5-13.5V DC)"),
           codeLine("#define NEXUS_HEURE_DEBUT    11     // Debut pic solaire Nexus (RTC DS3231)"),
           codeLine("#define NEXUS_HEURE_FIN      14     // Fin pic solaire Nexus (pompage proactif <75%->95%)"),
           codeLine(""),
@@ -4691,8 +4726,8 @@
           codeLine("DallasTemperature sensors(&oneWire);"),
           codeLine(""),
           codeLine("// --- 4. ETATS DE CONDUITE & ANTI-REBOND MILLIS() ---"),
-          codeLine("bool wantLumiere     = true;   // Consigne utilisateur Lumiere K2 (BP ou SCADA)"),
-          codeLine("bool wantVentilo     = true;   // Consigne utilisateur Ventilateur K3 (BP ou SCADA)"),
+          codeLine("bool wantLumiere     = true;   // Consigne utilisateur Lumiere R5 (BP ou SCADA)"),
+          codeLine("bool wantVentilo     = true;   // Consigne utilisateur Ventilateur R3 (BP ou SCADA)"),
           codeLine("bool manualShed      = false;  // Delestage manuel force depuis le SCADA"),
           codeLine("bool modeAutoPompe   = true;   // Conduite automatique Polytank (AUTO / MANUAL)"),
           codeLine("bool manualSource    = false;  // Forcage manuel source ATS"),
@@ -4773,26 +4808,28 @@
           codeLine("  }"),
           codeLine("}"),
           codeLine(""),
-          codeLine("// --- 7. LOGIQUE ATS, DELESTAGE SURCHARGE & HYSTERESIS POLYTANK ---"),
+          codeLine("// --- 7. LOGIQUE ATS, DELESTAGE SURCHARGE/BATTERIE & HYSTERESIS POLYTANK ---"),
           codeLine("void appliquerLogiqueSmartGrid() {"),
           codeLine("  bool surcharge  = (iCharge > SEUIL_I_SURCHARGE);"),
+          codeLine("  bool battBasse  = (vBatterie < SEUIL_V_BATT_DELEST);"),
           codeLine("  bool surchauffe = (tempC > SEUIL_TEMP_MAX);"),
+          codeLine("  bool sonabelOK  = (vSonabel >= SEUIL_V_SONABEL_MIN && vSonabel <= SEUIL_V_SONABEL_MAX);"),
           codeLine(""),
           codeLine("  if (!manualSource) {"),
-          codeLine("    if (vSonabel >= SEUIL_V_SONABEL_MIN) { sourceActive = \"SONABEL\"; k1Solar = false; }"),
-          codeLine("    else if (vBatterie >= 10.2f)         { sourceActive = \"SOLAIRE\"; k1Solar = true;  }"),
-          codeLine("    else                                 { sourceActive = \"COUPURE\"; k1Solar = false; }"),
+          codeLine("    if (sonabelOK)               { sourceActive = \"SONABEL\"; k1Solar = false; }"),
+          codeLine("    else if (vBatterie >= 10.5f) { sourceActive = \"SOLAIRE\"; k1Solar = true;  }"),
+          codeLine("    else                         { sourceActive = \"COUPURE\"; k1Solar = false; }"),
           codeLine("  } else {"),
           codeLine("    k1Solar = forceSolar;"),
           codeLine("    sourceActive = k1Solar ? \"SOLAIRE\" : \"SONABEL\";"),
           codeLine("  }"),
           codeLine(""),
           codeLine("  bool coupureTotale = (sourceActive == \"COUPURE\");"),
-          codeLine("  // En cas de surcharge (> 3.5 A), le Ventilateur (K3) est deleste automatiquement"),
-          codeLine("  // tandis que la Lumiere prioritaire (K2) est maintenue si elle etait allumee."),
+          codeLine("  // Surcharge (> 3.5 A) ou batterie basse (< 11.8 V DC) : Ventilateur (R3) deleste,"),
+          codeLine("  // tandis que la Ligne Vitale (R5) est maintenue si elle etait allumee."),
           codeLine("  k2LumiereActive = wantLumiere && !coupureTotale && !surchauffe;"),
-          codeLine("  k3VentiloActive = wantVentilo && !coupureTotale && !surchauffe && !surcharge && !manualShed;"),
-          codeLine("  disjQ1          = (!coupureTotale && !surchauffe && !surcharge && !manualShed) ? 1 : 0;"),
+          codeLine("  k3VentiloActive = wantVentilo && !coupureTotale && !surchauffe && !surcharge && !battBasse && !manualShed;"),
+          codeLine("  disjQ1          = (!coupureTotale && !surchauffe && !surcharge && !battBasse && !manualShed) ? 1 : 0;"),
           codeLine(""),
           codeLine("  if (coupureTotale || surchauffe) {"),
           codeLine("    k4PompeActive = false;"),
@@ -5209,6 +5246,7 @@
 
       const simFaultState = {
         sonabel: { faultSince: null, active: false, lastSentAt: 0 },
+        batt:    { faultSince: null, active: false, lastSentAt: 0 },
         acs:     { faultSince: null, active: false, lastSentAt: 0 },
         temp:    { faultSince: null, active: false, lastSentAt: 0 },
         eau:     { faultSince: null, active: false, lastSentAt: 0 }
@@ -5273,30 +5311,38 @@
         }
 
         const nowStr = new Date(nowMs).toLocaleTimeString();
+        const sonAcEq = sonabelDcToAc(s.vSonabel);
+        const sonReason = s.vSonabel > SONABEL_DC_MAX ? "SURTENSION SONABEL" : "COUPURE / SOUS-TENSION SONABEL";
         const checks = [
           {
             key: "sonabel",
-            fault: s.vSonabel < 9.5 || s.source === "COUPURE",
-            clear: s.vSonabel >= 10.0 && s.source === "SONABEL",
-            msg: `[ALERTE SMART GRID] COUPURE SONABEL\nTension SONABEL : ${s.vSonabel.toFixed(1)} V (< 9,5 V)\nSource active : ${s.source} (${s.vActive.toFixed(1)} V)\nBatterie : ${s.vBatt.toFixed(1)} V (${s.battPct}%)\nHeure : ${nowStr}`
+            fault: s.vSonabel < SONABEL_DC_MIN || s.vSonabel > SONABEL_DC_MAX || s.source === "COUPURE",
+            clear: s.vSonabel >= 10.7 && s.vSonabel <= 13.3 && s.source === "SONABEL",
+            msg: `[ALERTE SMART GRID] ${sonReason}\nTension SONABEL : ${s.vSonabel.toFixed(1)} V DC (équiv. ${sonAcEq} V AC) · Plage nom. 10,5–13,5 V DC (190–240 V AC)\nSource active : ${s.source} (${s.vActive.toFixed(1)} V DC)\nBatterie : ${s.vBatt.toFixed(1)} V DC (${s.battPct}%)\nHeure : ${nowStr}`
+          },
+          {
+            key: "batt",
+            fault: s.vBatt < BATT_SHED_DC,
+            clear: s.vBatt >= 12.0,
+            msg: `[ALERTE SMART GRID] DÉLESTAGE BATTERIE BASSE\nTension Batterie : ${s.vBatt.toFixed(1)} V DC (${s.battPct}%) (< 11,8 V DC)\nRelais R3 (Confort) : ${s.r3Confort ? "ON" : "DÉLESTÉ"} | R5 (Vitale) : ${s.r5Vitale ? "ON" : "OFF"}\nHeure : ${nowStr}`
           },
           {
             key: "acs",
             fault: s.iCharge > 3.5,
             clear: s.iCharge <= 3.3,
-            msg: `[ALERTE SMART GRID] SURCHARGE ACS712\nCourant mesuré : ${s.iCharge.toFixed(2)} A (> 3,5 A)\nRelais K3 (Ventilateur) : ${s.k3NonPrio ? "ON" : "DÉLESTÉ"}\nDisjoncteur Q1 : ${s.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${nowStr}`
+            msg: `[ALERTE SMART GRID] SURCHARGE ACS712\nCourant mesuré : ${s.iCharge.toFixed(2)} A (> 3,5 A · Bus 12V DC)\nRelais R3 (Ventilateur) : ${s.r3Confort ? "ON" : "DÉLESTÉ"}\nDisjoncteur Q1 : ${s.disj ? "FERMÉ" : "OUVERT"}\nHeure : ${nowStr}`
           },
           {
             key: "temp",
             fault: s.temp > 60.0,
             clear: s.temp <= 58.0,
-            msg: `[ALERTE SMART GRID] SURCHAUFFE DS18B20\nTempérature mesurée : ${s.temp.toFixed(1)} °C (> 60 °C)\nDisjoncteur Q1 : ${s.disj ? "FERMÉ" : "OUVERT"} | K2/K3 : ${s.k2Prio ? "ON" : "OFF"}/${s.k3NonPrio ? "ON" : "OFF"}\nHeure : ${nowStr}`
+            msg: `[ALERTE SMART GRID] SURCHAUFFE DS18B20\nTempérature mesurée : ${s.temp.toFixed(1)} °C (> 60 °C)\nDisjoncteur Q1 : ${s.disj ? "FERMÉ" : "OUVERT"} | R5/R3 : ${s.r5Vitale ? "ON" : "OFF"}/${s.r3Confort ? "ON" : "OFF"}\nHeure : ${nowStr}`
           },
           {
             key: "eau",
             fault: s.eau < 20,
             clear: s.eau >= 25,
-            msg: `[ALERTE SMART GRID] POLYTANK NIVEAU BAS CRITIQUE\nNiveau mesuré : ${s.eau}% (< 20%)\nPompe 12V (K4) : ${s.k4Pump ? "EN MARCHE" : "ARRÊTÉE"}\nHeure : ${nowStr}`
+            msg: `[ALERTE SMART GRID] POLYTANK NIVEAU BAS CRITIQUE\nNiveau mesuré : ${s.eau}% (< 20%)\nPompe 12V (R4) : ${s.r4Pump ? "EN MARCHE" : "ARRÊTÉE"}\nHeure : ${nowStr}`
           }
         ];
 
@@ -6014,7 +6060,7 @@
         const s = computeSim(), a = state.analysis;
         state.components.forEach(c => {
           if (c.type === "psu_sonabel") {
-            const ok = s.active && s.vSonabel >= 9.5;
+            const ok = s.active && s.vSonabel >= SONABEL_DC_MIN && s.vSonabel <= SONABEL_DC_MAX;
             setLed(`${c.id}-led`, ok, "#22c55e", "#14532d");
             const vt = document.getElementById(`${c.id}-v-txt`);
             if (vt) { vt.textContent = s.active ? `${s.vSonabel.toFixed(1)} V` : "OFF"; vt.setAttribute("fill", ok ? "#4ade80" : "#f87171"); }
@@ -6218,8 +6264,16 @@
       function updateSimUI(s) {
         const ctrls = document.getElementById("sim-controls");
         if (ctrls) ctrls.classList.toggle("is-disabled", !s.active);
-        const vB = document.getElementById("val-slider-v"), iB = document.getElementById("val-slider-i"), tB = document.getElementById("val-slider-t"), eB = document.getElementById("val-slider-eau");
-        vB.textContent = `${state.sim.vSonabel.toFixed(1)} V`; vB.className = "slider-val" + (state.sim.vSonabel < 9.5 ? " warn" : "");
+        const vB = document.getElementById("val-slider-v"), vbB = document.getElementById("val-slider-vbatt"), iB = document.getElementById("val-slider-i"), tB = document.getElementById("val-slider-t"), eB = document.getElementById("val-slider-eau");
+        const acEq = sonabelDcToAc(state.sim.vSonabel);
+        vB.textContent = `${state.sim.vSonabel.toFixed(1)} V DC (équiv. ${acEq} V AC)`;
+        vB.className = "slider-val" + (state.sim.vSonabel > SONABEL_DC_MAX ? " alert" : (state.sim.vSonabel < SONABEL_DC_MIN ? " warn" : ""));
+        if (vbB) {
+          const vBatCur = +finiteOr(state.sim.vBatt, 12.3).toFixed(1);
+          const bPctCur = Math.max(0, Math.min(100, Math.round(((vBatCur - 10.5) / 2.1) * 100)));
+          vbB.textContent = `${vBatCur.toFixed(1)} V DC (${bPctCur}%)`;
+          vbB.className = "slider-val" + (vBatCur < BATT_SHED_DC ? " alert" : "");
+        }
         iB.textContent = `${state.sim.iCharge.toFixed(1)} A`;
         iB.className = "slider-val" + (state.sim.iCharge > 3.5 ? " alert" : "");
         tB.textContent = `${state.sim.temp.toFixed(1)} °C`; tB.className = "slider-val" + (state.sim.temp > 60 ? " alert" : (state.sim.temp > 48 ? " warn" : ""));
@@ -7350,6 +7404,7 @@
         });
       }
       bindSlider("slider-v", "vSonabel");
+      bindSlider("slider-vbatt", "vBatt");
       bindSlider("slider-i", "iCharge");
       bindSlider("slider-t", "temp");
       bindSlider("slider-eau", "eau");

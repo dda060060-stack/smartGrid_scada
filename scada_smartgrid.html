@@ -313,10 +313,34 @@
       font-size: 11.5px;
       font-weight: 600;
       color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.25;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
     }
+    .kpi-sub {
+      font-size: 10.8px;
+      font-weight: 500;
+      color: var(--ink-2);
+      line-height: 1.3;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    .kpi-sub.is-warn { color: var(--amber); font-weight: 700; }
+    .kpi-sub.is-err  { color: var(--red); font-weight: 700; }
+    .kpi-range {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.3;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+    .kpi-range.is-ok   { color: var(--green); }
+    .kpi-range.is-warn { color: var(--amber); font-weight: 700; }
+    .kpi-range.is-err  { color: var(--red); font-weight: 700; }
 
     .kpi-val-line {
       display: flex;
@@ -843,7 +867,8 @@
         height: 28px;
       }
       .kpi-ico svg { width: 15px; height: 15px; }
-      .kpi-num { font-size: 18px; }
+      .kpi-num { font-size: 17px; }
+      .kpi-unit { font-size: 11px; }
       .kpi-lbl {
         font-size: 11px;
         line-height: 1.25;
@@ -851,6 +876,9 @@
         overflow: visible;
         text-overflow: clip;
       }
+      .kpi-sub { font-size: 10px; line-height: 1.25; }
+      .kpi-range { font-size: 9.5px; line-height: 1.25; }
+      .kpi-foot { font-size: 10px; line-height: 1.25; gap: 4px; }
 
       /* Ligne 2 : empilé compact sur mobile */
       .sub-pair-left,
@@ -900,7 +928,7 @@
       </div>
       <div class="app-title-wrap">
         <span class="app-title">Supervision Smart Grid · U-AUBEN</span>
-        <span class="app-subtitle">Pupitre de conduite 12V DC &amp; Polytank</span>
+        <span class="app-subtitle">Maquette 12V DC / 5V DC (équiv. 230V AC) &amp; Polytank</span>
       </div>
     </div>
 
@@ -929,11 +957,10 @@
           <span class="kpi-lbl">Tension Réseau SONABEL</span>
           <div class="kpi-val-line">
             <span id="val-v" class="kpi-num">--.-</span>
-            <span class="kpi-unit">V</span>
+            <span class="kpi-unit">V DC</span>
           </div>
-          <div class="kpi-foot">
-            <span id="val-v-detail">En attente</span>
-          </div>
+          <div class="kpi-sub">Maquette 12V (équiv. 230V AC)</div>
+          <div id="val-v-detail" class="kpi-range">10.5–13.5V (190–240V AC)</div>
         </div>
       </article>
 
@@ -946,9 +973,10 @@
           <span class="kpi-lbl">Tension Batterie</span>
           <div class="kpi-val-line">
             <span id="val-batt-v" class="kpi-num">--.-</span>
-            <span class="kpi-unit">V</span>
+            <span class="kpi-unit">V DC</span>
             <span class="kpi-unit" style="margin-left:auto;"><strong id="val-batt" style="color:var(--ink);">--</strong>%</span>
           </div>
+          <div id="val-batt-sub" class="kpi-sub">Batterie 12V (délestage &lt; 11.8V)</div>
           <div class="mini-bar"><div id="bar-batt" class="mini-bar-fill"></div></div>
         </div>
       </article>
@@ -962,12 +990,10 @@
           <span class="kpi-lbl">Courant Charge</span>
           <div class="kpi-val-line">
             <span id="val-i" class="kpi-num">--.--</span>
-            <span class="kpi-unit">A</span>
+            <span class="kpi-unit">A / <strong id="kpi-power" style="color:var(--blue);">0</strong> W</span>
           </div>
-          <div class="kpi-foot">
-            <span>Puissance</span>
-            <span class="badge bg-blue"><span id="kpi-power">0</span> W</span>
-          </div>
+          <div class="kpi-sub">Bus 12V DC (équiv. 230V AC)</div>
+          <div class="kpi-range">Seuil délestage : &gt; 3.5 A</div>
         </div>
       </article>
 
@@ -1176,138 +1202,135 @@
         </div>
 
         <div class="synoptic-scroll">
-          <svg id="synoptic-svg" class="synoptic-svg" viewBox="0 0 920 250" role="img" aria-label="Schéma synoptique temps réel des flux d'énergie Smart Grid 12V DC">
+          <svg id="synoptic-svg" class="synoptic-svg" viewBox="0 0 940 264" role="img" aria-label="Schéma synoptique temps réel des flux d'énergie Smart Grid 12V DC (équiv. 230V AC)">
             <defs>
               <pattern id="syn-grid" width="20" height="20" patternUnits="userSpaceOnUse">
                 <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#E2E8F0" stroke-width="0.65" opacity="0.65" />
               </pattern>
               <clipPath id="syn-bus-head-clip">
-                <rect x="432" y="56" width="174" height="142" rx="10" />
+                <rect x="436" y="50" width="184" height="166" rx="10" />
               </clipPath>
               <clipPath id="syn-tank-clip">
-                <rect x="851" y="175" width="52" height="58" rx="5" />
+                <rect x="867" y="185" width="52" height="58" rx="5" />
               </clipPath>
             </defs>
 
             <!-- Fond grille technique sobre -->
-            <rect x="1" y="1" width="918" height="248" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2" />
-            <rect x="1" y="1" width="918" height="248" rx="10" fill="url(#syn-grid)" />
+            <rect x="1" y="1" width="938" height="262" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1.2" />
+            <rect x="1" y="1" width="938" height="262" rx="10" fill="url(#syn-grid)" />
 
-            <!-- ===== COUCHE 1 : LIGNES DE BASE GRISES (TOUJOURS SOUS LES FLUX ACTIFS) ===== -->
+            <!-- ===== COUCHE 1 : LIGNES DE BASE GRISES ===== -->
             <g aria-hidden="true">
-              <!-- SONABEL -> ATS (NC) -->
-              <path class="syn-wire-base" d="M 196 62 L 224 62 L 224 110 L 252 110" />
-              <!-- SOLAIRE / BATTERIE -> ATS (NO) -->
-              <path class="syn-wire-base" d="M 196 188 L 224 188 L 224 144 L 252 144" />
-              <!-- ATS (COM) -> BUS 12V DC -->
-              <path class="syn-wire-base" d="M 386 127 L 432 127" />
-              <!-- BUS 12V DC -> NOEUD DE DISTRIBUTION -->
-              <path class="syn-wire-base" d="M 606 127 L 638 127" />
-              <!-- DISTRIBUTION -> K2 (Lumière) -->
-              <path class="syn-wire-base" d="M 638 127 L 638 48 L 668 48" />
-              <!-- DISTRIBUTION -> K3 (Ventilateur) -->
-              <path class="syn-wire-base" d="M 638 127 L 668 127" />
-              <!-- DISTRIBUTION -> K4 (Pompe) -->
-              <path class="syn-wire-base" d="M 638 127 L 638 204 L 668 204" />
-              <!-- POMPE K4 -> CUVE POLYTANK (HYDRAULIQUE) -->
-              <path class="syn-wire-base" d="M 812 204 L 848 204" />
+              <path class="syn-wire-base" d="M 210 66 L 234 66 L 234 116 L 260 116" />
+              <path class="syn-wire-base" d="M 210 198 L 234 198 L 234 150 L 260 150" />
+              <path class="syn-wire-base" d="M 394 133 L 436 133" />
+              <path class="syn-wire-base" d="M 620 133 L 650 133" />
+              <path class="syn-wire-base" d="M 650 133 L 650 65 L 678 65" />
+              <path class="syn-wire-base" d="M 650 133 L 678 133" />
+              <path class="syn-wire-base" d="M 650 133 L 650 214 L 678 214" />
+              <path class="syn-wire-base" d="M 824 214 L 864 214" />
             </g>
 
-            <!-- ===== COUCHE 2 : FLUX ANIMÉS AU-DESSUS DES LIGNES DE BASE ===== -->
+            <!-- ===== COUCHE 2 : FLUX ANIMÉS ===== -->
             <g aria-hidden="true">
-              <path id="syn-flow-sonabel" class="syn-wire-flow" d="M 196 62 L 224 62 L 224 110 L 252 110" />
-              <path id="syn-flow-solar" class="syn-wire-flow" d="M 196 188 L 224 188 L 224 144 L 252 144" />
-              <path id="syn-flow-bus" class="syn-wire-flow" d="M 386 127 L 432 127" />
-              <path id="syn-flow-trunk" class="syn-wire-flow" d="M 606 127 L 638 127" />
-              <path id="syn-flow-k2" class="syn-wire-flow" d="M 638 127 L 638 48 L 668 48" />
-              <path id="syn-flow-k3" class="syn-wire-flow" d="M 638 127 L 668 127" />
-              <path id="syn-flow-k4" class="syn-wire-flow" d="M 638 127 L 638 204 L 668 204" />
-              <path id="syn-flow-water" class="syn-wire-flow is-water" d="M 812 204 L 848 204" />
+              <path id="syn-flow-sonabel" class="syn-wire-flow" d="M 210 66 L 234 66 L 234 116 L 260 116" />
+              <path id="syn-flow-solar" class="syn-wire-flow" d="M 210 198 L 234 198 L 234 150 L 260 150" />
+              <path id="syn-flow-bus" class="syn-wire-flow" d="M 394 133 L 436 133" />
+              <path id="syn-flow-trunk" class="syn-wire-flow" d="M 620 133 L 650 133" />
+              <path id="syn-flow-k2" class="syn-wire-flow" d="M 650 133 L 650 65 L 678 65" />
+              <path id="syn-flow-k3" class="syn-wire-flow" d="M 650 133 L 678 133" />
+              <path id="syn-flow-k4" class="syn-wire-flow" d="M 650 133 L 650 214 L 678 214" />
+              <path id="syn-flow-water" class="syn-wire-flow is-water" d="M 824 214 L 864 214" />
             </g>
 
             <!-- Noeud de distribution -->
-            <circle cx="638" cy="127" r="4" fill="#64748B" id="syn-dist-node" />
+            <circle cx="650" cy="133" r="4" fill="#64748B" id="syn-dist-node" />
 
             <!-- ===== GAUCHE : SOURCES (SONABEL & SOLAIRE/BATTERIE) ===== -->
-            <!-- Source 1 : Réseau SONABEL -->
-            <g aria-label="Source Réseau SONABEL">
-              <rect id="syn-box-sonabel" x="16" y="20" width="180" height="84" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
-              <circle id="syn-led-sonabel" cx="34" cy="41" r="5" fill="#94A3B8" />
-              <text x="46" y="45" fill="#0F172A" font-family="Inter, sans-serif" font-size="12.5" font-weight="700">Réseau SONABEL</text>
-              <line x1="28" y1="56" x2="184" y2="56" stroke="#E2E8F0" stroke-width="1" />
-              <text id="syn-v-sonabel" x="28" y="83" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="17" font-weight="700">--.- V</text>
-              <text id="syn-st-sonabel" x="184" y="81" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="end">ATTENTE</text>
-              <circle cx="196" cy="62" r="3.5" fill="#64748B" />
+            <!-- Source 1 : SONABEL · 12V DC (équiv. 230V AC) -->
+            <g aria-label="SONABEL 12V DC équivalent 230V AC">
+              <rect id="syn-box-sonabel" x="14" y="20" width="196" height="92" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-led-sonabel" cx="30" cy="39" r="5" fill="#94A3B8" />
+              <text x="42" y="42" fill="#0F172A" font-family="Inter, sans-serif" font-size="11.5" font-weight="700">SONABEL · 12V DC</text>
+              <text x="42" y="55" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="9.5" font-weight="600">(équiv. 230V AC)</text>
+              <line x1="24" y1="64" x2="200" y2="64" stroke="#E2E8F0" stroke-width="1" />
+              <text id="syn-v-sonabel" x="24" y="92" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="14.5" font-weight="700">--.- V DC</text>
+              <text id="syn-st-sonabel" x="200" y="90" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" text-anchor="end">ATTENTE</text>
+              <circle cx="210" cy="66" r="3.5" fill="#64748B" />
             </g>
 
-            <!-- Source 2 : Solaire / Batterie -->
-            <g aria-label="Source Solaire et Batterie">
-              <rect id="syn-box-solar" x="16" y="146" width="180" height="84" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
-              <circle id="syn-led-solar" cx="34" cy="167" r="5" fill="#94A3B8" />
-              <text x="46" y="171" fill="#0F172A" font-family="Inter, sans-serif" font-size="12.5" font-weight="700">Solaire / Batterie</text>
-              <line x1="28" y1="182" x2="184" y2="182" stroke="#E2E8F0" stroke-width="1" />
-              <text id="syn-v-solar" x="28" y="209" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="14.5" font-weight="700">--.- V · --%</text>
-              <text id="syn-st-solar" x="184" y="208" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="end">ATTENTE</text>
-              <circle cx="196" cy="188" r="3.5" fill="#64748B" />
+            <!-- Source 2 : Solaire/Bat · 12V DC -->
+            <g aria-label="Solaire et Batterie 12V DC">
+              <rect id="syn-box-solar" x="14" y="152" width="196" height="92" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-led-solar" cx="30" cy="172" r="5" fill="#94A3B8" />
+              <text x="42" y="176" fill="#0F172A" font-family="Inter, sans-serif" font-size="11.5" font-weight="700">Solaire/Bat · 12V DC</text>
+              <text x="42" y="189" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="9.2" font-weight="600">Délestage &lt; 11.8V DC</text>
+              <line x1="24" y1="197" x2="200" y2="197" stroke="#E2E8F0" stroke-width="1" />
+              <text id="syn-v-solar" x="24" y="225" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700">--.- V DC · --%</text>
+              <text id="syn-st-solar" x="200" y="224" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" text-anchor="end">ATTENTE</text>
+              <circle cx="210" cy="198" r="3.5" fill="#64748B" />
             </g>
 
-            <!-- ===== MILIEU-GAUCHE : BASCULE ATS (K1) ===== -->
-            <g aria-label="Bascule ATS K1">
-              <rect id="syn-box-ats" x="252" y="68" width="134" height="118" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
-              <text x="319" y="87" fill="#0F172A" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" text-anchor="middle">Bascule ATS (K1)</text>
-              <line x1="264" y1="95" x2="374" y2="95" stroke="#E2E8F0" stroke-width="1" />
-              <!-- Contacts internes NC / NO / COM -->
-              <text x="260" y="113" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700">NC</text>
-              <circle id="syn-ats-nc" cx="284" cy="110" r="4" fill="#94A3B8" />
-              <text x="260" y="147" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700">NO</text>
-              <circle id="syn-ats-no" cx="284" cy="144" r="4" fill="#94A3B8" />
-              <circle id="syn-ats-com" cx="350" cy="127" r="4.5" fill="#334155" />
-              <text x="358" y="115" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700" text-anchor="middle">COM</text>
-              <!-- Lame mobile ATS -->
-              <line id="syn-ats-arm" x1="350" y1="127" x2="296" y2="127" stroke="#64748B" stroke-width="3.6" stroke-linecap="round" />
-              <!-- Étiquette source active -->
-              <rect id="syn-ats-pill-bg" x="271" y="159" width="96" height="19" rx="9.5" fill="#ECEFF4" />
-              <text id="syn-ats-label" x="319" y="172" fill="#334155" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" text-anchor="middle">ATTENTE</text>
-              <circle cx="252" cy="110" r="3" fill="#64748B" />
-              <circle cx="252" cy="144" r="3" fill="#64748B" />
-              <circle cx="386" cy="127" r="3.5" fill="#64748B" />
+            <!-- ===== MILIEU-GAUCHE : BASCULE ATS (R1/R2) ===== -->
+            <g aria-label="Bascule ATS R1 R2">
+              <rect id="syn-box-ats" x="260" y="72" width="134" height="122" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <text x="327" y="92" fill="#0F172A" font-family="Inter, sans-serif" font-size="11.5" font-weight="700" text-anchor="middle">Bascule ATS</text>
+              <line x1="272" y1="100" x2="382" y2="100" stroke="#E2E8F0" stroke-width="1" />
+              <text x="268" y="119" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700">R1</text>
+              <circle id="syn-ats-nc" cx="292" cy="116" r="4" fill="#94A3B8" />
+              <text x="268" y="153" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700">R2</text>
+              <circle id="syn-ats-no" cx="292" cy="150" r="4" fill="#94A3B8" />
+              <circle id="syn-ats-com" cx="358" cy="133" r="4.5" fill="#334155" />
+              <text x="366" y="121" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700" text-anchor="middle">BUS</text>
+              <line id="syn-ats-arm" x1="358" y1="133" x2="304" y2="133" stroke="#64748B" stroke-width="3.6" stroke-linecap="round" />
+              <rect id="syn-ats-pill-bg" x="279" y="166" width="96" height="19" rx="9.5" fill="#ECEFF4" />
+              <text id="syn-ats-label" x="327" y="179" fill="#334155" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" text-anchor="middle">ATTENTE</text>
+              <circle cx="260" cy="116" r="3" fill="#64748B" />
+              <circle cx="260" cy="150" r="3" fill="#64748B" />
+              <circle cx="394" cy="133" r="3.5" fill="#64748B" />
             </g>
 
-            <!-- ===== CENTRE : BUS 12V DC / ESP32 ===== -->
-            <g aria-label="Bus 12V DC et ESP32">
-              <rect id="syn-box-bus" x="432" y="56" width="174" height="142" rx="10" fill="#FFFFFF" stroke="#1976D2" stroke-width="2" />
+            <!-- ===== CENTRE : BUS 12V DC / LOGIQUE ESP32 · 5V DC ===== -->
+            <g aria-label="Bus 12V DC et Logique ESP32 5V DC">
+              <rect id="syn-box-bus" x="436" y="50" width="184" height="166" rx="10" fill="#FFFFFF" stroke="#1976D2" stroke-width="2" />
               <g clip-path="url(#syn-bus-head-clip)">
-                <rect id="syn-bus-hdr" x="432" y="56" width="174" height="28" fill="#0F172A" />
+                <rect id="syn-bus-hdr" x="436" y="50" width="184" height="27" fill="#0F172A" />
+                <rect x="436" y="77" width="184" height="21" fill="#EFF6FF" />
               </g>
-              <text x="519" y="74" fill="#FFFFFF" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">BUS 12V DC · ESP32</text>
-              <text id="syn-bus-v" x="519" y="116" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="22" font-weight="700" text-anchor="middle">--.- V</text>
-              <text id="syn-bus-i" x="519" y="144" fill="#3F51B5" font-family="IBM Plex Mono, monospace" font-size="17" font-weight="700" text-anchor="middle">--.-- A</text>
-              <line x1="448" y1="158" x2="590" y2="158" stroke="#E2E8F0" stroke-width="1" />
-              <text id="syn-bus-meta" x="519" y="180" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" text-anchor="middle">Q1 : -- · 0 W</text>
-              <circle cx="432" cy="127" r="3.5" fill="#1976D2" />
-              <circle cx="606" cy="127" r="3.5" fill="#1976D2" />
+              <text x="528" y="68" fill="#FFFFFF" font-family="IBM Plex Mono, monospace" font-size="10.8" font-weight="700" text-anchor="middle">BUS PUISSANCE · 12V DC</text>
+              <text x="528" y="91" fill="#1D4ED8" font-family="IBM Plex Mono, monospace" font-size="9.8" font-weight="700" text-anchor="middle">Logique ESP32 · 5V DC</text>
+              <line x1="436" y1="98" x2="620" y2="98" stroke="#DBEAFE" stroke-width="1" />
+              <text id="syn-bus-v" x="528" y="132" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="19" font-weight="700" text-anchor="middle">--.- V DC</text>
+              <text id="syn-bus-i" x="528" y="160" fill="#3F51B5" font-family="IBM Plex Mono, monospace" font-size="16" font-weight="700" text-anchor="middle">--.-- A</text>
+              <line x1="452" y1="176" x2="604" y2="176" stroke="#E2E8F0" stroke-width="1" />
+              <text id="syn-bus-meta" x="528" y="198" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="10.8" font-weight="600" text-anchor="middle">Q1 : -- · 0 W</text>
+              <circle cx="436" cy="133" r="3.5" fill="#1976D2" />
+              <circle cx="620" cy="133" r="3.5" fill="#1976D2" />
             </g>
 
-            <!-- ===== DROITE : 3 SORTIES DISTINCTES (K2, K3, K4 + CUVE) ===== -->
-            <!-- Sortie 1 : Lumière (K2) -->
-            <g aria-label="Sortie Lumière K2">
-              <rect id="syn-box-k2" x="668" y="16" width="238" height="64" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
-              <circle id="syn-ico-k2-bg" cx="694" cy="48" r="14" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2" />
-              <g transform="translate(682,36)" fill="none" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" id="syn-ico-k2">
+            <!-- ===== DROITE : CHARGES · 12V DC (équiv. 230V AC) ===== -->
+            <rect x="678" y="8" width="244" height="20" rx="5" fill="#EEF2FF" stroke="#C7D2FE" stroke-width="1" />
+            <text x="800" y="21.5" fill="#1E293B" font-family="IBM Plex Mono, monospace" font-size="9.8" font-weight="700" text-anchor="middle">Charges · 12V DC (équiv. 230V AC)</text>
+
+            <!-- Sortie 1 : Lumière (R5 / K2) -->
+            <g aria-label="Sortie Lumière Ligne Vitale">
+              <rect id="syn-box-k2" x="678" y="34" width="244" height="62" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-ico-k2-bg" cx="704" cy="65" r="14" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2" />
+              <g transform="translate(692,53)" fill="none" stroke="#64748B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" id="syn-ico-k2">
                 <path d="M9 18h6M10 21h4M12 3a5 5 0 0 0-3 9c.7.6 1 1.4 1 2.2V15h4v-.8c0-.8.3-1.6 1-2.2a5 5 0 0 0-3-9z" />
               </g>
-              <text x="717" y="43" fill="#0F172A" font-family="Inter, sans-serif" font-size="12" font-weight="700">Lumière (K2)</text>
-              <text x="717" y="59" fill="#64748B" font-family="Inter, sans-serif" font-size="10">Charge prioritaire</text>
-              <rect id="syn-pill-k2" x="836" y="36" width="60" height="24" rx="12" fill="#ECEFF4" />
-              <text id="syn-st-k2" x="866" y="52" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="middle">ATTENTE</text>
-              <circle cx="668" cy="48" r="3.5" fill="#64748B" />
+              <text x="727" y="60" fill="#0F172A" font-family="Inter, sans-serif" font-size="12" font-weight="700">Lumière (R5/K2)</text>
+              <text x="727" y="76" fill="#64748B" font-family="Inter, sans-serif" font-size="10">Ligne Vitale 12V</text>
+              <rect id="syn-pill-k2" x="852" y="53" width="60" height="24" rx="12" fill="#ECEFF4" />
+              <text id="syn-st-k2" x="882" y="69" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="middle">ATTENTE</text>
+              <circle cx="678" cy="65" r="3.5" fill="#64748B" />
             </g>
 
-            <!-- Sortie 2 : Ventilateur (K3) -->
-            <g aria-label="Sortie Ventilateur K3">
-              <rect id="syn-box-k3" x="668" y="95" width="238" height="64" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
-              <circle id="syn-ico-k3-bg" cx="694" cy="127" r="14" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2" />
-              <g transform="translate(694,127)">
+            <!-- Sortie 2 : Ventilateur (R3 / K3) -->
+            <g aria-label="Sortie Ventilateur Ligne Confort">
+              <rect id="syn-box-k3" x="678" y="104" width="244" height="62" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-ico-k3-bg" cx="704" cy="135" r="14" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2" />
+              <g transform="translate(704,135)">
                 <g id="syn-fan-blades" fill="#64748B">
                   <path d="M0,-2 C2,-9 8,-8 6,-2 C5,0 2,0 0,-2 Z" />
                   <path d="M0,-2 C2,-9 8,-8 6,-2 C5,0 2,0 0,-2 Z" transform="rotate(120)" />
@@ -1315,42 +1338,41 @@
                   <circle cx="0" cy="0" r="2.5" fill="#334155" />
                 </g>
               </g>
-              <text x="717" y="122" fill="#0F172A" font-family="Inter, sans-serif" font-size="12" font-weight="700">Ventilateur (K3)</text>
-              <text x="717" y="138" fill="#64748B" font-family="Inter, sans-serif" font-size="10">Charge non-prio</text>
-              <rect id="syn-pill-k3" x="836" y="115" width="60" height="24" rx="12" fill="#ECEFF4" />
-              <text id="syn-st-k3" x="866" y="131" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="middle">ATTENTE</text>
-              <!-- Indicateur Délesté affiché uniquement en surcharge automatique -->
+              <text x="727" y="130" fill="#0F172A" font-family="Inter, sans-serif" font-size="12" font-weight="700">Ventilateur (R3)</text>
+              <text x="727" y="146" fill="#64748B" font-family="Inter, sans-serif" font-size="10">Ligne Confort 12V</text>
+              <rect id="syn-pill-k3" x="852" y="123" width="60" height="24" rx="12" fill="#ECEFF4" />
+              <text id="syn-st-k3" x="882" y="139" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="middle">ATTENTE</text>
               <g id="syn-k3-shed" style="display:none;">
-                <rect x="826" y="115" width="70" height="24" rx="12" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.2" />
-                <text x="861" y="131" fill="#B45309" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="middle">Délesté</text>
+                <rect x="842" y="123" width="70" height="24" rx="12" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1.2" />
+                <text x="877" y="139" fill="#B45309" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700" text-anchor="middle">Délesté</text>
               </g>
-              <circle cx="668" cy="127" r="3.5" fill="#64748B" />
+              <circle cx="678" cy="135" r="3.5" fill="#64748B" />
             </g>
 
-            <!-- Sortie 3 : Pompe Polytank (K4) + Cuve reliée -->
-            <g aria-label="Sortie Pompe Polytank K4 et Cuve">
-              <rect id="syn-box-k4" x="668" y="172" width="144" height="64" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
-              <circle id="syn-ico-k4-bg" cx="692" cy="204" r="13" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2" />
-              <g transform="translate(692,204)">
+            <!-- Sortie 3 : Pompe Polytank (R4 / K4) + Cuve reliée -->
+            <g aria-label="Sortie Pompe Polytank R4 et Cuve">
+              <rect id="syn-box-k4" x="678" y="182" width="146" height="64" rx="9" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.8" />
+              <circle id="syn-ico-k4-bg" cx="702" cy="214" r="13" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1.2" />
+              <g transform="translate(702,214)">
                 <g id="syn-pump-blades" stroke="#64748B" stroke-width="2" stroke-linecap="round">
                   <line x1="0" y1="-7" x2="0" y2="7" />
                   <line x1="-7" y1="0" x2="7" y2="0" />
                   <circle cx="0" cy="0" r="2.5" fill="#334155" stroke="none" />
                 </g>
               </g>
-              <text x="713" y="199" fill="#0F172A" font-family="Inter, sans-serif" font-size="12" font-weight="700">Pompe (K4)</text>
-              <text id="syn-st-k4" x="713" y="218" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700">ATTENTE</text>
-              <circle cx="668" cy="204" r="3.5" fill="#64748B" />
-              <circle cx="812" cy="204" r="3" fill="#1976D2" />
+              <text x="723" y="209" fill="#0F172A" font-family="Inter, sans-serif" font-size="12" font-weight="700">Pompe (R4)</text>
+              <text id="syn-st-k4" x="723" y="228" fill="#64748B" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="700">ATTENTE</text>
+              <circle cx="678" cy="214" r="3.5" fill="#64748B" />
+              <circle cx="824" cy="214" r="3" fill="#1976D2" />
 
               <!-- Mini Cuve Polytank reliée -->
-              <rect id="syn-tank-box" x="848" y="172" width="58" height="64" rx="7" fill="#FFFFFF" stroke="#334155" stroke-width="1.8" />
+              <rect id="syn-tank-box" x="864" y="182" width="58" height="64" rx="7" fill="#FFFFFF" stroke="#334155" stroke-width="1.8" />
               <g clip-path="url(#syn-tank-clip)">
-                <rect id="syn-tank-water" x="851" y="233" width="52" height="0" fill="#1976D2" style="transition: y 0.45s ease, height 0.45s ease;" />
+                <rect id="syn-tank-water" x="867" y="243" width="52" height="0" fill="#1976D2" style="transition: y 0.45s ease, height 0.45s ease;" />
               </g>
-              <text x="877" y="187" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700" text-anchor="middle">CUVE</text>
-              <rect x="856" y="198" width="42" height="17" rx="4" fill="rgba(255,255,255,0.88)" />
-              <text id="syn-tank-pct" x="877" y="210" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">--%</text>
+              <text x="893" y="197" fill="#475569" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700" text-anchor="middle">CUVE</text>
+              <rect x="872" y="208" width="42" height="17" rx="4" fill="rgba(255,255,255,0.88)" />
+              <text id="syn-tank-pct" x="893" y="220" fill="#0F172A" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">--%</text>
             </g>
           </svg>
         </div>
@@ -1716,15 +1738,17 @@
       const vSonEl = document.getElementById("syn-v-sonabel");
       const stSonEl = document.getElementById("syn-st-sonabel");
       const sonLow = vSonDisp < SONABEL_LOW_LIMIT;
+      const sonHigh = vSonDisp > SONABEL_HIGH_LIMIT;
+      const sonOut = sonLow || sonHigh;
       if (boxSon) {
-        boxSon.setAttribute("stroke", isSonabel ? "#16A34A" : (sonLow ? "#DC2626" : "#CBD5E1"));
-        boxSon.setAttribute("fill", isSonabel ? "#F0FDF4" : (sonLow ? "#FEF2F2" : "#FFFFFF"));
+        boxSon.setAttribute("stroke", isSonabel ? "#16A34A" : (sonOut ? "#DC2626" : "#CBD5E1"));
+        boxSon.setAttribute("fill", isSonabel ? "#F0FDF4" : (sonOut ? "#FEF2F2" : "#FFFFFF"));
       }
-      if (ledSon) ledSon.setAttribute("fill", isSonabel ? "#16A34A" : (sonLow ? "#DC2626" : "#94A3B8"));
-      if (vSonEl) vSonEl.textContent = `${vSonDisp.toFixed(1)} V`;
+      if (ledSon) ledSon.setAttribute("fill", isSonabel ? "#16A34A" : (sonOut ? "#DC2626" : "#94A3B8"));
+      if (vSonEl) vSonEl.textContent = `${vSonDisp.toFixed(1)} V DC`;
       if (stSonEl) {
-        stSonEl.textContent = isSonabel ? "ACTIF" : (sonLow ? "COUPURE" : "VEILLE");
-        stSonEl.setAttribute("fill", isSonabel ? "#15803D" : (sonLow ? "#DC2626" : "#64748B"));
+        stSonEl.textContent = isSonabel ? "ACTIF" : (sonHigh ? "SURTENS." : (sonLow ? "COUPURE" : "VEILLE"));
+        stSonEl.setAttribute("fill", isSonabel ? "#15803D" : (sonOut ? "#DC2626" : "#64748B"));
       }
 
       // 3. Source Solaire / Batterie
@@ -1737,7 +1761,7 @@
         boxSol.setAttribute("fill", isSolar ? "#F0FDF4" : "#FFFFFF");
       }
       if (ledSol) ledSol.setAttribute("fill", isSolar ? "#16A34A" : "#94A3B8");
-      if (vSolEl) vSolEl.textContent = `${battVoltage.toFixed(1)} V · ${m.batt}%`;
+      if (vSolEl) vSolEl.textContent = `${battVoltage.toFixed(1)} V DC · ${m.batt}%`;
       if (stSolEl) {
         stSolEl.textContent = isSolar ? "ACTIF" : "VEILLE";
         stSolEl.setAttribute("fill", isSolar ? "#15803D" : "#64748B");
@@ -1755,11 +1779,11 @@
       if (atsNo) atsNo.setAttribute("fill", isSolar ? "#16A34A" : "#94A3B8");
       if (atsArm) {
         if (isSonabel) {
-          atsArm.setAttribute("x2", "284"); atsArm.setAttribute("y2", "110"); atsArm.setAttribute("stroke", "#16A34A");
+          atsArm.setAttribute("x2", "292"); atsArm.setAttribute("y2", "116"); atsArm.setAttribute("stroke", "#16A34A");
         } else if (isSolar) {
-          atsArm.setAttribute("x2", "284"); atsArm.setAttribute("y2", "144"); atsArm.setAttribute("stroke", "#16A34A");
+          atsArm.setAttribute("x2", "292"); atsArm.setAttribute("y2", "150"); atsArm.setAttribute("stroke", "#16A34A");
         } else {
-          atsArm.setAttribute("x2", "296"); atsArm.setAttribute("y2", "127"); atsArm.setAttribute("stroke", "#DC2626");
+          atsArm.setAttribute("x2", "304"); atsArm.setAttribute("y2", "133"); atsArm.setAttribute("stroke", "#DC2626");
         }
       }
       if (atsPillBg) atsPillBg.setAttribute("fill", isSonabel ? "#E8F5E9" : (isSolar ? "#FFFBEB" : "#FEE2E2"));
@@ -1775,7 +1799,7 @@
       const busMeta = document.getElementById("syn-bus-meta");
       const distNode = document.getElementById("syn-dist-node");
       if (boxBus) boxBus.setAttribute("stroke", isBusFault ? "#DC2626" : (hasBusPower ? "#16A34A" : "#1976D2"));
-      if (busV) busV.textContent = `${m.v.toFixed(1)} V`;
+      if (busV) busV.textContent = `${m.v.toFixed(1)} V DC`;
       if (busI) {
         busI.textContent = `${m.i.toFixed(2)} A`;
         busI.setAttribute("fill", isOverload ? "#DC2626" : "#3F51B5");
@@ -1809,7 +1833,7 @@
       }
 
       // 7. Sortie K3 : Ventilateur (indicateur "Délesté" uniquement en surcharge automatique)
-      const k3Shed = Boolean(hasBusPower && !m.ventilo && isOverload);
+      const k3Shed = Boolean(hasBusPower && !m.ventilo && (isOverload || battVoltage < BATT_SHED_LIMIT));
       const k3On = Boolean(hasBusPower && m.ventilo === 1 && !k3Shed);
       setSvgFlow("syn-flow-k3", k3On, false);
       const boxK3 = document.getElementById("syn-box-k3");
@@ -1875,7 +1899,7 @@
       const tankBox = document.getElementById("syn-tank-box");
       if (tankWater) {
         const h = (clampedEau / 100) * 58;
-        tankWater.setAttribute("y", (233 - h).toFixed(1));
+        tankWater.setAttribute("y", (243 - h).toFixed(1));
         tankWater.setAttribute("height", h.toFixed(1));
         tankWater.setAttribute("fill", alarmState.eau.active ? "#DC2626" : "#1976D2");
       }
@@ -1892,8 +1916,11 @@
     const VALID_SOURCES = new Set(["SONABEL", "SOLAIRE", "COUPURE"]);
     const CURRENT_OVERLOAD_LIMIT = 3.5;
     const CURRENT_OVERLOAD_CLEAR = 3.3;
-    const SONABEL_LOW_LIMIT      = 9.5;
-    const SONABEL_CLEAR_LIMIT    = 10.2;
+    const SONABEL_LOW_LIMIT      = 10.5;
+    const SONABEL_HIGH_LIMIT     = 13.5;
+    const SONABEL_CLEAR_LIMIT    = 10.7;
+    const SONABEL_CLEAR_HIGH     = 13.3;
+    const BATT_SHED_LIMIT        = 11.8;
     const TEMP_HYSTERESIS_C      = 2.0;
     const TANK_HYSTERESIS_PCT    = 5;
     const ALARM_CONFIRM_FRAMES   = 2;
@@ -2190,15 +2217,29 @@
       // Ligne 1 : 4 cartes KPI
       const vDisplay = vSonabel !== null ? vSonabel : v;
       document.getElementById("val-v").textContent = vDisplay.toFixed(1);
-      document.getElementById("val-v-detail").textContent = vDisplay >= SONABEL_LOW_LIMIT ? "Tension nominale" : "Sous-tension / Coupure";
+      const vDet = document.getElementById("val-v-detail");
+      if (vDet) {
+        const vNominal = vDisplay >= SONABEL_LOW_LIMIT && vDisplay <= SONABEL_HIGH_LIMIT;
+        vDet.textContent = vNominal
+          ? "10.5–13.5V (190–240V AC)"
+          : (vDisplay > SONABEL_HIGH_LIMIT ? "Surtension · 10.5–13.5V (190–240V AC)" : "Coupure/Bas · 10.5–13.5V (190–240V AC)");
+        vDet.className = "kpi-range " + (vNominal ? "is-ok" : "is-err");
+      }
 
       const battVoltage = vBatt !== null ? vBatt : (10.5 + (batt / 100) * 2.1);
       document.getElementById("val-batt-v").textContent = battVoltage.toFixed(1);
       document.getElementById("val-batt").textContent = batt;
+      const battSub = document.getElementById("val-batt-sub");
+      if (battSub) {
+        battSub.textContent = battVoltage < BATT_SHED_LIMIT
+          ? "Délestage actif (< 11.8V)"
+          : "Batterie 12V (délestage < 11.8V)";
+        battSub.className = "kpi-sub" + (battVoltage < BATT_SHED_LIMIT ? " is-warn" : "");
+      }
       const barBatt = document.getElementById("bar-batt");
       if (barBatt) {
         barBatt.style.width = batt + "%";
-        barBatt.style.background = batt < 25 ? "#DC2626" : (batt < 55 ? "#D97706" : "#2E7D32");
+        barBatt.style.background = battVoltage < BATT_SHED_LIMIT ? "#D97706" : (batt < 25 ? "#DC2626" : "#2E7D32");
       }
 
       document.getElementById("val-i").textContent = i.toFixed(2);
@@ -2291,11 +2332,11 @@
       const nowMs = Date.now();
 
       const sonabelFault = (m.src !== "SONABEL") ||
-        (m.vSonabel !== null && m.vSonabel < SONABEL_LOW_LIMIT) ||
-        (m.src === "SONABEL" && m.v < SONABEL_LOW_LIMIT);
+        (m.vSonabel !== null && (m.vSonabel < SONABEL_LOW_LIMIT || m.vSonabel > SONABEL_HIGH_LIMIT)) ||
+        (m.src === "SONABEL" && (m.v < SONABEL_LOW_LIMIT || m.v > SONABEL_HIGH_LIMIT));
       const sonabelClear = (m.src === "SONABEL") &&
-        (m.v >= SONABEL_CLEAR_LIMIT) &&
-        (m.vSonabel === null || m.vSonabel >= SONABEL_CLEAR_LIMIT);
+        (m.v >= SONABEL_CLEAR_LIMIT && m.v <= SONABEL_CLEAR_HIGH) &&
+        (m.vSonabel === null || (m.vSonabel >= SONABEL_CLEAR_LIMIT && m.vSonabel <= SONABEL_CLEAR_HIGH));
 
       const disjFault = (m.disj === 0);
       const disjClear = (m.disj === 1);

@@ -1892,12 +1892,15 @@
             <p>
               Le banc expérimental <strong>Smart Grid &amp; Supervision Polytank 12V DC</strong> réalisé par le Club du Génie Électrique de l'Université Aube Nouvelle (CGE-U-AUBEN) met en œuvre un micro-réseau hybride basse tension piloté par microcontrôleur <span class="doc-inline-code">ESP32 DevKit V1</span>. Il assure la continuité d'alimentation entre une source réseau simulée (SONABEL 12V DC) et un secours solaire sur batterie lithium 3S 18650, tout en automatisant le remplissage hydraulique d'une cuve Polytank.
             </p>
+            <div class="doc-callout">
+              <strong>Échelle d'essais laboratoire :</strong> <strong>Maquette pédagogique 12 V DC / Logique 5 V DC (équivalent terrain 230 V AC / 12 V DC)</strong> — toutes les tensions manipulées en TP restent en Très Basse Tension de Sécurité (TBTS 12 V DC puissance, 5,00 V DC logique ESP32) tout en reproduisant fidèlement les seuils d'un réseau réel 230 V AC / 12 V DC (plage nominale SONABEL <strong>10,5–13,5 V DC = équiv. 190–240 V AC</strong>, délestage batterie <strong>&lt; 11,8 V DC</strong>).
+            </div>
             <p>Cette documentation rassemble l'ensemble des références vérifiées pour l'atelier et la soutenance :</p>
             <ul>
-              <li>Séparation stricte des domaines 12V puissance, 5,00V logique régulé (LM2596) et 3,3V capteurs autour d'une masse commune GND.</li>
+              <li>Séparation stricte des domaines 12V DC puissance, 5,00V DC logique régulé (LM2596) et 3,3V capteurs autour d'une masse commune GND.</li>
               <li>Acquisition analogique sans conflit Wi-Fi sur le convertisseur <span class="doc-inline-code">ADC1</span> (GPIO 32 à 35) pour les tensions SONABEL / Batterie et les courants ACS712.</li>
-              <li>Protection matérielle et logicielle : disjoncteur Q1 (relais IN3), surveillance thermique DS18B20, détection de surcharge et hystérésis pompe Polytank (30% à 85%).</li>
-              <li>Supervision web SCADA temps réel via le broker <span class="doc-inline-code">broker.hivemq.com</span> (WebSocket sécurisé) avec commande à distance des 4 relais et alertes Agent WhatsApp / Telegram.</li>
+              <li>Protection matérielle et logicielle : FSM à 5 états, Sas anti-surtension 20 s au retour SONABEL (10,5–13,5 V DC), délestage sélectif Confort R3 (&gt; 3,5 A ou batterie &lt; 11,8 V DC) avec maintien Ligne Vitale R5, surveillance thermique DS18B20 (&gt; 60 °C) et Nexus Polytank (30 %–85 %, pic solaire 11h–14h : 75 %–95 %).</li>
+              <li>Supervision web SCADA temps réel via le broker <span class="doc-inline-code">broker.hivemq.com</span> (WebSocket sécurisé) avec commande à distance des 5 relais, mode Zéro Cloud autonome (RTC DS3231 + LCD 2004) et alertes Agent WhatsApp / Telegram.</li>
             </ul>
 
             <h2 id="pres-controle">Vérifications obligatoires avant mise sous tension</h2>
@@ -1915,15 +1918,15 @@
 
             <h3 id="pres-gnd">3. Continuité de la masse commune GND et premier essai</h3>
             <p>
-              Rassemblez tous les retours négatifs (adaptateur SONABEL 12V, sortie <span class="doc-inline-code">P-</span> du BMS 3S 40A, LM2596, module 4 relais, capteurs et ESP32) sur le même bornier GND. Lors du premier essai, validez l'affichage sur l'écran LCD 2004 I2C (adresse <span class="doc-inline-code">0x27</span>) et la publication MQTT avant de brancher la pompe 12V et les charges lumineuses.
+              Rassemblez tous les retours négatifs (adaptateur SONABEL 12V, sortie <span class="doc-inline-code">P-</span> du BMS 3S 40A, LM2596, modules relais, capteurs et ESP32) sur le même bornier GND. Lors du premier essai, validez l'affichage sur l'écran LCD 2004 I2C (adresse <span class="doc-inline-code">0x27</span>) et l'horloge RTC DS3231 (<span class="doc-inline-code">0x68</span>) avant de brancher la pompe 12V et les charges lumineuses.
             </p>
 
             <h2 id="pres-outils">Outils de la suite Smart Grid U-AUBEN</h2>
             <ul>
-              <li><a href="./simulateur_cablage.html">Simulateur de Câblage (Atelier Cirkit)</a> — Schéma précâblé complet à 90°, vérification ERC, simulation des capteurs et génération du code C++.</li>
-              <li><a href="./scada_smartgrid.html">Pupitre Web SCADA (MQTT HiveMQ)</a> — Conduite Manuel/Auto, jauge DS18B20, niveau Polytank, synoptique P&amp;ID, courbes et alertes WhatsApp/Telegram.</li>
+              <li><a href="./simulateur_cablage.html">Simulateur de Câblage (Atelier Cirkit)</a> — Schéma précâblé complet à 90°, vérification ERC, simulation 0–15 V DC (équiv. 230 V AC), FSM 5 états, Sas 20 s et génération du code C++.</li>
+              <li><a href="./scada_smartgrid.html">Pupitre Web SCADA (MQTT HiveMQ)</a> — Affichage prioritaire 12V DC / 5V DC (équiv. 230V AC), conduite Manuel/Auto, jauge DS18B20, niveau Polytank, synoptique P&amp;ID, courbes et alertes WhatsApp/Telegram.</li>
               <li><a href="./demo_3d_smartgrid.html">Maquette 3D Interactive (Démo Jury)</a> — Parcours technique en 6 chapitres et banc de test des 4 scénarios de défaut.</li>
-              <li><a href="#galerie" onclick="event.preventDefault(); switchDoc('galerie');">Galerie Matériel &amp; Budget</a> — Inventaire complet des 17 modules avec les 20 photos réelles d'atelier.</li>
+              <li><a href="#galerie" onclick="event.preventDefault(); switchDoc('galerie');">Galerie Matériel &amp; Budget</a> — Inventaire complet des 24 références (26 photos réelles d'atelier &amp; Electro Lab + 5 schémas techniques SVG).</li>
               <li><a href="#code" onclick="event.preventDefault(); switchDoc('code');">Code source ESP32 (sketch_smartgrid.ino)</a> — Programme Arduino C++ complet prêt à compiler.</li>
             </ul>
           </article>
@@ -1936,14 +1939,52 @@
 
             <h2 id="arch-rails">Rails d'alimentation et séparation des domaines</h2>
             <p>
-              L'installation sépare la puissance 12V DC de la logique 5V et des entrées 3,3V afin d'éviter toute chute de tension lors de l'enclenchement de la pompe ou des relais, tout en conservant une référence de masse unique <span class="doc-inline-code">GND</span>.
+              <strong>Maquette pédagogique 12 V DC / Logique 5 V DC (équivalent terrain 230 V AC / 12 V DC)</strong> : l'installation sépare la puissance 12V DC de la logique 5,00V DC et des entrées 3,3V afin d'éviter toute chute de tension lors de l'enclenchement de la pompe ou des relais, tout en conservant une référence de masse unique <span class="doc-inline-code">GND</span>.
             </p>
             <ul>
-              <li><strong>Rail 12V Puissance</strong> : alimenté par bascule ATS entre l'adaptateur secteur 12V 5A (SONABEL) et le pack 3S 18650 + BMS 40A (10,5–12,6V) maintenu par 2 panneaux solaires 5,5V en série via diode anti-retour. Il alimente le LM2596, les contacts COM/NO des 4 relais, les charges 12V et la pompe.</li>
-              <li><strong>Rail 5,00V Logique (LM2596)</strong> : sortie calibrée à vide à 5,00V exacts alimentant l'ESP32 sur <span class="doc-inline-code">VIN</span>, les bobines du module 4 relais 5V, les deux modules ACS712, l'afficheur LCD 2004 I2C et l'émetteur ultrason HC-SR04.</li>
+              <li><strong>Rail 12V DC Puissance (équiv. terrain 230V AC / 12V DC)</strong> : alimenté par bascule ATS entre l'adaptateur secteur 12V 5A (SONABEL maquette, plage nominale 10,5–13,5V DC = équiv. 190–240V AC) et le pack 3S 18650 + BMS 40A (10,5–12,6V DC, délestage &lt; 11,8V DC) maintenu par 2 panneaux solaires via diode anti-retour et fusible 5 A. Il alimente le LM2596, les contacts COM/NO des 5 relais, les charges 12V et la pompe.</li>
+              <li><strong>Rail 5,00V DC Logique (LM2596 + condensateur 1000 µF)</strong> : sortie calibrée à vide à 5,00V exacts alimentant l'ESP32 sur <span class="doc-inline-code">VIN</span>, les bobines des relais 5V, les deux modules ACS712, l'afficheur LCD 2004 I2C, l'horloge RTC DS3231 et le capteur ultrason HC-SR04.</li>
               <li><strong>Domaine 3,3V &amp; Protections</strong> : la broche <span class="doc-inline-code">3V3</span> de l'ESP32 alimente la sonde DS18B20 (GPIO 4) pour maintenir le bus OneWire à 3,3V. La sortie <span class="doc-inline-code">ECHO</span> du HC-SR04 est ramenée à 2,5V par pont diviseur 10 kΩ / 10 kΩ vers GPIO 18.</li>
-              <li><strong>Acquisition ADC1 &amp; Masse GND</strong> : les 4 capteurs analogiques (Tension SONABEL GPIO 34, Tension Batterie GPIO 32, Courant Charge GPIO 35, Courant Solaire GPIO 33) utilisent exclusivement <span class="doc-inline-code">ADC1</span> pour demeurer actifs durant les échanges Wi-Fi / MQTT.</li>
+              <li><strong>Acquisition ADC1 &amp; Masse GND</strong> : les 4 capteurs analogiques (Tension SONABEL, Tension Batterie, Courant Charge, Courant Solaire) utilisent exclusivement <span class="doc-inline-code">ADC1</span> pour demeurer actifs durant les échanges Wi-Fi / MQTT.</li>
             </ul>
+            <div class="data-table-wrap">
+              <table class="spec-table">
+                <thead>
+                  <tr>
+                    <th>Domaine / Bus</th>
+                    <th>Maquette pédagogique (12 V DC / 5 V DC)</th>
+                    <th>Équivalent terrain (230 V AC / 12 V DC)</th>
+                    <th>Rôle &amp; Protection</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Source SONABEL</strong></td>
+                    <td>12,2 V DC nom. (10,5–13,5 V DC · 0–15 V)</td>
+                    <td>230 V AC nom. (190–240 V AC)</td>
+                    <td>ATS R1/R2 + Sas anti-surtension 20 s</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Solaire / Batterie</strong></td>
+                    <td>12 V DC (Li-Ion 3S 10,5–12,6 V DC)</td>
+                    <td>Parc Batterie 12 V DC / PV</td>
+                    <td>Secours automatique + délestage Confort &lt; 11,8 V DC</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Logique ESP32</strong></td>
+                    <td>5,00 V DC (LM2596) + 3,3 V DC</td>
+                    <td>Alimentation contrôle-commande 5 V DC</td>
+                    <td>Condensateur 1000 µF + masse commune GND</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Charges &amp; Pompe</strong></td>
+                    <td>Bus 12 V DC (Lampe, Ventilo, Pompe)</td>
+                    <td>Départs 230 V AC / Pompe 12 V DC</td>
+                    <td>R5 Vitale (maintenue) · R3 Confort (&gt; 3,5 A) · R4 Pompe + 1N4007</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
             <h2 id="arch-maquette">Maquette 3D interactive cotée</h2>
             <p>
@@ -2193,13 +2234,65 @@
             </div>
 
             <h2 id="scada-mesures">Variables supervisées et seuils de protection</h2>
-            <ul>
-              <li><strong>Tensions SONABEL &amp; Batterie (GPIO 34 / 32)</strong> — Lecture simultanée via les deux capteurs 0–25V ; bascule ATS automatique vers le pack 3S 18650 sous 9,5 V.</li>
-              <li><strong>Courants Charge &amp; Solaire (GPIO 35 / 33)</strong> — Mesure à effet Hall ACS712, calcul instantané de la puissance (W) et protection surcharge (&gt; 15 A).</li>
-              <li><strong>Température Transformateur (GPIO 4)</strong> — Sonde étanche DS18B20 affichée sur jauge semi-circulaire 0–80 °C avec seuil haut configurable (60 °C par défaut).</li>
-              <li><strong>Niveau Polytank (GPIO 5 / 18)</strong> — Conversion ultrasonore HC-SR04 (0 à 100 %) avec seuils bas et haut enregistrables (30 % démarrage pompe / 85 % arrêt).</li>
-              <li><strong>Pilotage des 4 Relais (GPIO 26, 27, 14, 12)</strong> — Retour d'état temps réel et commande manuelle à distance pour IN1 (SONABEL), IN2 (Solaire), IN3 (Disjoncteur Q1) et IN4 (Mini-pompe 12V).</li>
-            </ul>
+            <p>
+              <strong>Maquette pédagogique 12 V DC / Logique 5 V DC (équivalent terrain 230 V AC / 12 V DC)</strong> — Le tableau ci-dessous récapitule les seuils exacts implémentés sur le banc de laboratoire, dans le simulateur et dans le pupitre SCADA, mis en regard des grandeurs terrain équivalentes :
+            </p>
+            <div class="data-table-wrap">
+              <table class="spec-table">
+                <thead>
+                  <tr>
+                    <th>Variable supervisée</th>
+                    <th>Maquette pédagogique (12 V DC / 5 V DC)</th>
+                    <th>Équivalent terrain (230 V AC / 12 V DC)</th>
+                    <th>Action automate / SCADA</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Tension Réseau SONABEL</strong></td>
+                    <td>Nom. <strong>12,2 V DC</strong> · Plage <strong>10,5–13,5 V DC</strong> (curseur 0–15 V)</td>
+                    <td>Nom. <strong>230 V AC</strong> · Plage <strong>190–240 V AC</strong></td>
+                    <td>Hors plage → bascule ATS sur Solaire (R2). Retour stable → <strong>Sas anti-surtension 20 s</strong> avant reconnexion R1.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Tension Batterie 3S</strong></td>
+                    <td>10,5–12,6 V DC · Délestage <strong>&lt; 11,8 V DC</strong></td>
+                    <td>Batterie <strong>12 V DC</strong> (délestage &lt; 11,8 V)</td>
+                    <td>État <strong>DELESTAGE_CRITIQUE</strong> : coupure Ligne Confort (R3), maintien Ligne Vitale (R5).</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Courant Charge (ACS712)</strong></td>
+                    <td>Bus <strong>12 V DC</strong> · Seuil surcharge <strong>&gt; 3,5 A</strong> (~42 W)</td>
+                    <td>Bus <strong>230 V AC</strong> (surcharge départs)</td>
+                    <td>Délestage sélectif R3 (Ventilateur), maintien R5 (Lumière) + alerte WhatsApp / Telegram.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Alimentation Logique ESP32</strong></td>
+                    <td><strong>5,00 V DC</strong> (Buck LM2596 + 1000 µF) / <strong>3,3 V DC</strong></td>
+                    <td>Contrôle-commande <strong>5 V DC</strong></td>
+                    <td>Alimentation stable ESP32 VIN, relais 5 V, LCD 2004 (0x27), RTC DS3231 (0x68), capteurs.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Température Poste (DS18B20)</strong></td>
+                    <td>Sonde OneWire 3,3 V · Seuil critique <strong>&gt; 60,0 °C</strong></td>
+                    <td>Transformateur / poste <strong>&gt; 60,0 °C</strong></td>
+                    <td>État <strong>URGENCE_THERMIQUE</strong> : ouverture générale R3, R4, R5 + buzzer + alerte agent.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Niveau Polytank (HC-SR04 + RTC)</strong></td>
+                    <td>Standard <strong>&lt; 30 % → ≥ 85 %</strong> · Pic 11h–14h : <strong>&lt; 75 % → ≥ 95 %</strong></td>
+                    <td>Cuve Polytank (Pompe 12 V / 230 V)</td>
+                    <td>Pilotage automatique Pompe R4 (protégée par diode 1N4007) et Nexus pic solaire 11h–14h.</td>
+                  </tr>
+                  <tr>
+                    <td><strong>Pilotage 5 Relais (R1–R5)</strong></td>
+                    <td>R1 SONABEL (25), R2 Solaire (26), R3 Confort (27), R4 Pompe (14), R5 Vitale (19)</td>
+                    <td>Contacteurs ATS / départs 230 V AC &amp; 12 V DC</td>
+                    <td>Interlock strict R1/R2, conduite Auto/Manuel, Mode Zéro Cloud autonome et retour SCADA temps réel.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </article>
 
           <!-- CARTES DE NAVIGATION BAS DE PAGE (PRÉCÉDENT / SUIVANT) -->
@@ -3272,9 +3365,9 @@
             sku: "SKU #178", supplier: "Electro Lab Ouagadougou",
             qty: 2, unitPrice: 1000,
             imgs: ["./images_composants/capteur_tension.jpg"],
-            innov: "FSM 5 états (seuil 9,5 V) & déclenchement Sas anti-surtension 20 s",
+            innov: "FSM 5 états (10,5–13,5 V DC = équiv. 190–240 V AC, batterie < 11,8 V) & Sas 20 s",
             pinout: "#1 SONABEL → GPIO 32 (ADC1) · #2 Batterie 3S → GPIO 33 (ADC1)",
-            desc: "Surveillance continue des tensions SONABEL et Batterie 12,6 V sur canaux ADC1 sans conflit Wi-Fi."
+            desc: "Surveillance continue Maquette 12V DC (équiv. 230V AC) et Batterie 3S 12,6 V sur canaux ADC1 sans conflit Wi-Fi."
           },
           {
             id: "bom_ds18b20", comp: "ds18b20",
@@ -4637,11 +4730,13 @@ const float ADC_VREF          = 3.30;
 const float V_DIVIDER_RATIO   = 5.00;   // Module tension DC 0-25V (30kΩ / 7.5kΩ)
 const float ACS_SENSITIVITY   = 0.100;  // 0.100 V/A pour ACS712-20A (0.185 pour 5A)
 
-// Seuils métier Smart Grid & Polytank
-const float V_SONABEL_MIN     = 9.5;    // Seuil présence SONABEL (V)
+// Seuils métier Smart Grid & Polytank — Maquette pédagogique 12 V DC / Logique 5 V DC (équivalent terrain 230 V AC / 12 V DC)
+const float V_SONABEL_MIN     = 10.5;   // Plage nominale SONABEL maquette : 10.5-13.5 V DC (équiv. 190-240 V AC)
+const float V_SONABEL_MAX     = 13.5;   // Seuil haut surtension SONABEL maquette (équiv. 240 V AC)
 const float V_BATT_MIN        = 10.5;   // Batterie 3S vide (0%)
+const float V_BATT_DELEST     = 11.8;   // Seuil délestage Confort batterie basse (V DC)
 const float V_BATT_MAX        = 12.6;   // Batterie 3S pleine (100%)
-const float I_MAX_SURCHARGE   = 15.0;   // Seuil disjonction surcharge (A) - baisser à 2.0A en test maquette si souhaité
+const float I_MAX_SURCHARGE   = 3.5;    // Seuil délestage surcharge maquette 12V DC (A)
 const float TEMP_MAX_CRIT     = 60.0;   // Seuil surchauffe (°C) - baisser à 35.0°C pour test rapide à la main
 
 // Dimensions cuve Polytank réelle (Ø 14 x 22 cm)
@@ -4724,7 +4819,7 @@ int lireNiveauPolytankPct() {
 void appliquerSorties() {
   if (!modeManuel) {
     String nouvelleSrc = "COUPURE";
-    if (vSonabel >= V_SONABEL_MIN) {
+    if (vSonabel >= V_SONABEL_MIN && vSonabel <= V_SONABEL_MAX) {
       nouvelleSrc = "SONABEL";
       vActive = vSonabel;
     } else if (vBatterie >= V_BATT_MIN) {
@@ -4746,7 +4841,7 @@ void appliquerSorties() {
     digitalWrite(PIN_REL_SONABEL, (sourceActive == "SONABEL") ? RELAY_ON : RELAY_OFF);
     digitalWrite(PIN_REL_SOLAIRE, (sourceActive == "SOLAIRE") ? RELAY_ON : RELAY_OFF);
 
-    bool defautCritique = (iCharge > I_MAX_SURCHARGE) || (tempTransfo > TEMP_MAX_CRIT) || (sourceActive == "COUPURE");
+    bool defautCritique = (iCharge > I_MAX_SURCHARGE) || (vBatterie < V_BATT_DELEST) || (tempTransfo > TEMP_MAX_CRIT) || (sourceActive == "COUPURE");
     disjFerme = !defautCritique;
     digitalWrite(PIN_REL_DISJ, disjFerme ? RELAY_ON : RELAY_OFF);
 
@@ -4847,8 +4942,8 @@ void verifierAlertesMaintenance() {
     return;
   }
 
-  // 1. Défaut Coupure SONABEL
-  bool defSonabel = (vSonabel < V_SONABEL_MIN);
+  // 1. Défaut Hors-Plage / Coupure SONABEL (Maquette 10.5–13.5 V DC = équiv. 190–240 V AC)
+  bool defSonabel = (vSonabel < V_SONABEL_MIN || vSonabel > V_SONABEL_MAX);
   if (defSonabel && !alerteSonabelActive) {
     alerteSonabelActive = true;
     notifierAgentMaintenance(
@@ -5113,11 +5208,11 @@ void loop() {
       {
         id: "sc1_sonabel",
         num: "SCÉNARIO 01",
-        title: "Coupure réseau SONABEL (Bascule ATS)",
-        action: "Débrancher la fiche de l'adaptateur secteur 12V 5A (ou basculer l'interrupteur d'arrivée SONABEL sur OFF) pendant que les 2 lampes LED 12V et le ventilateur tournent.",
-        board: "La tension sur <strong>GPIO 34</strong> chute sous 9,5V. L'ESP32 ouvre le relais <strong>IN1 (GPIO 26)</strong>, respecte un temps mort de 150 ms puis ferme <strong>IN2 (GPIO 27)</strong>. Les lampes LED 12V restent alimentées sur le pack batterie 3S / Solaire. Le feu tricolore passe du <strong>Vert (GPIO 25)</strong> au <strong>Jaune (GPIO 19)</strong> et le LCD affiche <span class='mono'>SRC:SOLAIRE</span>.",
-        scada: "Le badge source bascule sur <strong>SOLAIRE</strong> (jaune), le bras du commutateur ATS pivote sur la branche photovoltaïque avec flux animé jaune et l'événement est horodaté dans le journal.",
-        reset: "Rebrancher l'adaptateur 12V 5A : retour automatique sur la source prioritaire <strong>SONABEL</strong> et passage du feu au Vert."
+        title: "Coupure réseau SONABEL (Bascule ATS & Sas 20 s)",
+        action: "Débrancher la fiche de l'adaptateur secteur 12V 5A (ou abaisser la source SONABEL hors plage 10,5–13,5 V DC = équiv. 190–240 V AC) pendant que la lampe LED 12V et le ventilateur tournent.",
+        board: "La tension sur le capteur SONABEL sort de la plage nominale maquette <strong>10,5–13,5 V DC (équiv. 190–240 V AC)</strong>. L'ESP32 ouvre le relais <strong>R1 SONABEL</strong>, respecte l'interlock de 150 ms puis ferme <strong>R2 Solaire</strong>. Les charges 12V restent alimentées sur le pack batterie 3S / Solaire (délestage Confort R3 si batterie &lt; 11,8 V DC). Le feu tricolore passe du <strong>Vert</strong> au <strong>Jaune</strong> et le LCD affiche <span class='mono'>SOLAIRE</span>.",
+        scada: "Le badge source bascule sur <strong>SOLAIRE</strong> (jaune), le bras du commutateur ATS pivote sur la branche Solaire/Bat 12V DC avec flux animé jaune et l'événement est horodaté dans le journal.",
+        reset: "Rebrancher l'adaptateur 12V 5A (tension stable dans 10,5–13,5 V DC) : déclenchement du <strong>Sas anti-surtension 20 s</strong> avant reconnexion automatique sécurisée sur <strong>SONABEL (R1)</strong> et passage du feu au Vert."
       },
       {
         id: "sc2_surcharge",
