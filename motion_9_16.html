@@ -965,6 +965,8 @@
     .ctl-btn.primary:hover { background: #34D399; }
     .ctl-btn.rec-btn { background: rgba(56, 189, 248, 0.14); border-color: rgba(56, 189, 248, 0.5); color: #7DD3FC; }
     .ctl-btn.rec-btn:hover { background: var(--sky); border-color: var(--sky); color: #051624; }
+    .ctl-btn.dl-btn { background: rgba(16, 185, 129, 0.14); border-color: rgba(16, 185, 129, 0.55); color: #6EE7B7; }
+    .ctl-btn.dl-btn:hover { background: var(--emerald); border-color: var(--emerald); color: #031510; }
     .ctl-btn.off { color: var(--muted); }
 
     .scene-chips { display: flex; gap: 4px; flex-wrap: wrap; }
@@ -1564,12 +1566,12 @@
   <nav class="controls" id="controls" aria-label="Contrôles lecture et mode capture">
     <div class="ctl-row">
       <span class="time mono" id="t-cur">0:00</span>
-      <div class="progress" id="progress" role="slider" aria-label="Progression" aria-valuemin="0" aria-valuemax="88" aria-valuenow="0" tabindex="0">
+      <div class="progress" id="progress" role="slider" aria-label="Progression" aria-valuemin="0" aria-valuemax="153" aria-valuenow="0" tabindex="0">
         <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
         <div id="progress-ticks"></div>
         <div class="progress-knob" id="progress-knob"></div>
       </div>
-      <span class="time mono right" id="t-tot">1:28</span>
+      <span class="time mono right" id="t-tot">2:33</span>
     </div>
     <div class="ctl-row space">
       <div class="ctl-group">
@@ -1578,6 +1580,9 @@
         <button type="button" class="ctl-btn" id="btn-replay">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /></svg>Rejouer
         </button>
+        <a class="ctl-btn dl-btn" id="btn-download-mp4" href="./motion_9_16.mp4" download="SmartGrid_CGE_UAUBEN_9_16.mp4" title="Télécharger la vidéo complète 9:16 avec voix off naturelle FR au format MP4">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M4 20h16" /></svg>Télécharger en MP4
+        </a>
         <button type="button" class="ctl-btn rec-btn" id="btn-capture" title="Masquer la barre de contrôle pour enregistrer facilement l'écran en 9:16 (Échap pour quitter)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="3.5" fill="currentColor" /></svg>Mode Capture 9:16
         </button>
