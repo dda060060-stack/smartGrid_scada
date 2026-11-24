@@ -1169,6 +1169,48 @@
     }
 
     /* Indicateur discret d'alertes en arrière-plan (WhatsApp & Telegram) */
+    .fsm-card {
+      background: #f8fafc; border: 1px solid #d5dce6; border-radius: 7px;
+      padding: 8px 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .fsm-card-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap; }
+    .fsm-badge {
+      font-family: var(--font-mono); font-size: 10.5px; font-weight: 700;
+      padding: 2px 7px; border-radius: 4px; background: #e2e8f0; color: #334155;
+      border: 1px solid #cbd5e1;
+    }
+    .fsm-badge.st-nominal  { background: #dcfce7; color: #166534; border-color: #86efac; }
+    .fsm-badge.st-solaire  { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+    .fsm-badge.st-sas      { background: #ffedd5; color: #9a3412; border-color: #fdba74; }
+    .fsm-badge.st-delest   { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+    .fsm-badge.st-urgence  { background: #991b1b; color: #ffffff; border-color: #7f1d1d; }
+    .fsm-meta-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;
+      font-family: var(--font-mono); font-size: 10.5px; color: #475569;
+    }
+    .nexus-pill {
+      padding: 1px 6px; border-radius: 4px; font-weight: 700; font-size: 10px;
+      background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1;
+    }
+    .nexus-pill.is-peak { background: #dbeafe; color: #1d4ed8; border-color: #93c5fd; }
+    .sas-bar {
+      display: none; align-items: center; justify-content: space-between; gap: 6px;
+      background: #fff7ed; border: 1px solid #fdba74; border-radius: 5px;
+      padding: 4px 8px; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: #9a3412;
+    }
+    .sas-bar.visible { display: flex; }
+    .innov-btn-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+    .innov-btn {
+      flex: 1; min-width: 96px; padding: 4px 7px; border-radius: 5px;
+      border: 1px solid #cbd5e1; background: #ffffff; color: #334155;
+      font-family: var(--font-mono); font-size: 10px; font-weight: 700; cursor: pointer;
+      transition: all 0.14s ease;
+    }
+    .innov-btn:hover { border-color: #3f51b5; color: #3f51b5; }
+    .innov-btn.is-on { background: #1e293b; color: #f8fafc; border-color: #0f172a; }
+    .innov-btn.is-zc { background: #065f46; color: #ffffff; border-color: #047857; }
+    .actuator-grid.grid-5 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+
     .sim-agent-indicator {
       margin-top: 10px;
       padding: 7px 10px;
@@ -2130,8 +2172,8 @@
         <div id="palette-grid" class="card-grid-3"></div>
         <div id="preset-list" class="preset-card-list" style="display:none;">
           <button type="button" class="preset-item-btn active" data-load-preset="smartgrid">
-            <div class="preset-item-title">01 Smart Grid Précâblé (DAV)</div>
-            <div class="preset-item-desc">Disposition complète 12V DC : 2 Panneaux Solaires, SONABEL, Batterie 12V+BMS, LM2596 7 segments, 2 Tension, 2 ACS712 série, 4 Relais + Charges, ESP32 30 br., LCD 2004, DS18B20+4,7kΩ, HC-SR04+2×10kΩ, Feu tricolore, Buzzer et Pompe Polytank.</div>
+            <div class="preset-item-title">01 Smart Grid Précâblé (5 Innovations)</div>
+            <div class="preset-item-desc">Architecture complète 31 composants : RTC DS3231 I2C (GPIO 21/22), 5 Relais (R1 GPIO 25, R2 GPIO 26, R3 GPIO 27, R4 GPIO 14, 5e relais R5 Ligne Vitale GPIO 19), Diode 1N4007 pompe, Fusible 5A batterie, Condo 1000 µF rail 5V, Charges 12V animées, FSM 5 états, Sas 20 s, Nexus 11h–14h &amp; Zéro Cloud.</div>
           </button>
           <button type="button" class="preset-item-btn" data-load-preset="polytank">
             <div class="preset-item-title">02 Module Polytank</div>
@@ -2250,7 +2292,12 @@
       <!-- Main SVG Stage -->
       <svg id="workspace-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2060 990" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <linearGradient id="g-metal" x1="0%" y1="0%" x2="100%" y2="100%">
+          <radialGradient id="g-coin" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#f8fafc" />
+              <stop offset="55%" stop-color="#cbd5e1" />
+              <stop offset="100%" stop-color="#94a3b8" />
+            </radialGradient>
+            <linearGradient id="g-metal" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#e5e7eb" />
             <stop offset="30%" stop-color="#f8fafc" />
             <stop offset="58%" stop-color="#cbd5e1" />
@@ -2439,6 +2486,26 @@
           <button type="button" id="btn-buzzer-sound" class="mini-action-btn">Audio : Muet</button>
         </div>
 
+        <div class="fsm-card" aria-label="Automate FSM 5 états et innovations Smart Grid">
+          <div class="fsm-card-top">
+            <span style="font-size:10.5px;font-weight:700;color:#475569;">FSM 5 ÉTATS</span>
+            <span id="fsm-state-badge" class="fsm-badge">HORS TENSION</span>
+          </div>
+          <div id="sas-bar" class="sas-bar">
+            <span>SAS ANTI-SURTENSION 20 s</span>
+            <span id="sas-countdown-txt">20 s</span>
+          </div>
+          <div class="fsm-meta-row">
+            <span>RTC DS3231 : <strong id="rtc-clock-readout">10:00:00</strong></span>
+            <span id="nexus-pill" class="nexus-pill">Hors pic (11h–14h)</span>
+          </div>
+          <div class="innov-btn-row">
+            <button type="button" id="btn-zero-cloud" class="innov-btn" title="Couper le Cloud MQTT et démontrer l'autonomie locale 100% hors-ligne (FSM + RTC DS3231 + LCD + BP)">Zéro Cloud : OFF</button>
+            <button type="button" id="btn-nexus-peak" class="innov-btn" title="Basculer l'horloge RTC DS3231 sur le pic solaire 12h30 (Nexus Eau-Énergie)">Pic 12h30</button>
+            <button type="button" id="btn-sas-test" class="innov-btn" title="Simuler une coupure puis un retour SONABEL pour déclencher le Sas anti-surtension 20 s">Test Sas 20s</button>
+          </div>
+        </div>
+
         <div id="sim-controls" class="sim-controls is-disabled">
           <div class="slider-row">
             <div class="slider-top">
@@ -2446,7 +2513,7 @@
               <span id="val-slider-v" class="slider-val">12.2 V</span>
             </div>
             <input id="slider-v" class="cirkit-slider" type="range" min="0" max="14" step="0.1" value="12.2" />
-            <div class="slider-scale"><span>0 V (Coupure)</span><span>Seuil ATS 9,5 V</span><span>14 V</span></div>
+            <div class="slider-scale"><span>0 V (Coupure)</span><span>Seuil ATS 9,5 V · Sas 20s</span><span>14 V</span></div>
           </div>
 
           <div class="slider-row">
@@ -2455,7 +2522,7 @@
               <span id="val-slider-i" class="slider-val">1.8 A</span>
             </div>
             <input id="slider-i" class="cirkit-slider" type="range" min="0" max="5" step="0.1" value="1.8" />
-            <div class="slider-scale"><span>0 A</span><span>Délestage K3 : 3,5 A</span><span>5,0 A</span></div>
+            <div class="slider-scale"><span>0 A</span><span>Délestage R3 : 3,5 A</span><span>5,0 A</span></div>
           </div>
 
           <div class="slider-row">
@@ -2464,7 +2531,7 @@
               <span id="val-slider-t" class="slider-val">32.0 °C</span>
             </div>
             <input id="slider-t" class="cirkit-slider" type="range" min="20" max="80" step="0.5" value="32" />
-            <div class="slider-scale"><span>20 °C</span><span>Seuil 60 °C</span><span>80 °C</span></div>
+            <div class="slider-scale"><span>20 °C</span><span>Urgence 60 °C</span><span>80 °C</span></div>
           </div>
 
           <div class="slider-row">
@@ -2473,15 +2540,26 @@
               <span id="val-slider-eau" class="slider-val">62 %</span>
             </div>
             <input id="slider-eau" class="cirkit-slider" type="range" min="0" max="100" step="1" value="62" />
-            <div class="slider-scale"><span>0 % (&lt;30% K4 ON)</span><span>&ge;85% OFF</span><span>100 %</span></div>
+            <div class="slider-scale"><span>&lt;30% R4 ON</span><span>Pic 11-14h: &lt;75%</span><span>85/95% OFF</span></div>
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-top">
+              <label class="slider-label" for="slider-hour">Heure RTC DS3231 (Nexus)</label>
+              <span id="val-slider-hour" class="slider-val">10h00</span>
+            </div>
+            <input id="slider-hour" class="cirkit-slider" type="range" min="0" max="23" step="0.5" value="10" />
+            <div class="slider-scale"><span>00h</span><span>Pic Solaire 11h–14h</span><span>23h</span></div>
           </div>
         </div>
 
-        <div class="actuator-grid">
-          <div class="act-pill"><span class="act-k">K1 ATS</span><span id="act-src" class="act-v">ARRET</span></div>
-          <div class="act-pill"><span class="act-k">K2 Prio</span><span id="act-k2" class="act-v">--</span></div>
-          <div class="act-pill"><span class="act-k">K3 Non-Prio</span><span id="act-k3" class="act-v">--</span></div>
-          <div class="act-pill"><span class="act-k">K4 Pompe</span><span id="act-k4" class="act-v">--</span></div>
+        <div class="actuator-grid grid-5">
+          <div class="act-pill"><span class="act-k">ATS / Source</span><span id="act-src" class="act-v">ARRET</span></div>
+          <div class="act-pill"><span class="act-k">R1 SON (25)</span><span id="act-r1" class="act-v">--</span></div>
+          <div class="act-pill"><span class="act-k">R2 SOL (26)</span><span id="act-r2" class="act-v">--</span></div>
+          <div class="act-pill"><span class="act-k">R5 VIT (19)</span><span id="act-k2" class="act-v">--</span></div>
+          <div class="act-pill"><span class="act-k">R3 CONF (27)</span><span id="act-k3" class="act-v">--</span></div>
+          <div class="act-pill"><span class="act-k">R4 POMPE (14)</span><span id="act-k4" class="act-v">--</span></div>
         </div>
 
         <div class="mqtt-box">
@@ -2493,7 +2571,7 @@
 
         <div id="sim-agent-indicator" class="sim-agent-indicator" aria-label="Alertes agent actives">
           <span class="sim-agent-dot" aria-hidden="true"></span>
-          <span class="sim-agent-txt">Alertes Agent : WhatsApp &amp; Telegram actifs</span>
+          <span class="sim-agent-txt" id="sim-agent-txt">Alertes Agent : WhatsApp (+226 03 23 91 04) &amp; Telegram actifs</span>
         </div>
       </div>
     </aside>
@@ -2782,11 +2860,11 @@
         { id: "D35",   label: "D35",  gpio: 35,   kind: "adc1_in", desc: "GPIO 35 · ADC1_CH7 · ACS712 #2 Production solaire" },
         { id: "D32",   label: "D32",  gpio: 32,   kind: "adc1",    desc: "GPIO 32 · ADC1_CH4 · Capteur tension SONABEL" },
         { id: "D33",   label: "D33",  gpio: 33,   kind: "adc1",    desc: "GPIO 33 · ADC1_CH5 · Capteur tension Batterie" },
-        { id: "D25",   label: "D25",  gpio: 25,   kind: "adc2",    desc: "GPIO 25 · ADC2 (conflit Wi-Fi)" },
-        { id: "D26",   label: "D26",  gpio: 26,   kind: "adc2",    desc: "GPIO 26 · Commande Relais K1 (ATS Source)" },
-        { id: "D27",   label: "D27",  gpio: 27,   kind: "adc2",    desc: "GPIO 27 · Commande Relais K2 (Charge Prioritaire)" },
-        { id: "D14",   label: "D14",  gpio: 14,   kind: "adc2",    desc: "GPIO 14 · Commande Relais K3 (Charge Non-Prioritaire)" },
-        { id: "D12",   label: "D12",  gpio: 12,   kind: "adc2",    desc: "GPIO 12 · Commande Relais K4 (Pompe Polytank)" },
+        { id: "D25",   label: "D25",  gpio: 25,   kind: "gpio",    desc: "GPIO 25 · Commande Relais R1 (SONABEL · Sas 20 s)" },
+        { id: "D26",   label: "D26",  gpio: 26,   kind: "gpio",    desc: "GPIO 26 · Commande Relais R2 (Secours Solaire / Batterie)" },
+        { id: "D27",   label: "D27",  gpio: 27,   kind: "gpio",    desc: "GPIO 27 · Commande Relais R3 (Ligne Confort — Ventilateur 12V)" },
+        { id: "D14",   label: "D14",  gpio: 14,   kind: "gpio",    desc: "GPIO 14 · Commande Relais R4 (Mini Pompe 12V Polytank · Nexus)" },
+        { id: "D12",   label: "D12",  gpio: 12,   kind: "gpio",    desc: "GPIO 12 · Libre (broche boot MTDI évitée)" },
         { id: "D13",   label: "D13",  gpio: 13,   kind: "adc2",    desc: "GPIO 13 · Feu Rouge (Défaut)" },
         { id: "GND_L", label: "GND",  gpio: null, kind: "gnd",     desc: "Masse commune GND" },
         { id: "VIN",   label: "VIN",  gpio: null, kind: "pwr5",    desc: "Entrée régulée +5,0V (depuis LM2596 — jamais 12V)" }
@@ -2794,17 +2872,17 @@
 
       const ESP32_RIGHT_PINS = [
         { id: "D23",   label: "D23",  gpio: 23,   kind: "gpio",    desc: "GPIO 23 · Feu Vert (SONABEL nominal)" },
-        { id: "D22",   label: "D22",  gpio: 22,   kind: "i2c_scl", desc: "GPIO 22 · Bus I2C SCL (LCD 2004)" },
+        { id: "D22",   label: "D22",  gpio: 22,   kind: "i2c_scl", desc: "GPIO 22 · Bus I2C SCL (LCD 2004 + RTC DS3231 en parallèle)" },
         { id: "TX0",   label: "TX0",  gpio: 1,    kind: "gpio",    desc: "GPIO 1 · UART0 TX" },
         { id: "RX0",   label: "RX0",  gpio: 3,    kind: "gpio",    desc: "GPIO 3 · UART0 RX" },
-        { id: "D21",   label: "D21",  gpio: 21,   kind: "i2c_sda", desc: "GPIO 21 · Bus I2C SDA (LCD 2004)" },
-        { id: "D19",   label: "D19",  gpio: 19,   kind: "gpio",    desc: "GPIO 19 · Feu Jaune (Secours Solaire)" },
+        { id: "D21",   label: "D21",  gpio: 21,   kind: "i2c_sda", desc: "GPIO 21 · Bus I2C SDA (LCD 2004 + RTC DS3231 en parallèle)" },
+        { id: "D19",   label: "D19",  gpio: 19,   kind: "gpio",    desc: "GPIO 19 · Commande 5e Relais R5 (Ligne Vitale — Lumière 12V)" },
         { id: "D18",   label: "D18",  gpio: 18,   kind: "gpio",    desc: "GPIO 18 · HC-SR04 ECHO (via pont 10 kΩ / 10 kΩ)" },
         { id: "D5",    label: "D5",   gpio: 5,    kind: "gpio",    desc: "GPIO 5 · HC-SR04 TRIG" },
-        { id: "TX2",   label: "D17",  gpio: 17,   kind: "gpio",    desc: "GPIO 17 · Bouton Poussoir BP Ventilateur (INPUT_PULLUP -> Relais K3)" },
-        { id: "RX2",   label: "D16",  gpio: 16,   kind: "gpio",    desc: "GPIO 16 · Bouton Poussoir BP Lumière (INPUT_PULLUP -> Relais K2)" },
+        { id: "TX2",   label: "D17",  gpio: 17,   kind: "gpio",    desc: "GPIO 17 · Bouton Poussoir BP Ventilateur (INPUT_PULLUP -> Relais R3)" },
+        { id: "RX2",   label: "D16",  gpio: 16,   kind: "gpio",    desc: "GPIO 16 · Bouton Poussoir BP Lumière (INPUT_PULLUP -> 5e Relais R5)" },
         { id: "D4",    label: "D4",   gpio: 4,    kind: "adc2",    desc: "GPIO 4 · Bus OneWire DS18B20 (+ pull-up 4,7 kΩ)" },
-        { id: "D2",    label: "D2",   gpio: 2,    kind: "adc2",    desc: "GPIO 2 · ADC2 (conflit Wi-Fi)" },
+        { id: "D2",    label: "D2",   gpio: 2,    kind: "gpio",    desc: "GPIO 2 · Feu Jaune (Secours Solaire / Sas anti-surtension 20 s)" },
         { id: "D15",   label: "D15",  gpio: 15,   kind: "adc2",    desc: "GPIO 15 · Buzzer Alarme 5V" },
         { id: "GND_R", label: "GND",  gpio: null, kind: "gnd",     desc: "Masse commune GND" },
         { id: "P3V3",  label: "3V3",  gpio: null, kind: "pwr3v3",  desc: "Sortie régulée +3,3V (DS18B20 + Pull-up 4,7 kΩ)" }
@@ -3237,7 +3315,7 @@
           pins: [
             { id: "GND", label: "GND",       x: 24, y: 182, side: "bottom", kind: "gnd",    desc: "Masse commune GND" },
             { id: "R",   label: "R (Rouge)", x: 40, y: 182, side: "bottom", kind: "sig_in", desc: "LED Rouge (Défaut) → GPIO 13" },
-            { id: "Y",   label: "Y (Jaune)", x: 56, y: 182, side: "bottom", kind: "sig_in", desc: "LED Jaune (Solaire) → GPIO 19" },
+            { id: "Y",   label: "Y (Jaune)", x: 56, y: 182, side: "bottom", kind: "sig_in", desc: "LED Jaune (Secours Solaire / Sas 20 s) → GPIO 2" },
             { id: "G",   label: "G (Vert)",  x: 72, y: 182, side: "bottom", kind: "sig_in", desc: "LED Verte (SONABEL) → GPIO 23" }
           ],
           render(id) {
@@ -3280,31 +3358,32 @@
         },
 
         relay4: {
-          type: "relay4", name: "Module 4 Relais 5V", simPart: true,
-          keywords: "relais 4 canaux srd-05vdc com no nc opto", w: 206, h: 430,
+          type: "relay4", name: "Module 4 Relais 5V (R1–R4)", simPart: true,
+          keywords: "relais 4 canaux srd-05vdc com no nc opto r1 r2 r3 r4 sonabel solaire confort pompe", w: 206, h: 430,
           pins: [
-            { id: "VCC",  label: "VCC", x: 10, y: 120, side: "left", kind: "pwr5",   desc: "Alimentation bobines +5,0V (LM2596)" },
+            { id: "VCC",  label: "VCC", x: 10, y: 120, side: "left", kind: "pwr5",   desc: "Alimentation bobines +5,0V (LM2596 + 1000 µF)" },
             { id: "GND",  label: "GND", x: 10, y: 150, side: "left", kind: "gnd",    desc: "Masse commune GND" },
-            { id: "IN1",  label: "IN1", x: 10, y: 196, side: "left", kind: "sig_in", desc: "K1 ATS SONABEL/Solaire → GPIO 26" },
-            { id: "IN2",  label: "IN2", x: 10, y: 236, side: "left", kind: "sig_in", desc: "K2 Charge Prioritaire → GPIO 27" },
-            { id: "IN3",  label: "IN3", x: 10, y: 276, side: "left", kind: "sig_in", desc: "K3 Charge Non-Prioritaire → GPIO 14" },
-            { id: "IN4",  label: "IN4", x: 10, y: 316, side: "left", kind: "sig_in", desc: "K4 Pompe Polytank → GPIO 12" },
-            { id: "NC1",  label: "K1 NC",  x: 192, y: 42,  side: "right", kind: "pwr12", desc: "K1 NC : Entrée SONABEL +12V" },
-            { id: "COM1", label: "K1 COM", x: 192, y: 66,  side: "right", kind: "out12", desc: "K1 COM : Bus 12V ATS sélectionné" },
-            { id: "NO1",  label: "K1 NO",  x: 192, y: 90,  side: "right", kind: "pwr12", desc: "K1 NO : Entrée Secours Batterie +12V" },
-            { id: "COM2", label: "K2 COM", x: 192, y: 162, side: "right", kind: "pwr12", desc: "K2 COM : +12V depuis ACS712 #1 IP-" },
-            { id: "NO2",  label: "K2 NO",  x: 192, y: 186, side: "right", kind: "out12", desc: "K2 NO : Vers Charge Prioritaire 12V" },
-            { id: "COM3", label: "K3 COM", x: 192, y: 262, side: "right", kind: "pwr12", desc: "K3 COM : +12V depuis ACS712 #1 IP-" },
-            { id: "NO3",  label: "K3 NO",  x: 192, y: 286, side: "right", kind: "out12", desc: "K3 NO : Vers Charge Non-Prioritaire 12V" },
-            { id: "COM4", label: "K4 COM", x: 192, y: 362, side: "right", kind: "pwr12", desc: "K4 COM : +12V depuis ACS712 #1 IP-" },
-            { id: "NO4",  label: "K4 NO",  x: 192, y: 386, side: "right", kind: "out12", desc: "K4 NO : Vers Mini Pompe 12V Polytank" }
+            { id: "IN1",  label: "IN1 (R1)", x: 10, y: 196, side: "left", kind: "sig_in", desc: "R1 SONABEL (Sas 20 s) → GPIO 25" },
+            { id: "IN2",  label: "IN2 (R2)", x: 10, y: 236, side: "left", kind: "sig_in", desc: "R2 Solaire / Batterie → GPIO 26" },
+            { id: "IN3",  label: "IN3 (R3)", x: 10, y: 276, side: "left", kind: "sig_in", desc: "R3 Ligne Confort (Ventilateur 12V) → GPIO 27" },
+            { id: "IN4",  label: "IN4 (R4)", x: 10, y: 316, side: "left", kind: "sig_in", desc: "R4 Mini Pompe 12V Polytank → GPIO 14" },
+            { id: "NC1",  label: "R1 NC",  x: 192, y: 42,  side: "right", kind: "pwr12", desc: "R1 NC : Contact repos SONABEL" },
+            { id: "COM1", label: "R1 COM", x: 192, y: 66,  side: "right", kind: "pwr12", desc: "R1 COM : Entrée +12V SONABEL" },
+            { id: "NO1",  label: "R1 NO",  x: 192, y: 90,  side: "right", kind: "out12", desc: "R1 NO : Vers Bus +12V ATS" },
+            { id: "NC2",  label: "R2 NC",  x: 192, y: 142, side: "right", kind: "pwr12", desc: "R2 NC : Contact repos Solaire" },
+            { id: "COM2", label: "R2 COM", x: 192, y: 162, side: "right", kind: "pwr12", desc: "R2 COM : Entrée +12V Batterie (via Fusible 5 A)" },
+            { id: "NO2",  label: "R2 NO",  x: 192, y: 186, side: "right", kind: "out12", desc: "R2 NO : Vers Bus +12V ATS (Interlock avec R1)" },
+            { id: "COM3", label: "R3 COM", x: 192, y: 262, side: "right", kind: "pwr12", desc: "R3 COM : +12V depuis ACS712 #1 IP-" },
+            { id: "NO3",  label: "R3 NO",  x: 192, y: 286, side: "right", kind: "out12", desc: "R3 NO : Vers Ventilateur 12V (Ligne Confort)" },
+            { id: "COM4", label: "R4 COM", x: 192, y: 362, side: "right", kind: "pwr12", desc: "R4 COM : +12V depuis ACS712 #1 IP-" },
+            { id: "NO4",  label: "R4 NO",  x: 192, y: 386, side: "right", kind: "out12", desc: "R4 NO : Vers Mini Pompe 12V (+ Diode 1N4007)" }
           ],
           render(id) {
             const meta = [
-              { num: 1, title: "K1 · ATS SOURCE", y: 24,  pins: [["NC",42],["COM",66],["NO",90]] },
-              { num: 2, title: "K2 · PRIO 12V",   y: 124, pins: [["NC",142],["COM",162],["NO",186]] },
-              { num: 3, title: "K3 · NON-PRIO",   y: 224, pins: [["NC",242],["COM",262],["NO",286]] },
-              { num: 4, title: "K4 · POMPE EAU",  y: 324, pins: [["NC",342],["COM",362],["NO",386]] }
+              { num: 1, title: "R1 · SONABEL (25)", y: 24,  pins: [["NC",42],["COM",66],["NO",90]] },
+              { num: 2, title: "R2 · SOLAIRE (26)", y: 124, pins: [["NC",142],["COM",162],["NO",186]] },
+              { num: 3, title: "R3 · CONFORT (27)", y: 224, pins: [["NC",242],["COM",262],["NO",286]] },
+              { num: 4, title: "R4 · POMPE (14)",   y: 324, pins: [["NC",342],["COM",362],["NO",386]] }
             ];
             let body = "";
             meta.forEach(r => {
@@ -3336,8 +3415,8 @@
         },
 
         load_priority: {
-          type: "load_priority", name: "Charge Prioritaire 12V", simPart: true,
-          keywords: "charge prioritaire lampe eclairage 12v secours k2", w: 204, h: 118,
+          type: "load_priority", name: "Lampe LED 12V (Vitale)", simPart: true,
+          keywords: "charge prioritaire lampe led eclairage 12v secours ligne vitale r5 gpio 19", w: 204, h: 118,
           pins: [
             { id: "POS", label: "+12V", x: 10, y: 34, side: "left", kind: "pwr12", desc: "Entrée +12V depuis Relais K2 NO" },
             { id: "NEG", label: "GND",  x: 10, y: 82, side: "left", kind: "gnd",   desc: "Retour Masse GND" }
@@ -3347,7 +3426,7 @@
               <circle id="${id}-ambient" cx="108" cy="64" r="78" fill="url(#g-lamp-ambient)" filter="url(#f-lamp-glow)" opacity="0" pointer-events="none" />
               <rect id="${id}- housing" x="18" y="4" width="182" height="110" rx="5" fill="#f8fafc" stroke="#64748b" stroke-width="1.3" filter="url(#comp-shadow)" />
               <rect x="18" y="4" width="182" height="20" rx="4" fill="#1e293b" />
-              <text x="109" y="17" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.8" font-weight="700" fill="#f8fafc">CHARGE PRIORITAIRE 12V</text>
+              <text x="109" y="17" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.8" font-weight="700" fill="#f8fafc">LAMPE LED 12V · VITALE (R5)</text>
               <line x1="10" y1="34" x2="36" y2="34" stroke="#c81e1e" stroke-width="2.8" /><line x1="10" y1="82" x2="36" y2="82" stroke="#18181b" stroke-width="2.8" />
               <circle cx="10" cy="34" r="5" fill="#c81e1e" stroke="#7f1d1d" stroke-width="0.9" /><circle cx="10" cy="82" r="5" fill="#18181b" stroke="#64748b" stroke-width="0.9" />
               <circle id="${id}-glow" cx="108" cy="64" r="46" fill="url(#g-lamp-on)" filter="url(#f-lamp-glow)" opacity="0" pointer-events="none" />
@@ -3363,8 +3442,8 @@
         },
 
         load_nonpriority: {
-          type: "load_nonpriority", name: "Charge Non-Prio 12V", simPart: true,
-          keywords: "charge non prioritaire ventilateur 12v delestage k3", w: 204, h: 128,
+          type: "load_nonpriority", name: "Ventilateur 12V (Confort)", simPart: true,
+          keywords: "charge non prioritaire ventilateur 12v delestage ligne confort r3 gpio 27", w: 204, h: 128,
           pins: [
             { id: "POS", label: "+12V", x: 10, y: 38, side: "left", kind: "pwr12", desc: "Entrée +12V depuis Relais K3 NO (délestable)" },
             { id: "NEG", label: "GND",  x: 10, y: 88, side: "left", kind: "gnd",   desc: "Retour Masse GND" }
@@ -3373,7 +3452,7 @@
             return `
               <rect x="18" y="4" width="182" height="120" rx="5" fill="#f8fafc" stroke="#64748b" stroke-width="1.3" filter="url(#comp-shadow)" />
               <rect x="18" y="4" width="182" height="20" rx="4" fill="#1e293b" />
-              <text x="109" y="17" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.6" font-weight="700" fill="#f8fafc">CHARGE NON-PRIO 12V</text>
+              <text x="109" y="17" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.6" font-weight="700" fill="#f8fafc">VENTILATEUR 12V · CONFORT (R3)</text>
               <line x1="10" y1="38" x2="48" y2="38" stroke="#c81e1e" stroke-width="2.8" /><line x1="10" y1="88" x2="48" y2="88" stroke="#18181b" stroke-width="2.8" />
               <circle cx="10" cy="38" r="5" fill="#c81e1e" stroke="#7f1d1d" stroke-width="0.9" /><circle cx="10" cy="88" r="5" fill="#18181b" stroke="#64748b" stroke-width="0.9" />
               <rect x="74" y="30" width="68" height="68" rx="7" fill="#1e293b" stroke="#0f172a" stroke-width="1.3" />
@@ -3390,7 +3469,7 @@
 
         pump_12v: {
           type: "pump_12v", name: "Pompe 12V Polytank", simPart: true,
-          keywords: "pompe 12v polytank eau cuve ad20p k4", w: 204, h: 214,
+          keywords: "pompe 12v polytank eau cuve ad20p r4 gpio 14 diode 1n4007 nexus", w: 204, h: 214,
           pins: [
             { id: "POS", label: "+12V", x: 10, y: 46, side: "left", kind: "pwr12", desc: "Entrée +12V depuis Relais K4 NO" },
             { id: "NEG", label: "GND",  x: 10, y: 92, side: "left", kind: "gnd",   desc: "Retour Masse GND" }
@@ -3399,7 +3478,7 @@
             return `
               <rect x="18" y="4" width="182" height="206" rx="5" fill="#f8fafc" stroke="#64748b" stroke-width="1.3" filter="url(#comp-shadow)" />
               <rect x="18" y="4" width="182" height="20" rx="4" fill="#1e293b" />
-              <text x="109" y="17" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.6" font-weight="700" fill="#f8fafc">POMPE 12V &amp; POLYTANK</text>
+              <text x="109" y="17" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.6" font-weight="700" fill="#f8fafc">MINI POMPE 12V &amp; POLYTANK (R4)</text>
               <line x1="10" y1="46" x2="38" y2="46" stroke="#c81e1e" stroke-width="2.8" /><line x1="10" y1="92" x2="38" y2="92" stroke="#18181b" stroke-width="2.8" />
               <circle cx="10" cy="46" r="5" fill="#c81e1e" stroke="#7f1d1d" stroke-width="0.9" /><circle cx="10" cy="92" r="5" fill="#18181b" stroke="#64748b" stroke-width="0.9" />
               <rect x="34" y="34" width="66" height="68" rx="12" fill="#1e293b" stroke="#0f172a" stroke-width="1.3" />
@@ -3453,11 +3532,170 @@
               </g>
             `;
           }
+        },
+
+        rtc_ds3231: {
+          type: "rtc_ds3231", name: "RTC DS3231 (I2C)", simPart: true,
+          keywords: "rtc ds3231 horloge i2c temps reel cr2032 nexus pic solaire zero cloud", w: 158, h: 96,
+          pins: [
+            { id: "GND", label: "GND", x: 10, y: 24, side: "left", kind: "gnd",     desc: "Masse commune GND" },
+            { id: "VCC", label: "VCC", x: 10, y: 42, side: "left", kind: "pwr3v3",  desc: "Alimentation +3,3V (ou +5V) — Pile CR2032 secours intégrée" },
+            { id: "SDA", label: "SDA", x: 10, y: 60, side: "left", kind: "i2c_sda", desc: "Bus I2C SDA en parallèle avec LCD 2004 → GPIO 21" },
+            { id: "SCL", label: "SCL", x: 10, y: 78, side: "left", kind: "i2c_scl", desc: "Bus I2C SCL en parallèle avec LCD 2004 → GPIO 22" }
+          ],
+          render(id) {
+            return `
+              <rect x="16" y="3" width="138" height="90" rx="5" fill="url(#g-pcb-blue)" stroke="#0f3d7a" stroke-width="1.3" filter="url(#comp-shadow)" />
+              ${[[25,12],[145,12],[25,84],[145,84]].map(([cx,cy]) => `<circle cx="${cx}" cy="${cy}" r="3.1" fill="#d4a03a" /><circle cx="${cx}" cy="${cy}" r="1.4" fill="#ffffff" />`).join("")}
+              <rect x="4" y="14" width="16" height="72" rx="2" fill="#0f172a" stroke="#334155" stroke-width="0.9" />
+              ${[[24,"GND","#cbd5e1"],[42,"VCC","#c4b5fd"],[60,"SDA","#93c5fd"],[78,"SCL","#fde047"]].map(([y,lbl,c]) => `<circle cx="10" cy="${y}" r="3" fill="#d9a441" stroke="#785111" stroke-width="0.7" /><circle cx="10" cy="${y}" r="1.1" fill="#0f172a" /><text x="23" y="${y+2.3}" font-family="IBM Plex Mono,monospace" font-size="5.6" font-weight="700" fill="${c}">${lbl}</text>`).join("")}
+              <circle cx="80" cy="40" r="24" fill="#18181b" stroke="#475569" stroke-width="1.2" />
+              <circle cx="80" cy="40" r="19" fill="url(#g-coin)" stroke="#64748b" stroke-width="0.9" />
+              <text x="80" y="38" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.8" font-weight="700" fill="#1e293b">CR2032</text>
+              <text x="80" y="47" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.1" fill="#475569">3V RTC</text>
+              <rect x="114" y="18" width="28" height="22" rx="1.5" fill="#0f172a" stroke="#64748b" stroke-width="0.8" />
+              <text x="128" y="31.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="4.9" font-weight="700" fill="#e2e8f0">DS3231</text>
+              <rect x="52" y="68" width="94" height="19" rx="3" fill="#0f172a" stroke="#38bdf8" stroke-width="0.85" />
+              <text id="${id}-time" x="99" y="80" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="7.2" font-weight="700" fill="#38bdf8">10:00:00</text>
+              <circle id="${id}-peak-led" cx="128" cy="52" r="4.2" fill="#1e293b" stroke="#94a3b8" stroke-width="0.8" />
+              <text x="128" y="63" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="4.8" font-weight="700" fill="#dbeafe">PIC 11-14</text>
+            `;
+          }
+        },
+
+        relay1ch: {
+          type: "relay1ch", name: "5e Relais 5V (R5 Vitale)", simPart: true,
+          keywords: "relais 1 canal 5v r5 ligne vitale lumiere gpio 19 songle sku 805", w: 196, h: 112,
+          pins: [
+            { id: "VCC", label: "VCC", x: 10,  y: 30, side: "left",  kind: "pwr5",   desc: "Alimentation bobine R5 +5,0V (LM2596)" },
+            { id: "GND", label: "GND", x: 10,  y: 56, side: "left",  kind: "gnd",    desc: "Masse commune GND" },
+            { id: "IN",  label: "IN (R5)", x: 10, y: 82, side: "left", kind: "sig_in", desc: "Commande 5e Relais R5 (Ligne Vitale) → GPIO 19" },
+            { id: "NC",  label: "R5 NC",  x: 184, y: 30, side: "right", kind: "pwr12", desc: "R5 NC : Contact repos" },
+            { id: "COM", label: "R5 COM", x: 184, y: 56, side: "right", kind: "pwr12", desc: "R5 COM : +12V depuis ACS712 #1 IP-" },
+            { id: "NO",  label: "R5 NO",  x: 184, y: 82, side: "right", kind: "out12", desc: "R5 NO : Sortie Ligne Vitale → Lampe LED 12V" }
+          ],
+          render(id) {
+            return `
+              <rect x="2" y="2" width="192" height="108" rx="6" fill="url(#g-pcb-black)" stroke="#334155" stroke-width="1.3" filter="url(#comp-shadow)" />
+              <rect x="4" y="18" width="14" height="76" rx="2" fill="#0f172a" stroke="#475569" stroke-width="0.8" />
+              ${[[30,"VCC"],[56,"GND"],[82,"IN"]].map(([y,lbl]) => `<circle cx="10" cy="${y}" r="3.1" fill="#d9a441" stroke="#785111" stroke-width="0.7" /><circle cx="10" cy="${y}" r="1.2" fill="#0f172a" /><text x="21" y="${y+2.4}" font-family="IBM Plex Mono,monospace" font-size="6.1" font-weight="700" fill="#f8fafc">${lbl}</text>`).join("")}
+              <g id="${id}-led-1"><circle cx="49" cy="34" r="9" fill="url(#g-led-green)" opacity="0" class="led-glow" /><circle cx="49" cy="34" r="3.6" fill="#14532d" stroke="#cbd5e1" stroke-width="0.8" class="led-core" /><text x="49" y="48" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.4" font-weight="700" fill="#86efac">R5</text></g>
+              <rect x="64" y="14" width="84" height="76" rx="3" fill="url(#g-relay-cube)" stroke="#0c4a9e" stroke-width="1.1" />
+              <rect x="68" y="18" width="76" height="68" rx="1.5" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="0.8" />
+              <text x="106" y="32" text-anchor="middle" font-family="Inter,sans-serif" font-size="6.8" font-weight="700" fill="#ffffff">SONGLE 1-CH</text>
+              <text x="106" y="42" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.6" fill="#dbeafe">SRD-05VDC-SL-C</text>
+              <rect x="72" y="48" width="68" height="14" rx="2" fill="rgba(15,23,42,0.34)" />
+              <text x="106" y="57.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.5" font-weight="700" fill="#fef08a">R5 · VITALE (19)</text>
+              <text id="${id}-state-1" x="106" y="74" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.6" font-weight="700" fill="#fde68a">OUVERT</text>
+              <rect x="152" y="16" width="38" height="78" rx="2" fill="#0369a1" stroke="#0c4a6e" stroke-width="1" />
+              ${[["NC",30],["COM",56],["NO",82]].map(([plbl,py]) => `<circle cx="180" cy="${py}" r="5.1" fill="#cbd5e1" stroke="#475569" stroke-width="0.9" /><line x1="177" y1="${py-2.5}" x2="183" y2="${py+2.5}" stroke="#334155" stroke-width="1.3" /><text x="171" y="${py+2.2}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="5.3" font-weight="700" fill="#e0f2fe">${plbl}</text>`).join("")}
+              <text class="comp-tag-label" x="98" y="103" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.9" font-weight="700" fill="#cbd5e1">5e RELAIS 5V · LIGNE VITALE</text>
+            `;
+          }
+        },
+
+        diode_1n4007: {
+          type: "diode_1n4007", name: "Diode 1N4007 (Roue libre)", simPart: true,
+          keywords: "diode 1n4007 roue libre pompe 12v protection cem inductive", w: 56, h: 74,
+          pins: [
+            { id: "K", label: "Cathode (K)", x: 28, y: 10, side: "top",    kind: "pwr12", desc: "Cathode (bague argentée) → Borne +12V Pompe (R4 NO4)" },
+            { id: "A", label: "Anode (A)",   x: 28, y: 56, side: "bottom", kind: "gnd",   desc: "Anode → Borne GND Pompe (Masse commune)" }
+          ],
+          render() {
+            return `
+              <line x1="28" y1="10" x2="28" y2="56" stroke="#94a3b8" stroke-width="3.2" stroke-linecap="round" />
+              <rect x="17" y="19" width="22" height="28" rx="3.5" fill="#18181b" stroke="#475569" stroke-width="1.1" filter="url(#comp-shadow)" />
+              <rect x="17.5" y="21.5" width="21" height="5.2" rx="1" fill="#e2e8f0" />
+              <text x="28" y="37" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.1" font-weight="700" fill="#cbd5e1">4007</text>
+              <circle cx="28" cy="10" r="4.3" fill="#c81e1e" stroke="#7f1d1d" stroke-width="0.9" /><circle cx="28" cy="10" r="1.5" fill="#ffffff" />
+              <circle cx="28" cy="56" r="4.3" fill="#18181b" stroke="#64748b" stroke-width="0.9" /><circle cx="28" cy="56" r="1.5" fill="#e2e8f0" />
+              <text x="12" y="13" font-family="IBM Plex Mono,monospace" font-size="6.4" font-weight="700" fill="#b91c1c">K</text>
+              <text x="12" y="59" font-family="IBM Plex Mono,monospace" font-size="6.4" font-weight="700" fill="#1e293b">A</text>
+              <text class="comp-tag-label" x="28" y="70" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.6" font-weight="700" fill="#334155">1N4007</text>
+            `;
+          }
+        },
+
+        fuse_5a: {
+          type: "fuse_5a", name: "Fusible 5A + Support", simPart: true,
+          keywords: "fusible 5a porte-fusible 5x20mm protection 12v batterie court-circuit", w: 132, h: 48,
+          pins: [
+            { id: "IN",  label: "IN (+12V Batt)",  x: 10,  y: 20, side: "left",  kind: "pwr12", desc: "Entrée +12V depuis Batterie 3S P+" },
+            { id: "OUT", label: "OUT (+12V Prot.)",x: 122, y: 20, side: "right", kind: "pwr12", desc: "Sortie +12V protégée 5 A vers R2 Solaire & Tension #2" }
+          ],
+          render(id) {
+            return `
+              <line x1="10" y1="20" x2="122" y2="20" stroke="#c81e1e" stroke-width="3.2" />
+              <rect x="24" y="6" width="84" height="28" rx="6" fill="#1e293b" stroke="#0f172a" stroke-width="1.2" filter="url(#comp-shadow)" />
+              <rect x="36" y="11" width="60" height="18" rx="4" fill="#f8fafc" stroke="#94a3b8" stroke-width="1" />
+              <rect x="36" y="11" width="13" height="18" rx="2" fill="url(#g-metal)" stroke="#64748b" stroke-width="0.9" />
+              <rect x="83" y="11" width="13" height="18" rx="2" fill="url(#g-metal)" stroke="#64748b" stroke-width="0.9" />
+              <path id="${id}-filament" d="M49 20 Q58 16 66 20 Q74 24 83 20" fill="none" stroke="#475569" stroke-width="1.4" />
+              <circle cx="10" cy="20" r="4.6" fill="#c81e1e" stroke="#7f1d1d" stroke-width="0.9" /><circle cx="10" cy="20" r="1.6" fill="#ffffff" />
+              <circle cx="122" cy="20" r="4.6" fill="#c81e1e" stroke="#7f1d1d" stroke-width="0.9" /><circle cx="122" cy="20" r="1.6" fill="#ffffff" />
+              <text class="comp-tag-label" x="66" y="44" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.1" font-weight="700" fill="#991b1b">FUSIBLE 5 A · BATT +12V</text>
+            `;
+          }
+        },
+
+        cap_1000uf: {
+          type: "cap_1000uf", name: "Condo 1000 µF (5V)", simPart: true,
+          keywords: "condensateur electrolytique 1000uf 16v 25v filtrage decouplage rail 5v", w: 122, h: 64,
+          pins: [
+            { id: "POS", label: "+ (+5V)", x: 10, y: 20, side: "left", kind: "pwr5", desc: "Borne positive (+) → Rail +5,0V LM2596" },
+            { id: "NEG", label: "- (GND)", x: 10, y: 44, side: "left", kind: "gnd",  desc: "Borne négative (−) → Masse commune GND" }
+          ],
+          render() {
+            return `
+              <line x1="10" y1="20" x2="36" y2="20" stroke="#ea580c" stroke-width="2.6" />
+              <line x1="10" y1="44" x2="36" y2="44" stroke="#18181b" stroke-width="2.6" />
+              <circle cx="10" cy="20" r="4.4" fill="#ea580c" stroke="#9a3412" stroke-width="0.9" /><circle cx="10" cy="20" r="1.5" fill="#ffffff" />
+              <circle cx="10" cy="44" r="4.4" fill="#18181b" stroke="#64748b" stroke-width="0.9" /><circle cx="10" cy="44" r="1.5" fill="#e2e8f0" />
+              <rect x="34" y="6" width="82" height="48" rx="8" fill="#18181b" stroke="#475569" stroke-width="1.2" filter="url(#comp-shadow)" />
+              <rect x="34" y="38" width="82" height="12" rx="2" fill="#94a3b8" opacity="0.82" />
+              <text x="48" y="47" font-family="IBM Plex Mono,monospace" font-size="8.5" font-weight="800" fill="#0f172a">-  -  -</text>
+              <text x="43" y="21" font-family="IBM Plex Mono,monospace" font-size="8.5" font-weight="800" fill="#fb923c">+</text>
+              <circle cx="94" cy="24" r="13" fill="url(#g-cap-top)" stroke="#64748b" stroke-width="0.9" />
+              <path d="M86 24 L102 24 M94 16 L94 32" stroke="#64748b" stroke-width="1.1" />
+              <text x="64" y="22" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.4" font-weight="700" fill="#f8fafc">1000µF</text>
+              <text x="64" y="32" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.6" fill="#cbd5e1">16V/25V</text>
+              <text class="comp-tag-label" x="75" y="62" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.8" font-weight="700" fill="#c2410c">FILTRAGE RAIL +5V</text>
+            `;
+          }
+        },
+
+        zmpt101b: {
+          type: "zmpt101b", name: "Tension AC ZMPT101B", simPart: false,
+          keywords: "zmpt101b capteur tension ac 230v phase 3 sonabel transformateur", w: 164, h: 92,
+          pins: [
+            { id: "AC_L", label: "L (230V)", x: 12,  y: 28, side: "left",  kind: "pwr12",  desc: "Phase 230V AC (Fiche Phase 3 isolée)" },
+            { id: "AC_N", label: "N (230V)", x: 12,  y: 62, side: "left",  kind: "gnd",    desc: "Neutre 230V AC (Fiche Phase 3 isolée)" },
+            { id: "VCC",  label: "VCC",      x: 154, y: 24, side: "right", kind: "pwr5",   desc: "Alimentation +5,0V (LM2596)" },
+            { id: "OUT",  label: "OUT",      x: 154, y: 46, side: "right", kind: "analog", desc: "Sortie analogique sinusoïdale → GPIO 36 (VP · ADC1 Phase 3)" },
+            { id: "GND",  label: "GND",      x: 154, y: 68, side: "right", kind: "gnd",    desc: "Masse commune GND" }
+          ],
+          render() {
+            return `
+              <rect x="2" y="2" width="160" height="88" rx="5" fill="url(#g-pcb-blue)" stroke="#0f3d7a" stroke-width="1.3" filter="url(#comp-shadow)" />
+              <rect x="6" y="14" width="28" height="62" rx="2" fill="#15803d" stroke="#0f5129" stroke-width="1" />
+              <circle cx="18" cy="28" r="6.5" fill="#cbd5e1" stroke="#475569" stroke-width="0.9" /><circle cx="18" cy="62" r="6.5" fill="#cbd5e1" stroke="#475569" stroke-width="0.9" />
+              <rect x="42" y="14" width="46" height="46" rx="3" fill="#0284c7" stroke="#0369a1" stroke-width="1.1" />
+              <text x="65" y="34" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6.1" font-weight="700" fill="#ffffff">ZMPT101B</text>
+              <text x="65" y="45" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.3" fill="#bae6fd">2mA:2mA</text>
+              <rect x="96" y="18" width="22" height="22" rx="1.5" fill="#0369a1" stroke="#0c4a6e" stroke-width="0.9" />
+              <circle cx="107" cy="29" r="4" fill="url(#g-brass)" stroke="#713f12" stroke-width="0.7" />
+              <rect x="146" y="16" width="14" height="60" rx="1.5" fill="#0f172a" />
+              ${[[24,"VCC"],[46,"OUT"],[68,"GND"]].map(([y,lbl]) => `<circle cx="154" cy="${y}" r="3.1" fill="#d9a441" stroke="#785111" stroke-width="0.7" /><circle cx="154" cy="${y}" r="1.2" fill="#0f172a" /><text x="142" y="${y+2.4}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="6.1" font-weight="700" fill="#f8fafc">${lbl}</text>`).join("")}
+              <text class="comp-tag-label" x="82" y="81" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="5.9" font-weight="700" fill="#fde68a">PHASE 3 · 230V AC</text>
+            `;
+          }
         }
       };
 
       const PALETTE_ORDER = [
-        "esp32", "lm2596", "relay4",
+        "esp32", "rtc_ds3231", "lm2596",
+        "relay4", "relay1ch", "diode_1n4007",
+        "fuse_5a", "cap_1000uf", "zmpt101b",
         "acs712", "volt_sensor", "ds18b20",
         "hcsr04", "resistor_10k", "resistor_4k7",
         "lcd2004", "battery_12v", "solar_panel",
@@ -3481,22 +3719,28 @@
         resistor_4k7:     { spec: "Résistance carbone 4,7 kΩ ±5% · 1/4 W (Jaune-Violet-Rouge-Or)", role: "Résistance de tirage pull-up obligatoire entre DATA (GPIO 4) et +3,3V pour le bus OneWire DS18B20." },
         ds18b20:          { spec: "Sonde thermique numérique étanche inox (-55 à +125 °C · OneWire)", role: "Surveillance température transformateur/poste avec déclenchement thermique Q1 > 60 °C." },
         lcd2004:          { spec: "Afficheur alphanumérique LCD 20×4 caractères + adaptateur I2C PCF8574 (0x27)", role: "Affichage local temps réel : source active, état Q1, tension, courant, température, batterie et Polytank." },
-        traffic_light:    { spec: "Module colonne feu tricolore LED 5 mm (Rouge / Jaune / Vert)", role: "Signalisation d'état locale : Vert SONABEL (GPIO 23), Jaune Solaire (GPIO 19), Rouge Défaut (GPIO 13)." },
+        traffic_light:    { spec: "Module colonne feu tricolore LED 5 mm (Electro Lab SKU #180)", role: "Signalisation d'état FSM : Vert SONABEL (GPIO 23), Jaune Secours Solaire / Sas 20 s (GPIO 2), Rouge Défaut / Délestage (GPIO 13)." },
         buzzer:           { spec: "Buzzer actif piézoélectrique 5V (85 dB)", role: "Alarme sonore locale commandée par GPIO 15 en cas de défaut, surchauffe ou niveau d'eau critique." },
-        relay4:           { spec: "Module 4 relais optocouplés 5V SONGLE SRD-05VDC (10A · COM/NO/NC)", role: "Commutation puissance 12V : K1 ATS (GPIO 26), K2 Prioritaire (GPIO 27), K3 Non-Prio (GPIO 14), K4 Pompe (GPIO 12)." },
+        relay4:           { spec: "Module 4 relais optocouplés 5V SONGLE SRD-05VDC (10A · Electro Lab SKU #624)", role: "Commutation puissance 12V FSM : R1 SONABEL (GPIO 25), R2 Solaire (GPIO 26), R3 Confort Ventilateur (GPIO 27), R4 Pompe Polytank (GPIO 14)." },
         load_priority:    { spec: "Éclairage LED de secours 12V DC (circuit prioritaire)", role: "Maintenu alimenté par K2 même lors d'un délestage de surcharge, commandé par BP Lumière (GPIO 16) ou SCADA." },
         load_nonpriority: { spec: "Ventilateur / charge secondaire 12V DC (circuit délestable)", role: "Commandé par BP Ventilateur (GPIO 17) ou SCADA, et délesté automatiquement par K3 si I > 3,5 A." },
         push_button:      { spec: "Bouton poussoir tactile 6×6 mm NO (câblé entre GPIO et GND en INPUT_PULLUP)", role: "Commande locale à bascule (anti-rebond millis) pour Lumière K2 (GPIO 16) et Ventilateur K3 (GPIO 17) avec synchronisation MQTT SCADA." },
-        pump_12v:         { spec: "Mini pompe centrifuge brushless 12V DC AD20P + cuve Polytank", role: "Remplissage automatique piloté par K4 (marche < 30 %, arrêt >= 85 %)." }
+        pump_12v:         { spec: "Mini pompe centrifuge brushless 12V DC AD20P-1230C (SKU #608) + cuve Polytank", role: "Remplissage automatique piloté par R4 (GPIO 14) avec diode 1N4007 : Nexus pic solaire 11h–14h (<75%→95%) et standard (<30%→85%)." },
+        rtc_ds3231:       { spec: "Module Horloge Temps Réel RTC DS3231 I2C (0x68) + Pile CR2032 (Electro Lab SKU #155)", role: "Câblé en parallèle sur le bus I2C (GPIO 21 SDA / GPIO 22 SCL) : pilote le Nexus pic solaire 11h–14h, le Sas 20 s et le Mode Zéro Cloud hors-ligne." },
+        relay1ch:         { spec: "Module 1 Relais 5V SONGLE SRD-05VDC-SL-C 10A (Electro Lab SKU #805)", role: "5e relais R5 (GPIO 19) dédié exclusivement au pilotage de la Ligne Vitale (Lampe LED 12V), préservée en délestage." },
+        diode_1n4007:     { spec: "Diode de redressement 1N4007 1A / 1000V DO-41 (Electro Lab SKU #975)", role: "Diode de roue libre montée en anti-parallèle aux bornes de la pompe 12V (Cathode sur +12V, Anode sur GND) contre les surtensions inductives." },
+        fuse_5a:          { spec: "Porte-fusible 5×20 mm + Fusible verre 5 A / 250 V (Electro Lab SKU #968)", role: "Protection court-circuit en série sur le rail +12V sortie Batterie 3S/BMS vers le relais R2 Solaire." },
+        cap_1000uf:       { spec: "Condensateur électrolytique radial 1000 µF / 25 V 105°C (équiv. ≥ 16 V, Electro Lab SKU #2008)", role: "Réservoir de découplage sur le rail +5,0V LM2596 empêchant tout brownout ESP32 lors de la commutation simultanée des 5 relais." },
+        zmpt101b:         { spec: "Capteur de tension AC isolé ZMPT101B 2mA:2mA (Electro Lab SKU #152 — Fiche Phase 3)", role: "Extension Phase 3 (230V AC SONABEL) raccordée sur ADC1 libre (GPIO 36 / VP) pour la FSM et le Sas anti-surtension 20 s." }
       };
 
       // =====================================================================
       // 3. PRESETS — DISPOSITION EXACTE DAV (26 COMPOSANTS, 73 FILS 90°, 0 CROISEMENT)
       // =====================================================================
       const SMARTGRID_ZONES = [
-        { x: 20,   y: 58, w: 590, h: 890, title: "GAUCHE · SOURCES 12V, BUCK LM2596 7-SEG & CAPTEURS TENSION / COURANT" },
-        { x: 642,  y: 58, w: 642, h: 890, title: "CENTRE · MODULE 4 RELAIS 5V, CHARGES 12V, BOUTONS & ESP32 (30 BROCHES)" },
-        { x: 1320, y: 58, w: 660, h: 890, title: "DROITE · LCD 2004 I2C, DS18B20, HC-SR04, FEU TRICOLORE, BUZZER & POLYTANK" }
+        { x: 20,   y: 58, w: 620, h: 970, title: "GAUCHE · SOURCES 12V, FUSIBLE 5A, LM2596, CONDO 1000 µF & CAPTEURS" },
+        { x: 668,  y: 58, w: 696, h: 970, title: "CENTRE · 5 RELAIS (R1–R5), CHARGES 12V (VITALE / CONFORT), BP & ESP32" },
+        { x: 1396, y: 58, w: 696, h: 970, title: "DROITE · BUS I2C (LCD + RTC DS3231), DS18B20, HC-SR04, FEU, 1N4007 & POMPE" }
       ];
 
       function createPreset(name) {
@@ -3504,131 +3748,149 @@
           return {
             zones: SMARTGRID_ZONES,
             components: [
-              // GAUCHE : Sources + Conversion LM2596 7-segments + 2 Tension + 2 ACS712
+              // GAUCHE : Sources + Fusible 5A batterie + LM2596 + Capteurs + Rail 5V + Condo 1000 µF
               { id: "psu_sonabel1", type: "psu_sonabel",      x: 40,   y: 76,  rot: 0 },
-              { id: "solar1",       type: "solar_panel",      x: 40,   y: 204, rot: 0 },
-              { id: "solar2",       type: "solar_panel",      x: 40,   y: 332, rot: 0 },
-              { id: "batt1",        type: "battery_12v",      x: 40,   y: 468, rot: 0 },
-              { id: "bus12",        type: "bus_12v",          x: 40,   y: 634, rot: 0 },
+              { id: "solar1",       type: "solar_panel",      x: 40,   y: 198, rot: 0 },
+              { id: "solar2",       type: "solar_panel",      x: 40,   y: 320, rot: 0 },
+              { id: "batt1",        type: "battery_12v",      x: 40,   y: 444, rot: 0 },
+              { id: "fuse1",        type: "fuse_5a",          x: 46,   y: 576, rot: 0 },
+              { id: "bus12",        type: "bus_12v",          x: 40,   y: 654, rot: 0 },
 
-              { id: "lm2596_1",     type: "lm2596",           x: 376,  y: 76,  rot: 0 },
-              { id: "volt_son",     type: "volt_sensor",      x: 386,  y: 222, rot: 0, tag: "TENSION SONABEL" },
-              { id: "volt_bat",     type: "volt_sensor",      x: 386,  y: 334, rot: 0, tag: "TENSION BATTERIE" },
-              { id: "acs_solar",    type: "acs712",           x: 386,  y: 448, rot: 0, tag: "ACS712 #2 SOLAIRE" },
-              { id: "acs_load",     type: "acs712",           x: 386,  y: 568, rot: 0, tag: "ACS712 #1 CHARGE" },
-              { id: "rail5",        type: "rail_5v",          x: 396,  y: 678, rot: 0 },
+              { id: "lm2596_1",     type: "lm2596",           x: 396,  y: 76,  rot: 0 },
+              { id: "volt_son",     type: "volt_sensor",      x: 406,  y: 214, rot: 0, tag: "TENSION SONABEL" },
+              { id: "volt_bat",     type: "volt_sensor",      x: 406,  y: 318, rot: 0, tag: "TENSION BATTERIE" },
+              { id: "acs_solar",    type: "acs712",           x: 406,  y: 422, rot: 0, tag: "ACS712 #2 SOLAIRE" },
+              { id: "acs_load",     type: "acs712",           x: 406,  y: 534, rot: 0, tag: "ACS712 #1 CHARGE" },
+              { id: "rail5",        type: "rail_5v",          x: 406,  y: 654, rot: 0 },
+              { id: "cap1",         type: "cap_1000uf",       x: 416,  y: 938, rot: 0 },
 
-              // CENTRE : Module 4 Relais 5V + Charges 12V + 2 Boutons Poussoirs + ESP32 30 broches
-              { id: "relay1",       type: "relay4",           x: 742,  y: 76,  rot: 0 },
-              { id: "load_prio",    type: "load_priority",    x: 1066, y: 120, rot: 0 },
-              { id: "load_nonprio", type: "load_nonpriority", x: 1066, y: 282, rot: 0 },
-              { id: "bp_lumiere",   type: "push_button",      x: 1094, y: 428, rot: 0, tag: "BP LUMIERE (GPIO 16)", target: "k2" },
-              { id: "bp_ventilo",   type: "push_button",      x: 1094, y: 508, rot: 0, tag: "BP VENTILATEUR (GPIO 17)", target: "k3" },
-              { id: "esp32",        type: "esp32",            x: 894,  y: 556, rot: 0 },
+              // CENTRE : Module 4 Relais (R1..R4) + 5e Relais R5 (GPIO 19) + Charges 12V + BP + ESP32 30 broches
+              { id: "relay1",       type: "relay4",           x: 760,  y: 76,  rot: 0 },
+              { id: "relay5",       type: "relay1ch",         x: 760,  y: 526, rot: 0 },
+              { id: "load_prio",    type: "load_priority",    x: 1132, y: 76,  rot: 0 },
+              { id: "load_nonprio", type: "load_nonpriority", x: 1132, y: 222, rot: 0 },
+              { id: "bp_lumiere",   type: "push_button",      x: 1150, y: 382, rot: 0, tag: "BP LUMIERE (GPIO 16)", target: "r5" },
+              { id: "bp_ventilo",   type: "push_button",      x: 1150, y: 472, rot: 0, tag: "BP VENTILATEUR (GPIO 17)", target: "r3" },
+              { id: "esp32",        type: "esp32",            x: 924,  y: 656, rot: 0 },
 
-              // DROITE : LCD 2004 I2C + DS18B20 + 4.7k + HC-SR04 + 2x10k + Feu tricolore + Buzzer + Pompe Polytank
-              { id: "lcd1",         type: "lcd2004",          x: 1412, y: 76,  rot: 0 },
-              { id: "ds1",          type: "ds18b20",          x: 1446, y: 244, rot: 0 },
-              { id: "r_4k7",        type: "resistor_4k7",     x: 1446, y: 364, rot: 0 },
-              { id: "hcsr1",        type: "hcsr04",           x: 1446, y: 432, rot: 0 },
-              { id: "r1_10k",       type: "resistor_10k",     x: 1446, y: 584, rot: 0 },
-              { id: "r2_10k",       type: "resistor_10k",     x: 1446, y: 644, rot: 0 },
-              { id: "feu1",         type: "traffic_light",    x: 1814, y: 76,  rot: 0 },
-              { id: "buz1",         type: "buzzer",           x: 1794, y: 360, rot: 0 },
-              { id: "pump1",        type: "pump_12v",         x: 1742, y: 540, rot: 0 }
+              // DROITE : LCD 2004 + RTC DS3231 (I2C //) + DS18B20 + 4.7k + HC-SR04 + 2x10k + Feu + Buzzer + Diode 1N4007 + Pompe 12V
+              { id: "lcd1",         type: "lcd2004",          x: 1480, y: 76,  rot: 0 },
+              { id: "rtc1",         type: "rtc_ds3231",       x: 1480, y: 226, rot: 0 },
+              { id: "ds1",          type: "ds18b20",          x: 1510, y: 344, rot: 0 },
+              { id: "r_4k7",        type: "resistor_4k7",     x: 1510, y: 456, rot: 0 },
+              { id: "hcsr1",        type: "hcsr04",           x: 1510, y: 516, rot: 0 },
+              { id: "r1_10k",       type: "resistor_10k",     x: 1510, y: 668, rot: 0 },
+              { id: "r2_10k",       type: "resistor_10k",     x: 1510, y: 728, rot: 0 },
+              { id: "feu1",         type: "traffic_light",    x: 1930, y: 76,  rot: 0 },
+              { id: "buz1",         type: "buzzer",           x: 1910, y: 360, rot: 0 },
+              { id: "diode1",       type: "diode_1n4007",     x: 1782, y: 576, rot: 0 },
+              { id: "pump1",        type: "pump_12v",         x: 1860, y: 540, rot: 0 }
             ],
             wires: [
-              // A. BUS PUISSANCE +12V (ROUGE #c81e1e)
-              { id: "w_p1",  from: "psu_sonabel1.POS", to: "volt_son.VP",     color: "#c81e1e", layer: "power", via: [[244, 108], [244, 248]] },
-              { id: "w_p2",  from: "psu_sonabel1.POS", to: "relay1.NC1",      color: "#c81e1e", layer: "power", via: [[244, 108], [244, 28], [978, 28], [978, 118]] },
-              { id: "w_p3a", from: "solar1.PV_P",      to: "solar2.PV_P",     color: "#c81e1e", layer: "power", via: [[224, 234], [224, 362]] },
-              { id: "w_p3b", from: "solar2.PV_P",      to: "acs_solar.IP_P",  color: "#c81e1e", layer: "power", via: [[262, 362], [262, 476]] },
-              { id: "w_p4",  from: "acs_solar.IP_N",   to: "batt1.POS",       color: "#c81e1e", layer: "power", via: [[274, 512], [274, 498]] },
-              { id: "w_p5",  from: "batt1.POS",        to: "volt_bat.VP",     color: "#c81e1e", layer: "power", via: [[284, 498], [284, 360]] },
-              { id: "w_p6",  from: "batt1.POS",        to: "relay1.NO1",      color: "#c81e1e", layer: "power", via: [[254, 498], [254, 18], [990, 18], [990, 166]] },
-              { id: "w_p7",  from: "relay1.COM1",      to: "bus12.P1",        color: "#c81e1e", layer: "power", via: [[966, 142], [966, 8], [296, 8], [296, 682]] },
-              { id: "w_p8",  from: "bus12.P3",         to: "lm2596_1.IN_P",   color: "#c81e1e", layer: "power", via: [[26, 746], [26, 588], [326, 588], [326, 106]] },
-              { id: "w_p9",  from: "bus12.P2",         to: "acs_load.IP_P",   color: "#c81e1e", layer: "power", via: [[308, 732], [308, 596]] },
-              { id: "w_p10", from: "acs_load.IP_N",    to: "relay1.COM2",     color: "#c81e1e", layer: "power", via: [[364, 632], [364, 668], [628, 668], [628, 520], [966, 520], [966, 238]] },
-              { id: "w_p11", from: "relay1.COM2",      to: "relay1.COM3",     color: "#c81e1e", layer: "power", via: [[966, 238], [966, 338]] },
-              { id: "w_p12", from: "relay1.COM3",      to: "relay1.COM4",     color: "#c81e1e", layer: "power", via: [[966, 338], [966, 438]] },
-              { id: "w_p13", from: "relay1.NO2",       to: "load_prio.POS",   color: "#c81e1e", layer: "power", via: [[1010, 262], [1010, 154]] },
-              { id: "w_p14", from: "relay1.NO3",       to: "load_nonprio.POS",color: "#c81e1e", layer: "power", via: [[1010, 362], [1010, 320]] },
-              { id: "w_p15", from: "relay1.NO4",       to: "pump1.POS",       color: "#c81e1e", layer: "power", via: [[1010, 462], [1010, 592], [1292, 592], [1292, 954], [1686, 954], [1686, 586]] },
+              // A. BUS PUISSANCE +12V (ROUGE #c81e1e) + FUSIBLE 5A + DIODE 1N4007
+              { id: "w_p1",  from: "psu_sonabel1.POS", to: "volt_son.VP",     color: "#c81e1e", layer: "power", via: [[244, 108], [244, 240]] },
+              { id: "w_p2",  from: "psu_sonabel1.POS", to: "relay1.COM1",     color: "#c81e1e", layer: "power", via: [[244, 108], [244, 24], [1004, 24], [1004, 142]] },
+              { id: "w_p3a", from: "solar1.PV_P",      to: "solar2.PV_P",     color: "#c81e1e", layer: "power", via: [[224, 228], [224, 350]] },
+              { id: "w_p3b", from: "solar2.PV_P",      to: "acs_solar.IP_P",  color: "#c81e1e", layer: "power", via: [[262, 350], [262, 450]] },
+              { id: "w_f1",  from: "batt1.POS",        to: "fuse1.IN",        color: "#c81e1e", layer: "power", via: [[224, 474], [224, 560], [30, 560], [30, 596]] },
+              { id: "w_f2",  from: "fuse1.OUT",        to: "acs_solar.IP_N",  color: "#c81e1e", layer: "power", via: [[276, 596], [276, 486]] },
+              { id: "w_p5",  from: "fuse1.OUT",        to: "volt_bat.VP",     color: "#c81e1e", layer: "power", via: [[286, 596], [286, 344]] },
+              { id: "w_p6",  from: "fuse1.OUT",        to: "relay1.COM2",     color: "#c81e1e", layer: "power", via: [[254, 596], [254, 14], [1016, 14], [1016, 238]] },
+              { id: "w_p7a", from: "relay1.NO1",       to: "relay1.NO2",      color: "#c81e1e", layer: "power", via: [[992, 166], [992, 262]] },
+              { id: "w_p7b", from: "relay1.NO1",       to: "bus12.P1",        color: "#c81e1e", layer: "power", via: [[992, 166], [992, 4], [298, 4], [298, 702]] },
+              { id: "w_p8",  from: "bus12.P3",         to: "lm2596_1.IN_P",   color: "#c81e1e", layer: "power", via: [[22, 766], [22, 636], [336, 636], [336, 106]] },
+              { id: "w_p9",  from: "bus12.P2",         to: "acs_load.IP_P",   color: "#c81e1e", layer: "power", via: [[312, 752], [312, 562]] },
+              { id: "w_p10", from: "acs_load.IP_N",    to: "relay1.COM3",     color: "#c81e1e", layer: "power", via: [[370, 598], [370, 646], [648, 646], [648, 514], [978, 514], [978, 338]] },
+              { id: "w_p11", from: "relay1.COM3",      to: "relay1.COM4",     color: "#c81e1e", layer: "power", via: [[978, 338], [978, 438]] },
+              { id: "w_p12", from: "relay1.COM4",      to: "relay5.COM",      color: "#c81e1e", layer: "power", via: [[978, 438], [978, 582]] },
+              { id: "w_p13", from: "relay5.NO",        to: "load_prio.POS",   color: "#c81e1e", layer: "power", via: [[1036, 608], [1036, 110]] },
+              { id: "w_p14", from: "relay1.NO3",       to: "load_nonprio.POS",color: "#c81e1e", layer: "power", via: [[1048, 362], [1048, 260]] },
+              { id: "w_p15", from: "relay1.NO4",       to: "diode1.K",        color: "#c81e1e", layer: "power", via: [[1060, 462], [1060, 628], [1374, 628], [1374, 1044], [1762, 1044], [1762, 586]] },
+              { id: "w_d1",  from: "diode1.K",         to: "pump1.POS",       color: "#c81e1e", layer: "power" },
+              { id: "w_d2",  from: "diode1.A",         to: "pump1.NEG",       color: "#18181b", layer: "power" },
 
-              // B. RAIL LOGIQUE +5V (ORANGE #ea580c)
-              { id: "w_5v1", from: "lm2596_1.OUT_P",   to: "rail5.P5_IN",     color: "#ea580c", layer: "power", via: [[602, 106], [602, 672], [354, 672], [354, 750]] },
-              { id: "w_5v2", from: "rail5.P5_1",       to: "acs_load.VCC",    color: "#ea580c", layer: "power", via: [[574, 720], [574, 592]] },
-              { id: "w_5v3", from: "rail5.P5_1",       to: "acs_solar.VCC",   color: "#ea580c", layer: "power", via: [[574, 720], [574, 472]] },
-              { id: "w_5v4", from: "rail5.P5_2",       to: "esp32.VIN",       color: "#ea580c", layer: "power", via: [[618, 752], [618, 876.8]] },
-              { id: "w_5v5", from: "rail5.P5_3",       to: "relay1.VCC",      color: "#ea580c", layer: "power", via: [[650, 784], [650, 196]] },
-              { id: "w_5v6", from: "rail5.P5_3",       to: "lcd1.VCC",        color: "#ea580c", layer: "power", via: [[650, 784], [650, 964], [1348, 964], [1348, 132]] },
-              { id: "w_5v7", from: "rail5.P5_3",       to: "hcsr1.VCC",       color: "#ea580c", layer: "power", via: [[650, 784], [650, 964], [1348, 964], [1348, 548], [1512, 548]] },
+              // B. RAIL LOGIQUE +5V (ORANGE #ea580c) + CONDENSATEUR 1000 µF
+              { id: "w_5v1", from: "lm2596_1.OUT_P",   to: "rail5.P5_IN",     color: "#ea580c", layer: "power", via: [[622, 106], [622, 636], [380, 636], [380, 726]] },
+              { id: "w_c1",  from: "cap1.POS",         to: "rail5.P5_IN",     color: "#ea580c", layer: "power", via: [[380, 958], [380, 726]] },
+              { id: "w_5v2", from: "rail5.P5_1",       to: "acs_load.VCC",    color: "#ea580c", layer: "power", via: [[586, 696], [586, 558]] },
+              { id: "w_5v3", from: "rail5.P5_1",       to: "acs_solar.VCC",   color: "#ea580c", layer: "power", via: [[586, 696], [586, 446]] },
+              { id: "w_5v4", from: "rail5.P5_2",       to: "esp32.VIN",       color: "#ea580c", layer: "power", via: [[644, 728], [644, 992.8]] },
+              { id: "w_5v5", from: "rail5.P5_3",       to: "relay1.VCC",      color: "#ea580c", layer: "power", via: [[676, 760], [676, 196]] },
+              { id: "w_5v5b",from: "rail5.P5_3",       to: "relay5.VCC",      color: "#ea580c", layer: "power", via: [[676, 760], [676, 556]] },
+              { id: "w_5v6", from: "rail5.P5_3",       to: "lcd1.VCC",        color: "#ea580c", layer: "power", via: [[676, 760], [676, 1054], [1424, 1054], [1424, 132]] },
+              { id: "w_5v7", from: "rail5.P5_3",       to: "hcsr1.VCC",       color: "#ea580c", layer: "power", via: [[676, 760], [676, 1054], [1424, 1054], [1424, 632], [1576, 632]] },
 
-              // C. RAIL +3,3V (VIOLET #7c3aed)
-              { id: "w_3v1", from: "esp32.P3V3",       to: "ds1.VCC",         color: "#7c3aed", layer: "power", via: [[1326, 876.8], [1326, 268]] },
-              { id: "w_3v2", from: "esp32.P3V3",       to: "r_4k7.A",         color: "#7c3aed", layer: "power", via: [[1326, 876.8], [1326, 380]] },
+              // C. RAIL +3,3V (VIOLET #7c3aed) : DS18B20, 4,7k & RTC DS3231
+              { id: "w_3v1", from: "esp32.P3V3",       to: "ds1.VCC",         color: "#7c3aed", layer: "power", via: [[1404, 992.8], [1404, 368]] },
+              { id: "w_3v2", from: "esp32.P3V3",       to: "r_4k7.A",         color: "#7c3aed", layer: "power", via: [[1404, 992.8], [1404, 472]] },
+              { id: "w_3v3", from: "esp32.P3V3",       to: "rtc1.VCC",        color: "#7c3aed", layer: "power", via: [[1404, 992.8], [1404, 268]] },
 
               // D. MASSE COMMUNE GND (NOIR #18181b)
-              { id: "w_g1",  from: "psu_sonabel1.NEG", to: "bus12.G5",        color: "#18181b", layer: "power", via: [[234, 148], [234, 844]] },
-              { id: "w_g2",  from: "solar1.PV_N",      to: "bus12.G5",        color: "#18181b", layer: "power", via: [[234, 276], [234, 844]] },
-              { id: "w_g3",  from: "solar2.PV_N",      to: "bus12.G5",        color: "#18181b", layer: "power", via: [[234, 404], [234, 844]] },
-              { id: "w_g4",  from: "batt1.NEG",        to: "bus12.G5",        color: "#18181b", layer: "power", via: [[234, 540], [234, 844]] },
-              { id: "w_g5",  from: "bus12.G4",         to: "lm2596_1.IN_N",   color: "#18181b", layer: "power", via: [[16, 782], [16, 602], [338, 602], [338, 160]] },
-              { id: "w_g6",  from: "bus12.G5",         to: "volt_son.VN",     color: "#18181b", layer: "power", via: [[348, 844], [348, 280]] },
-              { id: "w_g7",  from: "bus12.G5",         to: "volt_bat.VN",     color: "#18181b", layer: "power", via: [[348, 844], [348, 392]] },
-              { id: "w_g8",  from: "lm2596_1.OUT_N",   to: "rail5.G_IN",      color: "#18181b", layer: "power", via: [[612, 160], [612, 682], [364, 682], [364, 794]] },
-              { id: "w_g9",  from: "rail5.G1",         to: "volt_son.GND",    color: "#18181b", layer: "power", via: [[588, 834], [588, 280]] },
-              { id: "w_g10", from: "rail5.G1",         to: "volt_bat.GND",    color: "#18181b", layer: "power", via: [[588, 834], [588, 392]] },
-              { id: "w_g11", from: "rail5.G1",         to: "acs_solar.GND",   color: "#18181b", layer: "power", via: [[588, 834], [588, 516]] },
-              { id: "w_g12", from: "rail5.G1",         to: "acs_load.GND",    color: "#18181b", layer: "power", via: [[588, 834], [588, 636]] },
-              { id: "w_g13", from: "rail5.G2",         to: "esp32.GND_L",     color: "#18181b", layer: "power", via: [[662, 870], [662, 858.6]] },
-              { id: "w_g14", from: "rail5.G3",         to: "relay1.GND",      color: "#18181b", layer: "power", via: [[672, 904], [672, 226]] },
-              { id: "w_g15", from: "rail5.G3",         to: "load_prio.NEG",   color: "#18181b", layer: "power", via: [[672, 904], [672, 534], [1032, 534], [1032, 202]] },
-              { id: "w_g16", from: "rail5.G3",         to: "load_nonprio.NEG",color: "#18181b", layer: "power", via: [[672, 904], [672, 534], [1032, 534], [1032, 370]] },
-              { id: "w_g17", from: "esp32.GND_R",      to: "lcd1.GND",        color: "#18181b", layer: "power", via: [[1338, 858.6], [1338, 114]] },
-              { id: "w_g18", from: "esp32.GND_R",      to: "ds1.GND",         color: "#18181b", layer: "power", via: [[1338, 858.6], [1338, 308]] },
-              { id: "w_g19", from: "esp32.GND_R",      to: "hcsr1.GND",       color: "#18181b", layer: "power", via: [[1338, 858.6], [1338, 568], [1572, 568]] },
-              { id: "w_hc5", from: "r2_10k.B",         to: "esp32.GND_R",     color: "#18181b", layer: "power", via: [[1576, 660], [1576, 700], [1338, 700], [1338, 858.6]] },
-              { id: "w_g20", from: "esp32.GND_R",      to: "pump1.NEG",       color: "#18181b", layer: "power", via: [[1338, 858.6], [1338, 974], [1700, 974], [1700, 632]] },
-              { id: "w_g21", from: "esp32.GND_R",      to: "buz1.NEG",        color: "#18181b", layer: "power", via: [[1338, 858.6], [1338, 974], [1700, 974], [1700, 424]] },
-              { id: "w_g22", from: "esp32.GND_R",      to: "feu1.GND",        color: "#18181b", layer: "power", via: [[1338, 858.6], [1338, 974], [1700, 974], [1700, 294], [1838, 294]] },
+              { id: "w_g1",  from: "psu_sonabel1.NEG", to: "bus12.G5",        color: "#18181b", layer: "power", via: [[234, 148], [234, 864]] },
+              { id: "w_g2",  from: "solar1.PV_N",      to: "bus12.G5",        color: "#18181b", layer: "power", via: [[234, 270], [234, 864]] },
+              { id: "w_g3",  from: "solar2.PV_N",      to: "bus12.G5",        color: "#18181b", layer: "power", via: [[234, 392], [234, 864]] },
+              { id: "w_g4",  from: "batt1.NEG",        to: "bus12.G5",        color: "#18181b", layer: "power", via: [[234, 516], [234, 864]] },
+              { id: "w_g5",  from: "bus12.G4",         to: "lm2596_1.IN_N",   color: "#18181b", layer: "power", via: [[12, 802], [12, 644], [348, 644], [348, 160]] },
+              { id: "w_g6",  from: "bus12.G5",         to: "volt_son.VN",     color: "#18181b", layer: "power", via: [[358, 864], [358, 272]] },
+              { id: "w_g7",  from: "bus12.G5",         to: "volt_bat.VN",     color: "#18181b", layer: "power", via: [[358, 864], [358, 376]] },
+              { id: "w_g8",  from: "lm2596_1.OUT_N",   to: "rail5.G_IN",      color: "#18181b", layer: "power", via: [[632, 160], [632, 644], [392, 644], [392, 770]] },
+              { id: "w_c2",  from: "cap1.NEG",         to: "rail5.G_IN",      color: "#18181b", layer: "power", via: [[392, 982], [392, 770]] },
+              { id: "w_g9",  from: "rail5.G1",         to: "volt_son.GND",    color: "#18181b", layer: "power", via: [[598, 810], [598, 272]] },
+              { id: "w_g10", from: "rail5.G1",         to: "volt_bat.GND",    color: "#18181b", layer: "power", via: [[598, 810], [598, 376]] },
+              { id: "w_g11", from: "rail5.G1",         to: "acs_solar.GND",   color: "#18181b", layer: "power", via: [[598, 810], [598, 490]] },
+              { id: "w_g12", from: "rail5.G1",         to: "acs_load.GND",    color: "#18181b", layer: "power", via: [[598, 810], [598, 602]] },
+              { id: "w_g13", from: "rail5.G2",         to: "esp32.GND_L",     color: "#18181b", layer: "power", via: [[654, 846], [654, 974.6]] },
+              { id: "w_g14", from: "rail5.G3",         to: "relay1.GND",      color: "#18181b", layer: "power", via: [[686, 880], [686, 226]] },
+              { id: "w_g14b",from: "rail5.G3",         to: "relay5.GND",      color: "#18181b", layer: "power", via: [[686, 880], [686, 582]] },
+              { id: "w_g15", from: "rail5.G3",         to: "load_prio.NEG",   color: "#18181b", layer: "power", via: [[686, 880], [686, 644], [1072, 644], [1072, 158]] },
+              { id: "w_g16", from: "rail5.G3",         to: "load_nonprio.NEG",color: "#18181b", layer: "power", via: [[686, 880], [686, 644], [1072, 644], [1072, 310]] },
+              { id: "w_g17", from: "esp32.GND_R",      to: "lcd1.GND",        color: "#18181b", layer: "power", via: [[1414, 974.6], [1414, 114]] },
+              { id: "w_g17b",from: "esp32.GND_R",      to: "rtc1.GND",        color: "#18181b", layer: "power", via: [[1414, 974.6], [1414, 250]] },
+              { id: "w_g18", from: "esp32.GND_R",      to: "ds1.GND",         color: "#18181b", layer: "power", via: [[1414, 974.6], [1414, 408]] },
+              { id: "w_g19", from: "esp32.GND_R",      to: "hcsr1.GND",       color: "#18181b", layer: "power", via: [[1414, 974.6], [1414, 650], [1636, 650]] },
+              { id: "w_hc5", from: "r2_10k.B",         to: "esp32.GND_R",     color: "#18181b", layer: "power", via: [[1648, 744], [1648, 780], [1414, 780], [1414, 974.6]] },
+              { id: "w_g20", from: "esp32.GND_R",      to: "diode1.A",        color: "#18181b", layer: "power", via: [[1414, 974.6], [1414, 1064], [1772, 1064], [1772, 632]] },
+              { id: "w_g21", from: "esp32.GND_R",      to: "buz1.NEG",        color: "#18181b", layer: "power", via: [[1414, 974.6], [1414, 1064], [1772, 1064], [1772, 424]] },
+              { id: "w_g22", from: "esp32.GND_R",      to: "feu1.GND",        color: "#18181b", layer: "power", via: [[1414, 974.6], [1414, 1064], [1772, 1064], [1772, 294], [1954, 294]] },
 
               // E. CAPTEURS ANALOGIQUES -> ADC1 (GPIO 32, 33, 34, 35)
-              { id: "w_s1",  from: "volt_son.S",       to: "esp32.D32",       color: "#1d4ed8", layer: "signal", via: [[684, 248], [684, 713.0]] },
-              { id: "w_s2",  from: "volt_bat.S",       to: "esp32.D33",       color: "#2563eb", layer: "signal", via: [[694, 360], [694, 731.2]] },
-              { id: "w_s3",  from: "acs_load.OUT",     to: "esp32.D34",       color: "#15803d", layer: "signal", via: [[704, 614], [704, 676.6]] },
-              { id: "w_s4",  from: "acs_solar.OUT",    to: "esp32.D35",       color: "#0d9488", layer: "signal", via: [[714, 494], [714, 694.8]] },
+              { id: "w_s1",  from: "volt_son.S",       to: "esp32.D32",       color: "#1d4ed8", layer: "signal", via: [[696, 240], [696, 829.0]] },
+              { id: "w_s2",  from: "volt_bat.S",       to: "esp32.D33",       color: "#2563eb", layer: "signal", via: [[704, 344], [704, 847.2]] },
+              { id: "w_s3",  from: "acs_load.OUT",     to: "esp32.D34",       color: "#15803d", layer: "signal", via: [[712, 580], [712, 792.6]] },
+              { id: "w_s4",  from: "acs_solar.OUT",    to: "esp32.D35",       color: "#0d9488", layer: "signal", via: [[720, 468], [720, 810.8]] },
 
-              // F. COMMANDE MODULE 4 RELAIS (GPIO 26, 27, 14, 12)
-              { id: "w_rl1", from: "esp32.D26",        to: "relay1.IN1",      color: "#15803d", layer: "signal", via: [[724, 767.6], [724, 272]] },
-              { id: "w_rl2", from: "esp32.D27",        to: "relay1.IN2",      color: "#15803d", layer: "signal", via: [[732, 785.8], [732, 312]] },
-              { id: "w_rl3", from: "esp32.D14",        to: "relay1.IN3",      color: "#15803d", layer: "signal", via: [[718, 804.0], [718, 352]] },
-              { id: "w_rl4", from: "esp32.D12",        to: "relay1.IN4",      color: "#15803d", layer: "signal", via: [[708, 822.2], [708, 392]] },
+              // F. COMMANDE 5 RELAIS : R1 (GPIO 25), R2 (GPIO 26), R3 (GPIO 27), R4 (GPIO 14), R5 (GPIO 19)
+              { id: "w_rl1", from: "esp32.D25",        to: "relay1.IN1",      color: "#15803d", layer: "signal", via: [[728, 865.4], [728, 272]] },
+              { id: "w_rl2", from: "esp32.D26",        to: "relay1.IN2",      color: "#15803d", layer: "signal", via: [[736, 883.6], [736, 312]] },
+              { id: "w_rl3", from: "esp32.D27",        to: "relay1.IN3",      color: "#15803d", layer: "signal", via: [[744, 901.8], [744, 352]] },
+              { id: "w_rl4", from: "esp32.D14",        to: "relay1.IN4",      color: "#15803d", layer: "signal", via: [[752, 920.0], [752, 392]] },
+              { id: "w_rl5", from: "esp32.D19",        to: "relay5.IN",       color: "#15803d", layer: "signal", via: [[1114, 829.0], [1114, 650], [748, 650], [748, 608]] },
 
-              // G. BUS I2C LCD 2004 (GPIO 21 SDA / GPIO 22 SCL)
-              { id: "w_i2c1",from: "lcd1.SDA",         to: "esp32.D21",       color: "#1d4ed8", layer: "signal", via: [[1360, 150], [1360, 694.8]] },
-              { id: "w_i2c2",from: "lcd1.SCL",         to: "esp32.D22",       color: "#ca8a04", layer: "signal", via: [[1372, 168], [1372, 640.2]] },
+              // G. BUS I2C PARALLELE : LCD 2004 (0x27) + RTC DS3231 (0x68) (GPIO 21 SDA / GPIO 22 SCL)
+              { id: "w_i2c1",from: "lcd1.SDA",         to: "esp32.D21",       color: "#1d4ed8", layer: "signal", via: [[1436, 150], [1436, 810.8]] },
+              { id: "w_i2c2",from: "lcd1.SCL",         to: "esp32.D22",       color: "#ca8a04", layer: "signal", via: [[1448, 168], [1448, 756.2]] },
+              { id: "w_i2c3",from: "rtc1.SDA",         to: "lcd1.SDA",        color: "#1d4ed8", layer: "signal", via: [[1436, 286], [1436, 150]] },
+              { id: "w_i2c4",from: "rtc1.SCL",         to: "lcd1.SCL",        color: "#ca8a04", layer: "signal", via: [[1448, 304], [1448, 168]] },
 
               // H. DS18B20 ONEWIRE + PULL-UP 4,7 kΩ (GPIO 4)
-              { id: "w_ds1", from: "ds1.DAT",          to: "esp32.D4",        color: "#ca8a04", layer: "signal", via: [[1384, 288], [1384, 804.0]] },
-              { id: "w_ds2", from: "r_4k7.B",          to: "ds1.DAT",         color: "#ca8a04", layer: "signal", via: [[1648, 380], [1648, 348], [1428, 348], [1428, 288]] },
+              { id: "w_ds1", from: "ds1.DAT",          to: "esp32.D4",        color: "#ca8a04", layer: "signal", via: [[1460, 388], [1460, 920.0]] },
+              { id: "w_ds2", from: "r_4k7.B",          to: "ds1.DAT",         color: "#ca8a04", layer: "signal", via: [[1722, 472], [1722, 446], [1494, 446], [1494, 388]] },
 
               // I. ULTRASON HC-SR04 + PONT DIVISEUR 10k/10k (GPIO 5, GPIO 18)
-              { id: "w_hc1", from: "hcsr1.TRIG",       to: "esp32.D5",        color: "#0284c7", layer: "signal", via: [[1532, 558], [1396, 558], [1396, 749.4]] },
-              { id: "w_hc2", from: "hcsr1.ECHO",       to: "r1_10k.B",        color: "#0284c7", layer: "signal", via: [[1552, 600]] },
-              { id: "w_hc3", from: "r1_10k.A",         to: "esp32.D18",       color: "#15803d", layer: "signal", via: [[1410, 600], [1410, 731.2]] },
-              { id: "w_hc4", from: "r1_10k.A",         to: "r2_10k.A",        color: "#15803d", layer: "signal", via: [[1424, 600], [1424, 660]] },
+              { id: "w_hc1", from: "hcsr1.TRIG",       to: "esp32.D5",        color: "#0284c7", layer: "signal", via: [[1596, 642], [1472, 642], [1472, 865.4]] },
+              { id: "w_hc2", from: "hcsr1.ECHO",       to: "r1_10k.B",        color: "#0284c7", layer: "signal", via: [[1616, 684]] },
+              { id: "w_hc3", from: "r1_10k.A",         to: "esp32.D18",       color: "#15803d", layer: "signal", via: [[1484, 684], [1484, 847.2]] },
+              { id: "w_hc4", from: "r1_10k.A",         to: "r2_10k.A",        color: "#15803d", layer: "signal", via: [[1496, 684], [1496, 744]] },
 
-              // J. SIGNALISATION FEU TRICOLORE, BUZZER & BOUTONS POUSSOIRS (GPIO 23, 19, 13, 15, 16, 17)
-              { id: "w_sg1", from: "feu1.G",           to: "esp32.D23",       color: "#15803d", layer: "signal", via: [[1886, 332], [1748, 332], [1748, 226], [1310, 226], [1310, 622.0]] },
-              { id: "w_sg2", from: "feu1.Y",           to: "esp32.D19",       color: "#ca8a04", layer: "signal", via: [[1870, 320], [1736, 320], [1736, 216], [1300, 216], [1300, 713.0]] },
-              { id: "w_sg3", from: "feu1.R",           to: "esp32.D13",       color: "#1d4ed8", layer: "signal", via: [[1854, 308], [1660, 308], [1660, 942], [682, 942], [682, 840.4]] },
-              { id: "w_sg4", from: "buz1.POS",         to: "esp32.D15",       color: "#ca8a04", layer: "signal", via: [[1672, 394], [1672, 840.4]] },
-              { id: "w_bp1", from: "bp_lumiere.SIG",   to: "esp32.RX2",       color: "#0284c7", layer: "signal", via: [[1076, 450], [1076, 801.8]] },
-              { id: "w_bp2", from: "bp_ventilo.SIG",   to: "esp32.TX2",       color: "#0d9488", layer: "signal", via: [[1082, 530], [1082, 783.6]] },
-              { id: "w_bp3", from: "bp_lumiere.GND",   to: "esp32.GND_R",     color: "#18181b", layer: "power",  via: [[1070, 474], [1070, 874.6]] },
-              { id: "w_bp4", from: "bp_ventilo.GND",   to: "esp32.GND_R",     color: "#18181b", layer: "power",  via: [[1070, 554], [1070, 874.6]] }
+              // J. SIGNALISATION FEU TRICOLORE (G=23, Y=2, R=13), BUZZER (15) & BOUTONS POUSSOIRS (16, 17)
+              { id: "w_sg1", from: "feu1.G",           to: "esp32.D23",       color: "#15803d", layer: "signal", via: [[2002, 330], [1866, 330], [1866, 214], [1388, 214], [1388, 738.0]] },
+              { id: "w_sg2", from: "feu1.Y",           to: "esp32.D2",        color: "#ca8a04", layer: "signal", via: [[1986, 318], [1854, 318], [1854, 344], [1740, 344], [1740, 938.2]] },
+              { id: "w_sg3", from: "feu1.R",           to: "esp32.D13",       color: "#1d4ed8", layer: "signal", via: [[1970, 306], [1750, 306], [1750, 1034], [690, 1034], [690, 956.4]] },
+              { id: "w_sg4", from: "buz1.POS",         to: "esp32.D15",       color: "#ca8a04", layer: "signal", via: [[1730, 394], [1730, 956.4]] },
+              { id: "w_bp1", from: "bp_lumiere.SIG",   to: "esp32.RX2",       color: "#0284c7", layer: "signal", via: [[1124, 404], [1124, 901.8]] },
+              { id: "w_bp2", from: "bp_ventilo.SIG",   to: "esp32.TX2",       color: "#0d9488", layer: "signal", via: [[1134, 494], [1134, 883.6]] },
+              { id: "w_bp3", from: "bp_lumiere.GND",   to: "esp32.GND_R",     color: "#18181b", layer: "power",  via: [[1142, 428], [1142, 974.6]] },
+              { id: "w_bp4", from: "bp_ventilo.GND",   to: "esp32.GND_R",     color: "#18181b", layer: "power",  via: [[1142, 518], [1142, 974.6]] }
             ]
           };
         }
@@ -3681,7 +3943,7 @@
               { id: "pw24", from: "r1_10k.A",         to: "r2_10k.A",       color: "#15803d", layer: "signal", via: [[794, 412], [794, 470]] },
               { id: "pw25", from: "r2_10k.B",         to: "esp32.GND_R",    color: "#18181b", layer: "power",  via: [[926, 470], [926, 502], [756, 502], [756, 514.6]] },
               { id: "pw26", from: "buz1.POS",         to: "esp32.D15",      color: "#ca8a04", layer: "signal", via: [[966, 562], [966, 496.4]] },
-              { id: "pw27", from: "esp32.D12",        to: "relay1.IN4",     color: "#15803d", layer: "signal", via: [[504, 478.2], [504, 658], [1202, 658], [1202, 438]] }
+              { id: "pw27", from: "esp32.D14",        to: "relay1.IN4",     color: "#15803d", layer: "signal", via: [[504, 460.0], [504, 658], [1202, 658], [1202, 438]] }
             ]
           };
         }
@@ -3730,12 +3992,19 @@
 
         vb: { x: 0, y: 0, w: 1940, h: 930 },
 
+        zeroCloud: false,
         sim: {
           vSonabel: 12.2, iCharge: 1.8, temp: 32.0, eau: 62,
           vBatt: 12.3, battPct: 86, source: "SONABEL",
           wantLamp: true, wantFan: true, manualSource: false, manualShed: false,
           bpLumPressed: false, bpFanPressed: false,
-          disj: 1, k2Prio: 1, k3NonPrio: 1, pompe: 0, manualMode: false
+          disj: 1, k2Prio: 1, k3NonPrio: 1, pompe: 0, manualMode: false,
+          // FSM 5 états + Sas anti-surtension 20 s + Nexus pic solaire 11h-14h (RTC DS3231)
+          fsmState: "NOMINAL_SONABEL",
+          wasOnSolar: false,
+          sasRemaining: 0,
+          rtcHour: 10.0,
+          rtcSec: 0
         },
         analysis: null,
 
@@ -3812,22 +4081,36 @@
         const bucks = state.components.filter(c => c.type === "lm2596");
         const acsList = state.components.filter(c => c.type === "acs712");
         const relays = state.components.filter(c => c.type === "relay4");
+        const relays1ch = state.components.filter(c => c.type === "relay1ch");
+        const fuses = state.components.filter(c => c.type === "fuse_5a");
+        const caps = state.components.filter(c => c.type === "cap_1000uf");
+        const diodes = state.components.filter(c => c.type === "diode_1n4007");
+        const rtcs = state.components.filter(c => c.type === "rtc_ds3231");
 
         psus.forEach(p => { pwr12Roots.add(find(`${p.id}.POS`)); gndRoots.add(find(`${p.id}.NEG`)); });
         solars.forEach(s => { pwr12Roots.add(find(`${s.id}.PV_P`)); gndRoots.add(find(`${s.id}.PV_N`)); });
         batteries.forEach(b => { pwr12Roots.add(find(`${b.id}.POS`)); gndRoots.add(find(`${b.id}.NEG`)); });
 
         let changed = true;
-        for (let iter = 0; iter < 6 && changed; iter++) {
+        for (let iter = 0; iter < 8 && changed; iter++) {
           changed = false;
+          fuses.forEach(fs => {
+            const pA = find(`${fs.id}.IN`), pB = find(`${fs.id}.OUT`);
+            if (pwr12Roots.has(pA) && !pwr12Roots.has(pB)) { pwr12Roots.add(pB); changed = true; }
+            if (pwr12Roots.has(pB) && !pwr12Roots.has(pA)) { pwr12Roots.add(pA); changed = true; }
+          });
           acsList.forEach(acs => {
             const pA = find(`${acs.id}.IP_P`), pB = find(`${acs.id}.IP_N`);
             if (pwr12Roots.has(pA) && !pwr12Roots.has(pB)) { pwr12Roots.add(pB); changed = true; }
             if (pwr12Roots.has(pB) && !pwr12Roots.has(pA)) { pwr12Roots.add(pA); changed = true; }
           });
           relays.forEach(rel => {
+            // R1 (SONABEL COM1->NO1) & R2 (Solaire COM2->NO2) + rétro-compatibilité K1 ATS (NC1/NO1->COM1)
             const nc1 = find(`${rel.id}.NC1`), no1 = find(`${rel.id}.NO1`), com1 = find(`${rel.id}.COM1`);
+            const no2 = find(`${rel.id}.NO2`), com2 = find(`${rel.id}.COM2`);
             if ((pwr12Roots.has(nc1) || pwr12Roots.has(no1)) && !pwr12Roots.has(com1)) { pwr12Roots.add(com1); changed = true; }
+            if (pwr12Roots.has(com1) && !pwr12Roots.has(no1)) { pwr12Roots.add(no1); changed = true; }
+            if (pwr12Roots.has(com2) && !pwr12Roots.has(no2)) { pwr12Roots.add(no2); changed = true; }
           });
         }
 
@@ -3882,7 +4165,7 @@
           sda: null, scl: null, ds18b20: null, dsPullupOk: false,
           trig: null, echo: null, echoProtected: false,
           vSonabel: null, vBatt: null, iCharge: null, iSolaire: null,
-          rel1: null, rel2: null, rel3: null, rel4: null,
+          rel1: null, rel2: null, rel3: null, rel4: null, rel5: null, rtcSda: null, rtcScl: null,
           ledG: null, ledY: null, ledR: null, buzzer: null,
           bpLumiere: null, bpVentilo: null
         };
@@ -4001,13 +4284,14 @@
           }
         });
 
-        // 4. Bus I2C LCD 2004
+        // 4. Bus I2C partagé : LCD 2004 (0x27) + RTC DS3231 (0x68) en parallèle sur GPIO 21 / 22
         const lcds = state.components.filter(c => c.type === "lcd2004");
+        let i2cRegisteredSda = false, i2cRegisteredAcl = false;
         lcds.forEach(lcd => {
           checkPowerPins(lcd, "LCD 2004 I2C", 5);
           const sda = getEspGpioOnNet(`${lcd.id}.SDA`), scl = getEspGpioOnNet(`${lcd.id}.SCL`);
-          if (sda) { pins.sda = sda.gpio; regOwner(sda.gpio, "LCD SDA", `${lcd.id}.SDA`); }
-          if (scl) { pins.scl = scl.gpio; regOwner(scl.gpio, "LCD SCL", `${lcd.id}.SCL`); }
+          if (sda) { pins.sda = sda.gpio; if (!i2cRegisteredSda) { regOwner(sda.gpio, "Bus I2C SDA", `${lcd.id}.SDA`); i2cRegisteredSda = true; } }
+          if (scl) { pins.scl = scl.gpio; if (!i2cRegisteredAcl) { regOwner(scl.gpio, "Bus I2C SCL", `${lcd.id}.SCL`); i2cRegisteredAcl = true; } }
           if (!sda || !scl) {
             if (sda && sda.gpio !== 21) { errors.push({ code: `I2CS_${lcd.id}`, title: `Erreur Bus I2C hors GPIO 21/22 (SDA=${sda.gpio})`, detail: "Reliez SDA à GPIO 21 et SCL à GPIO 22." }); markWires(`${lcd.id}.SDA`); }
             else if (scl && scl.gpio !== 22) { errors.push({ code: `I2CC_${lcd.id}`, title: `Erreur Bus I2C hors GPIO 21/22 (SCL=${scl.gpio})`, detail: "Reliez SDA à GPIO 21 et SCL à GPIO 22." }); markWires(`${lcd.id}.SCL`); }
@@ -4018,41 +4302,99 @@
           } else if (sda.gpio !== 21 || scl.gpio !== 22) {
             errors.push({ code: `I2CB_${lcd.id}`, title: `Erreur Bus I2C hors GPIO 21/22 (SDA=${sda.gpio}, SCL=${scl.gpio})`, detail: "Utilisez GPIO 21 (SDA) et GPIO 22 (SCL)." });
             if (sda.gpio !== 21) markWires(`${lcd.id}.SDA`); if (scl.gpio !== 22) markWires(`${lcd.id}.SCL`);
-          } else checks.push("Bus I2C LCD 2004 conforme : SDA = GPIO 21, SCL = GPIO 22");
+          } else checks.push("Bus I2C LCD 2004 (0x27) conforme : SDA = GPIO 21, SCL = GPIO 22");
         });
 
-        // 5. Relays & 12V Loads
+        let rtcOk = false;
+        rtcs.forEach(rtc => {
+          if (!isGnd(`${rtc.id}.GND`)) errors.push({ code: `NO_GND_${rtc.id}`, title: "Masse GND absente sur RTC DS3231", detail: "Reliez GND du RTC DS3231 au rail GND commun." });
+          const vEp = `${rtc.id}.VCC`;
+          if (is12v(vEp)) { errors.push({ code: `OV12_${rtc.id}`, title: "Surtension 12V sur RTC DS3231", detail: "Alimentez le RTC DS3231 en +3,3V (ou +5V), jamais +12V." }); markWires(vEp); }
+          else if (!is3v3(vEp) && !is5v(vEp)) errors.push({ code: `NOPWR_${rtc.id}`, title: "Alimentation 3,3V/5V absente sur RTC DS3231", detail: "Reliez VCC du RTC DS3231 à +3,3V (ESP32 3V3) ou +5V." });
+          const sda = getEspGpioOnNet(`${rtc.id}.SDA`), scl = getEspGpioOnNet(`${rtc.id}.SCL`);
+          if (sda) { pins.rtcSda = sda.gpio; if (!i2cRegisteredSda) { regOwner(sda.gpio, "Bus I2C SDA (RTC)", `${rtc.id}.SDA`); i2cRegisteredSda = true; } }
+          if (scl) { pins.rtcScl = scl.gpio; if (!i2cRegisteredAcl) { regOwner(scl.gpio, "Bus I2C SCL (RTC)", `${rtc.id}.SCL`); i2cRegisteredAcl = true; } }
+          if (!sda || !scl) {
+            errors.push({ code: `RTC_I2C_${rtc.id}`, title: "Bus I2C incomplet sur RTC DS3231", detail: "Câblez SDA (GPIO 21) et SCL (GPIO 22) en parallèle avec le LCD 2004." });
+          } else if (sda.gpio !== 21 || scl.gpio !== 22) {
+            errors.push({ code: `RTC_I2CB_${rtc.id}`, title: `RTC DS3231 hors bus I2C GPIO 21/22 (SDA=${sda.gpio}, SCL=${scl.gpio})`, detail: "Reliez SDA sur GPIO 21 et SCL sur GPIO 22." });
+            if (sda.gpio !== 21) markWires(`${rtc.id}.SDA`); if (scl.gpio !== 22) markWires(`${rtc.id}.SCL`);
+          } else {
+            rtcOk = true;
+            checks.push("RTC DS3231 (0x68) câblé en parallèle sur I2C (GPIO 21/22) : Nexus 11h–14h & Zéro Cloud prêts");
+          }
+        });
+
+        // 4B. Protections matérielles (Fusible 5A batterie, Condo 1000 µF rail 5V, Diode 1N4007 pompe)
+        fuses.forEach(fs => {
+          const hasIn = state.wires.some(w => w.from === `${fs.id}.IN` || w.to === `${fs.id}.IN`);
+          const hasOut = state.wires.some(w => w.from === `${fs.id}.OUT` || w.to === `${fs.id}.OUT`);
+          if (!hasIn || !hasOut) errors.push({ code: `FUSE_${fs.id}`, title: "Fusible 5 A non câblé en série", detail: "Insérez le fusible 5 A en série sur le rail +12V sortie Batterie." });
+          else checks.push("Protection Fusible 5 A en série sur rail +12V Batterie vérifiée");
+        });
+        caps.forEach(cp => {
+          if (is12v(`${cp.id}.POS`)) { errors.push({ code: `CAP12_${cp.id}`, title: "Condensateur 1000 µF sur rail 12V", detail: "Placez le condensateur 1000 µF sur le rail +5,0V LM2596 (et GND)." }); markWires(`${cp.id}.POS`); }
+          else if (!is5v(`${cp.id}.POS`) || !isGnd(`${cp.id}.NEG`)) errors.push({ code: `CAP_${cp.id}`, title: "Condensateur 1000 µF non raccordé au rail +5V / GND", detail: "Reliez (+) au rail +5V LM2596 et (−) à GND commun." });
+          else checks.push("Découplage Condensateur 1000 µF sur rail +5,0V (anti-brownout 5 relais) vérifié");
+        });
+        diodes.forEach(di => {
+          const kGnd = isGnd(`${di.id}.K`), aGnd = isGnd(`${di.id}.A`);
+          const kOnPump = state.components.filter(c => c.type === "pump_12v").some(pm => sameNet(`${di.id}.K`, `${pm.id}.POS`));
+          const aOnPumpNeg = state.components.filter(c => c.type === "pump_12v").some(pm => sameNet(`${di.id}.A`, `${pm.id}.NEG`)) || aGnd;
+          if (kGnd && !aGnd) {
+            errors.push({ code: `DIODE_REV_${di.id}`, title: "Diode 1N4007 inversée (court-circuit)", detail: "Cathode (K, bague) doit être côté +12V Pompe et Anode (A) côté GND." });
+            markWires(`${di.id}.K`); markWires(`${di.id}.A`);
+          } else if (!kOnPump || !aOnPumpNeg) {
+            errors.push({ code: `DIODE_${di.id}`, title: "Diode 1N4007 non câblée aux bornes de la pompe 12V", detail: "Reliez Cathode (K) à Pompe +12V et Anode (A) à Pompe GND." });
+          } else {
+            checks.push("Diode de roue libre 1N4007 aux bornes de la Pompe 12V conforme (K→+12V, A→GND)");
+          }
+        });
+
+        // 5. 5 Relais (R1=25, R2=26, R3=27, R4=14 + 5e relais R5=19) & Charges 12V
         relays.forEach(rel => {
-          checkPowerPins(rel, "Module 4 Relais 5V", 5);
+          checkPowerPins(rel, "Module 4 Relais 5V (R1–R4)", 5);
           let n = 0;
-          [["IN1","rel1","K1 ATS",26],["IN2","rel2","K2 Lumière",27],["IN3","rel3","K3 Ventilateur",14],["IN4","rel4","K4 Pompe",12]].forEach(([pid,k,lbl,rec]) => {
+          [["IN1","rel1","R1 SONABEL",25],["IN2","rel2","R2 Solaire",26],["IN3","rel3","R3 Confort",27],["IN4","rel4","R4 Pompe",14]].forEach(([pid,k,lbl,rec]) => {
             const p = getEspGpioOnNet(`${rel.id}.${pid}`);
             if (p) {
               n++; pins[k] = p.gpio; regOwner(p.gpio, lbl, `${rel.id}.${pid}`);
               if (INPUT_ONLY_GPIOS.has(p.gpio)) { errors.push({ code: `RIN_${pid}`, title: `GPIO ${p.gpio} Input-Only incompatible (${lbl})`, detail: `Déplacez ${pid} sur GPIO ${rec}.` }); markWires(`${rel.id}.${pid}`); }
             }
           });
-          if (n === 0) errors.push({ code: `RNONE_${rel.id}`, title: "Entrées IN1..IN4 non câblées sur Module 4 Relais", detail: "Reliez IN1..IN4 aux GPIO 26, 27, 14, 12." });
+          if (n === 0) errors.push({ code: `RNONE_${rel.id}`, title: "Entrées IN1..IN4 non câblées sur Module 4 Relais", detail: "Reliez IN1..IN4 aux GPIO 25, 26, 27, 14." });
         });
 
-        function check12vLoad(type, label, noPin, comPin) {
+        relays1ch.forEach(r5 => {
+          checkPowerPins(r5, "5e Relais 5V (R5 Ligne Vitale)", 5);
+          const p = getEspGpioOnNet(`${r5.id}.IN`);
+          if (!p) errors.push({ code: `R5_${r5.id}`, title: "Entrée IN non câblée sur 5e Relais R5", detail: "Reliez IN du 5e relais R5 à GPIO 19 (Ligne Vitale)." });
+          else {
+            pins.rel5 = p.gpio; regOwner(p.gpio, "R5 Ligne Vitale", `${r5.id}.IN`);
+            if (INPUT_ONLY_GPIOS.has(p.gpio)) { errors.push({ code: `R5IN_${r5.id}`, title: `GPIO ${p.gpio} Input-Only incompatible (R5)`, detail: "Déplacez IN de R5 sur GPIO 19." }); markWires(`${r5.id}.IN`); }
+            else checks.push(`5e Relais R5 (Ligne Vitale) conforme sur GPIO ${p.gpio}`);
+          }
+        });
+
+        function check12vLoad(type, label, noPin, comPin, allowRelay1ch = false) {
           const items = state.components.filter(c => c.type === type);
           let ok = items.length > 0;
           items.forEach(item => {
             if (!isGnd(`${item.id}.NEG`)) { ok = false; errors.push({ code: `GND_${item.id}`, title: `GND absent sur ${label}`, detail: `Reliez GND de ${label} au rail GND commun.` }); }
-            const viaRel = relays.some(r => sameNet(`${item.id}.POS`, `${r.id}.${noPin}`) && is12v(`${r.id}.${comPin}`));
-            if (!viaRel && !is12v(`${item.id}.POS`)) { ok = false; errors.push({ code: `PWR_${item.id}`, title: `Puissance +12V absente sur ${label}`, detail: `Reliez +12V au contact ${noPin} (avec ${comPin} sur +12V).` }); }
+            const viaRel4 = relays.some(r => sameNet(`${item.id}.POS`, `${r.id}.${noPin}`) && is12v(`${r.id}.${comPin}`));
+            const viaRel5 = allowRelay1ch && relays1ch.some(r => sameNet(`${item.id}.POS`, `${r.id}.NO`) && is12v(`${r.id}.COM`));
+            if (!viaRel4 && !viaRel5 && !is12v(`${item.id}.POS`)) { ok = false; errors.push({ code: `PWR_${item.id}`, title: `Puissance +12V absente sur ${label}`, detail: `Reliez +12V via le contact NO/COM du relais dédié.` }); }
           });
           return ok;
         }
-        const prioOk = check12vLoad("load_priority", "Charge Prioritaire 12V", "NO2", "COM2");
-        const nonPrioOk = check12vLoad("load_nonpriority", "Charge Non-Prioritaire 12V", "NO3", "COM3");
-        const pumpOk = check12vLoad("pump_12v", "Mini Pompe 12V Polytank", "NO4", "COM4");
-        if (prioOk || nonPrioOk || pumpOk) checks.push("Contacts COM/NO/NC et lignes puissance 12V des charges vérifiés");
+        const prioOk = check12vLoad("load_priority", "Lampe LED 12V (Ligne Vitale)", "NO2", "COM2", true);
+        const nonPrioOk = check12vLoad("load_nonpriority", "Ventilateur 12V (Ligne Confort)", "NO3", "COM3", false);
+        const pumpOk = check12vLoad("pump_12v", "Mini Pompe 12V Polytank", "NO4", "COM4", false);
+        if (prioOk || nonPrioOk || pumpOk) checks.push("Contacts COM/NO/NC des 5 relais et lignes puissance 12V des charges vérifiés");
 
         state.components.filter(c => c.type === "traffic_light").forEach(tl => {
           checkPowerPins(tl, "Feu Tricolore LED", null);
-          [["G","ledG","Feu Vert",23],["Y","ledY","Feu Jaune",19],["R","ledR","Feu Rouge",13]].forEach(([pid,k,lbl,rec]) => {
+          [["G","ledG","Feu Vert",23],["Y","ledY","Feu Jaune",2],["R","ledR","Feu Rouge",13]].forEach(([pid,k,lbl,rec]) => {
             const p = getEspGpioOnNet(`${tl.id}.${pid}`);
             if (p) { pins[k] = p.gpio; regOwner(p.gpio, lbl, `${tl.id}.${pid}`); if (INPUT_ONLY_GPIOS.has(p.gpio)) { errors.push({ code: `TL_${pid}`, title: `GPIO ${p.gpio} Input-Only (${lbl})`, detail: `Déplacez ${pid} sur GPIO ${rec}.` }); markWires(`${tl.id}.${pid}`); } }
           });
@@ -4100,7 +4442,7 @@
         return {
           valid: errors.length === 0, errors, checks, faultWireIds, pins,
           hasEspPower: vinValid5 && espHasGnd, hasBatt: batteries.length > 0,
-          hasLcd: lcds.length > 0 && pins.sda === 21 && pins.scl === 22,
+          hasLcd: lcds.length > 0 && pins.sda === 21 && pins.scl === 22, hasRtc: rtcOk,
           hasHcsr: hcsrs.length > 0 && pins.trig !== null && pins.echo !== null && pins.echoProtected,
           hasDs: dsProbes.length > 0 && pins.ds18b20 !== null && pins.dsPullupOk,
           prioOk, nonPrioOk, pumpOk
@@ -4110,66 +4452,157 @@
       // =====================================================================
       // 6. SIMULATION ENGINE
       // =====================================================================
+      function formatRtcTime(hourFloat, secInt) {
+        const h = Math.floor(((hourFloat % 24) + 24) % 24);
+        const m = Math.floor((hourFloat - Math.floor(hourFloat)) * 60 + 1e-6);
+        const sc = Math.max(0, Math.min(59, Math.floor(secInt || 0)));
+        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sc).padStart(2, "0")}`;
+      }
+
+      const FSM_LABELS = {
+        NOMINAL_SONABEL:   { label: "1 · NOMINAL SONABEL",    lcd: "NOMINAL", cls: "st-nominal" },
+        SECOURS_SOLAIRE:   { label: "2 · SECOURS SOLAIRE",    lcd: "SOLAIRE", cls: "st-solaire" },
+        SAS_STABILISATION: { label: "3 · SAS ANTI-SURT. 20s", lcd: "SAS 20S", cls: "st-sas" },
+        DELESTAGE_CRITIQUE:{ label: "4 · DÉLESTAGE CONFORT",  lcd: "DELEST.", cls: "st-delest" },
+        URGENCE_THERMIQUE: { label: "5 · URGENCE THERMIQUE",  lcd: "URGENCE", cls: "st-urgence" }
+      };
+
       function computeSim() {
         const a = state.analysis, active = state.powered && a && a.valid, s = state.sim;
+        const rtcStr = formatRtcTime(s.rtcHour, s.rtcSec);
         if (!active) {
-          return { active: false, vSonabel: 0, vActive: 0, vBatt: 0, battPct: 0, iCharge: 0, iScada: 0, iSolaire: 0, temp: 25, eau: 0, source: "ARRET", disj: 0, k1Solar: false, k2Prio: false, k3NonPrio: false, k4Pump: false, shedding: false, ledG: false, ledY: false, ledR: false, buzzer: false };
+          return {
+            active: false, vSonabel: 0, vActive: 0, vBatt: 0, battPct: 0, iCharge: 0, iScada: 0, iSolaire: 0,
+            temp: 25, eau: 0, source: "ARRET", fsmState: "ARRET", sasRemaining: 0, rtcStr, nexusPeak: false,
+            zeroCloud: state.zeroCloud, disj: 0,
+            r1Sonabel: false, r2Solaire: false, r3Confort: false, r4Pump: false, r5Vitale: false,
+            k1Solar: false, k2Prio: false, k3NonPrio: false, k4Pump: false,
+            shedding: false, ledG: false, ledY: false, ledR: false, buzzer: false
+          };
         }
         const vSon = s.vSonabel, vBatt = 12.3, battPct = 86, iLoad = s.iCharge;
         const iScada = state.acsScale4x ? +(iLoad * 4).toFixed(2) : +iLoad.toFixed(2);
         const temp = s.temp, eau = Math.round(s.eau);
         const isOverload = iLoad > 3.5, isOverheat = temp > 60.0;
 
+        // 1. Gestion ATS + Sas anti-surtension 20 s (FSM États 1, 2 & 3)
         if (!s.manualSource) {
-          if (vSon >= 9.5) s.source = "SONABEL";
-          else if (a.hasBatt) s.source = "SOLAIRE";
-          else s.source = "COUPURE";
+          if (vSon < 9.5) {
+            s.sasRemaining = 0;
+            if (a.hasBatt) {
+              s.source = "SOLAIRE";
+              s.wasOnSolar = true;
+            } else {
+              s.source = "COUPURE";
+              s.wasOnSolar = true;
+            }
+          } else {
+            // Tension SONABEL >= 9,5 V
+            if (s.wasOnSolar && s.sasRemaining <= 0) {
+              // Retour SONABEL après coupure : enclenchement du Sas anti-surtension 20 s !
+              s.sasRemaining = 20;
+              s.wasOnSolar = false;
+            }
+            if (s.sasRemaining > 0 && a.hasBatt) {
+              s.source = "SOLAIRE"; // Protégé sur Solaire pendant le Sas 20 s
+            } else {
+              s.sasRemaining = 0;
+              s.source = "SONABEL";
+            }
+          }
         }
 
         const isBlackout = s.source === "COUPURE";
-        // Les charges Lumière (K2) et Ventilateur (K3) ne s'allument JAMAIS à cause d'un défaut :
-        // - K2 (Lumière prioritaire) suit la consigne wantLamp (BP Lumière / SCADA) sauf en cas de coupure totale ou surchauffe > 60 °C.
-        // - K3 (Ventilateur non-prioritaire) est délesté automatiquement si surcharge ACS712 (> 3,5 A), surchauffe ou coupure ; sinon il suit wantFan.
+        const inSas = Boolean(s.sasRemaining > 0 && vSon >= 9.5 && !isBlackout);
+
+        // 2. Détermination de l'état de la FSM à 5 états
+        let fsmState = "NOMINAL_SONABEL";
+        if (isOverheat || isBlackout) fsmState = "URGENCE_THERMIQUE";
+        else if (isOverload || s.manualShed) fsmState = "DELESTAGE_CRITIQUE";
+        else if (inSas) fsmState = "SAS_STABILISATION";
+        else if (s.source === "SOLAIRE") fsmState = "SECOURS_SOLAIRE";
+        else fsmState = "NOMINAL_SONABEL";
+        s.fsmState = fsmState;
+
+        // 3. Délestage sélectif : R5 Ligne Vitale (GPIO 19) vs R3 Ligne Confort (GPIO 27)
         s.k2Prio = (s.wantLamp && !isBlackout && !isOverheat) ? 1 : 0;
         s.k3NonPrio = (s.wantFan && !isBlackout && !isOverheat && !isOverload && !s.manualShed) ? 1 : 0;
         s.disj = (!isBlackout && !isOverheat && !isOverload && !s.manualShed) ? 1 : 0;
 
+        // 4. Nexus Eau-Énergie (Pic Solaire 11h00–14h00 piloté par RTC DS3231)
+        const nexusPeak = Boolean(a.hasRtc && s.rtcHour >= 11 && s.rtcHour < 14 && !isBlackout && !isOverheat && !isOverload);
         if (isBlackout || isOverheat) {
           s.pompe = 0;
         } else if (!s.manualMode) {
-          if (eau < 30) s.pompe = 1;
-          else if (eau >= 85) s.pompe = 0;
+          if (nexusPeak) {
+            if (eau < 75) s.pompe = 1;
+            else if (eau >= 95) s.pompe = 0;
+          } else {
+            if (eau < 30) s.pompe = 1;
+            else if (eau >= 85) s.pompe = 0;
+          }
         }
 
         const vActive = s.source === "SONABEL" ? vSon : (s.source === "SOLAIRE" ? vBatt : 0.0);
-        const k1Solar = s.source === "SOLAIRE";
-        const k2Prio = s.k2Prio === 1 && a.pins.rel2 !== null;
-        const k3NonPrio = s.k3NonPrio === 1 && a.pins.rel3 !== null;
-        const k4Pump = s.pompe === 1 && a.pins.rel4 !== null;
+        // Interlock strict R1 / R2 : jamais fermés simultanément !
+        const r1Sonabel = (s.source === "SONABEL") && a.pins.rel1 !== null;
+        const r2Solaire = (s.source === "SOLAIRE") && a.pins.rel2 !== null;
+        const r3Confort = (s.k3NonPrio === 1) && a.pins.rel3 !== null;
+        const r4Pump    = (s.pompe === 1) && a.pins.rel4 !== null;
+        const r5Vitale  = (s.k2Prio === 1) && (a.pins.rel5 !== null || a.pins.rel2 !== null);
+        const shedding  = (isOverload || s.manualShed) && !isOverheat && !isBlackout;
+
         return {
           active: true, vSonabel: +vSon.toFixed(1), vActive: +vActive.toFixed(1), vBatt, battPct,
-          iCharge: +iLoad.toFixed(2), iScada, iSolaire: s.source === "SOLAIRE" ? +(Math.max(0.5, iLoad)).toFixed(2) : 0.65,
-          temp: +temp.toFixed(1), eau, source: s.source, disj: s.disj,
-          k1Solar, k2Prio, k3NonPrio, k4Pump,
-          shedding: (isOverload || s.manualShed) && !isOverheat && s.source !== "COUPURE",
-          ledG: (s.disj === 1 && s.source === "SONABEL") && a.pins.ledG !== null,
-          ledY: (s.disj === 1 && s.source === "SOLAIRE") && a.pins.ledY !== null,
-          ledR: (s.disj === 0) && a.pins.ledR !== null,
+          iCharge: +iLoad.toFixed(2), iScada,
+          iSolaire: s.source === "SOLAIRE" ? +(Math.max(0.5, iLoad)).toFixed(2) : (nexusPeak ? 1.85 : 0.65),
+          temp: +temp.toFixed(1), eau, source: s.source, fsmState, sasRemaining: s.sasRemaining,
+          rtcStr, nexusPeak, zeroCloud: state.zeroCloud, disj: s.disj,
+          r1Sonabel, r2Solaire, r3Confort, r4Pump, r5Vitale,
+          // Alias de compatibilité SCADA / Audio
+          k1Solar: r2Solaire, k2Prio: r5Vitale, k3NonPrio: r3Confort, k4Pump: r4Pump,
+          shedding,
+          ledG: (fsmState === "NOMINAL_SONABEL") && a.pins.ledG !== null,
+          ledY: (fsmState === "SECOURS_SOLAIRE" || fsmState === "SAS_STABILISATION") && a.pins.ledY !== null,
+          ledR: (fsmState === "DELESTAGE_CRITIQUE" || fsmState === "URGENCE_THERMIQUE") && a.pins.ledR !== null,
           buzzer: ((s.disj === 0) || (eau < 30)) && a.pins.buzzer !== null
         };
+      }
+
+      let simClockTimer = null;
+      function stopSimClock() {
+        if (simClockTimer !== null) { clearInterval(simClockTimer); simClockTimer = null; }
+      }
+      function startSimClock() {
+        stopSimClock();
+        if (IS_EMBED_MODE) return;
+        if (!state.powered || !state.analysis || !state.analysis.valid) return;
+        simClockTimer = setInterval(() => {
+          if (!state.powered) { stopSimClock(); return; }
+          state.sim.rtcSec = (state.sim.rtcSec + 1) % 60;
+          if (state.sim.sasRemaining > 0 && state.sim.vSonabel >= 9.5) {
+            state.sim.sasRemaining = Math.max(0, state.sim.sasRemaining - 1);
+            if (state.sim.sasRemaining === 0) {
+              showToast("Sas anti-surtension 20 s validé : reconnexion sécurisée sur SONABEL (R1)");
+            }
+          }
+          updateLiveVisuals();
+        }, 1000);
       }
 
       function formatLcdLines(s) {
         const pad = (str, len) => str.length >= len ? str.slice(0, len) : str + " ".repeat(len - str.length);
         if (!s.active) {
-          return [pad("LCD 2004 I2C (0x27)", 20), pad(state.analysis && !state.analysis.valid ? "DEFAUT CABLAGE" : "HORS TENSION", 20), pad("SDA:GPIO21 SCL:22", 20), pad("CGE U-AUBEN 12V DC", 20)];
+          return [pad("LCD 2004 + RTC 0x68", 20), pad(state.analysis && !state.analysis.valid ? "DEFAUT CABLAGE" : "HORS TENSION", 20), pad("SDA:GPIO21 SCL:22", 20), pad("CGE U-AUBEN 12V DC", 20)];
         }
-        const q1 = s.disj === 1 ? "FERME" : (s.shedding ? "DELES" : "OUV. ");
+        const stTag = s.sasRemaining > 0
+          ? `SAS:${String(s.sasRemaining).padStart(2, "0")}s`
+          : (s.zeroCloud ? "0-CLD" : (FSM_LABELS[s.fsmState]?.lcd || s.source).slice(0, 7));
         return [
-          pad(`SRC:${pad(s.source, 7)} Q1:${q1}`, 20),
+          pad(`${s.rtcStr.slice(0, 5)} ${pad(s.source, 7)} ${stTag}`, 20),
           pad(`U:${s.vActive.toFixed(1).padStart(4," ")}V  I:${s.iCharge.toFixed(1).padStart(4," ")}A`, 20),
-          pad(`L:${s.k2Prio?"ON ":"OFF"} V:${s.k3NonPrio?"ON ":s.shedding?"DEL":"OFF"} T:${s.temp.toFixed(0).padStart(2," ")}C`, 20),
-          pad(`EAU:${String(s.eau).padStart(3," ")}% POMPE:${s.k4Pump?"ON ":"OFF"}`, 20)
+          pad(`R5:${s.r5Vitale?"ON ":"OFF"} R3:${s.r3Confort?"ON ":s.shedding?"DEL":"OFF"} T:${s.temp.toFixed(0).padStart(2," ")}C`, 20),
+          pad(`EAU:${String(s.eau).padStart(3," ")}% ${s.nexusPeak?"PIC":"R4"}:${s.r4Pump?"ON ":"OFF"}`, 20)
         ];
       }
 
@@ -4208,6 +4641,7 @@
           codeLine("#include <LiquidCrystal_I2C.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;LiquidCrystal_I2C.h&gt;</span>`),
           codeLine("#include <OneWire.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;OneWire.h&gt;</span>`),
           codeLine("#include <DallasTemperature.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;DallasTemperature.h&gt;</span>`),
+          codeLine("#include <RTClib.h>", `<span class="tok-kw">#include</span> <span class="tok-str">&lt;RTClib.h&gt;</span>`),
           codeLine(""),
           codeLine("// --- 1. BROCHAGE MATERIEL ESP32 (30 BROCHES) ---"),
           defLine("PIN_I2C_SDA",       p.sda,       p.sda === 21 ? "Bus I2C SDA -> LCD 2004 (0x27)" : (sdaErr ? "ERREUR: GPIO 21 requis" : "Non cable"), sdaErr),
@@ -4219,10 +4653,11 @@
           defLine("PIN_TRIG",          p.trig,      p.trig === null ? "Non cable" : "HC-SR04 TRIG (impulsion 10 us)"),
           defLine("PIN_ECHO",          p.echo,      p.echo === null ? "Non cable" : (echoErr ? "DANGER 5V: pont 10k/10k requis" : "HC-SR04 ECHO via pont 10k/10k (2.5V)"), echoErr),
           defLine("PIN_DS18B20",       p.ds18b20,   p.ds18b20 === null ? "Non cable" : (dsErr ? "ERREUR: pull-up 4.7k absente" : "OneWire DS18B20 + pull-up 4.7k vers 3.3V"), dsErr),
-          defLine("PIN_RELAI_ATS",     p.rel1,      p.rel1 === null ? "Non cable" : "Relais K1 (IN1) ATS SONABEL / Solaire"),
-          defLine("PIN_RELAI_LUMIERE", p.rel2,      p.rel2 === null ? "Non cable" : "Relais K2 (IN2) Charge Prioritaire Lumiere 12V"),
-          defLine("PIN_RELAI_VENTILO", p.rel3,      p.rel3 === null ? "Non cable" : "Relais K3 (IN3) Charge Non-Prio Ventilateur 12V"),
-          defLine("PIN_RELAI_POMPE",   p.rel4,      p.rel4 === null ? "Non cable" : "Relais K4 (IN4) Mini Pompe Polytank 12V"),
+          defLine("PIN_RELAI_SONABEL", p.rel1,      p.rel1 === null ? "Non cable" : "Relais R1 (IN1) Source SONABEL + Sas 20 s (GPIO 25)"),
+          defLine("PIN_RELAI_SOLAIRE", p.rel2,      p.rel2 === null ? "Non cable" : "Relais R2 (IN2) Secours Solaire / Batterie (GPIO 26)"),
+          defLine("PIN_RELAI_CONFORT", p.rel3,      p.rel3 === null ? "Non cable" : "Relais R3 (IN3) Ligne Confort Ventilateur 12V (GPIO 27)"),
+          defLine("PIN_RELAI_POMPE",   p.rel4,      p.rel4 === null ? "Non cable" : "Relais R4 (IN4) Mini Pompe 12V + Diode 1N4007 (GPIO 14)"),
+          defLine("PIN_RELAI_VITALE",  p.rel5,      p.rel5 === null ? "Non cable" : "5e Relais R5 (1-ch) Ligne Vitale Lumiere 12V (GPIO 19)"),
           defLine("PIN_BP_LUMIERE",    p.bpLumiere, p.bpLumiere === null ? "Non cable" : "Bouton Poussoir Lumiere (INPUT_PULLUP -> GND)"),
           defLine("PIN_BP_VENTILO",    p.bpVentilo, p.bpVentilo === null ? "Non cable" : "Bouton Poussoir Ventilateur (INPUT_PULLUP -> GND)"),
           defLine("PIN_LED_VERT",      p.ledG,      p.ledG === null ? "Non cable" : "Feu Tricolore Vert (Reseau SONABEL OK)"),
@@ -4237,6 +4672,9 @@
           codeLine("#define SEUIL_EAU_BAS        30     // Demarrage auto Pompe K4 si niveau < 30 %"),
           codeLine("#define SEUIL_EAU_HAUT       85     // Arret auto Pompe K4 si niveau >= 85 %"),
           codeLine("#define DEBOUNCE_MS          45UL   // Anti-rebond logiciel boutons poussoirs"),
+          codeLine("#define SAS_STABILISATION_MS 20000UL // Sas anti-surtension 20 s au retour SONABEL"),
+          codeLine("#define NEXUS_HEURE_DEBUT    11     // Debut pic solaire Nexus (RTC DS3231)"),
+          codeLine("#define NEXUS_HEURE_FIN      14     // Fin pic solaire Nexus (pompage proactif <75%->95%)"),
           codeLine(""),
           codeLine("// --- 3. CONFIGURATION WI-FI & BROKER MQTT HIVEMQ ---"),
           codeLine(`const char* WIFI_SSID      = "CGE_UAUBEN_SMARTGRID";`),
@@ -4459,10 +4897,12 @@
             ["ACS712 #1 Charge", p.iCharge, iChErr], ["ACS712 #2 Solaire", p.iSolaire, iSolErr],
             ["HC-SR04 TRIG", p.trig, false], ["HC-SR04 ECHO", p.echo, echoErr],
             ["DS18B20 DATA", p.ds18b20, dsErr],
-            ["Relais K1 ATS", p.rel1, false], ["Relais K2 Lumière", p.rel2, false],
-            ["Relais K3 Ventilateur", p.rel3, false], ["Relais K4 Pompe", p.rel4, false],
+            ["RTC DS3231 (I2C //)", p.rtcSda, false],
+            ["Relais R1 SONABEL", p.rel1, false], ["Relais R2 Solaire", p.rel2, false],
+            ["Relais R3 Confort", p.rel3, false], ["Relais R4 Pompe", p.rel4, false],
+            ["5e Relais R5 Vitale", p.rel5, false],
             ["BP Lumière (Pull-up)", p.bpLumiere, false], ["BP Ventilateur (Pull-up)", p.bpVentilo, false],
-            ["Feu Vert", p.ledG, false], ["Feu Jaune", p.ledY, false],
+            ["Feu Vert", p.ledG, false], ["Feu Jaune (Sas/Sol)", p.ledY, false],
             ["Feu Rouge", p.ledR, false], ["Buzzer 5V", p.buzzer, false]
           ];
           tbody.innerHTML = rows.map(([lbl, g, err]) => {
@@ -4526,8 +4966,18 @@
           v_sonabel: +finiteOr(s.vSonabel, 0.0).toFixed(1),
           v_batt: +finiteOr(s.vBatt, 0.0).toFixed(1),
           i_solaire: +finiteOr(s.iSolaire, 0.0).toFixed(2),
-          lumiere: s.k2Prio ? 1 : 0,
-          ventilo: s.k3NonPrio ? 1 : 0
+          lumiere: s.r5Vitale ? 1 : 0,
+          ventilo: s.r3Confort ? 1 : 0,
+          fsm: s.fsmState,
+          sas_s: s.sasRemaining,
+          rtc: s.rtcStr,
+          nexus: s.nexusPeak ? 1 : 0,
+          zero_cloud: s.zeroCloud ? 1 : 0,
+          r1: s.r1Sonabel ? 1 : 0,
+          r2: s.r2Solaire ? 1 : 0,
+          r3: s.r3Confort ? 1 : 0,
+          r4: s.r4Pump ? 1 : 0,
+          r5: s.r5Vitale ? 1 : 0
         };
       }
 
@@ -4547,18 +4997,21 @@
         } else {
           const on = cmd.cmd === "ON" || cmd.state === 1 || cmd.state === true;
           const target = String(cmd.relay || cmd.target || "").toUpperCase();
-          if (target === "IN1" || target === "K1" || target === "ATS") {
+          if (target === "IN1" || target === "K1" || target === "R1" || target === "ATS" || target === "SONABEL") {
             state.sim.manualSource = true;
             state.sim.source = on ? "SONABEL" : "SOLAIRE";
-          } else if (target === "IN2" || target === "K2" || target === "LUMIERE" || target === "LAMP") {
+          } else if (target === "R2" || target === "SOLAIRE") {
+            state.sim.manualSource = true;
+            state.sim.source = on ? "SOLAIRE" : "SONABEL";
+          } else if (target === "IN2" || target === "K2" || target === "R5" || target === "VITALE" || target === "LUMIERE" || target === "LAMP") {
             state.sim.wantLamp = on;
-          } else if (target === "IN3" || target === "K3" || target === "VENTILO" || target === "FAN") {
+          } else if (target === "IN3" || target === "K3" || target === "R3" || target === "CONFORT" || target === "VENTILO" || target === "FAN") {
             state.sim.wantFan = on;
             state.sim.manualShed = !on && (cmd.action === "SHED" || cmd.label === "Délestage Q1");
           } else if (target === "DELESTAGE" || target === "SHED") {
             state.sim.wantFan = false;
             state.sim.manualShed = true;
-          } else if (target === "IN4" || target === "K4" || target === "POMPE" || target === "PUMP") {
+          } else if (target === "IN4" || target === "K4" || target === "R4" || target === "POMPE" || target === "PUMP") {
             state.sim.manualMode = true;
             state.sim.pompe = on ? 1 : 0;
           } else {
@@ -4587,21 +5040,22 @@
           if (!IS_EMBED_MODE && state.mqttEnabled && !state.mqttClient) connectMqtt();
           restartMqttInterval();
           startSimAlertMonitor();
+          startSimClock();
         }
-        const isFan = comp.id === "bp_ventilo" || comp.target === "k3" || (comp.tag && comp.tag.toUpperCase().includes("VENTIL"));
+        const isFan = comp.id === "bp_ventilo" || comp.target === "k3" || comp.target === "r3" || (comp.tag && comp.tag.toUpperCase().includes("VENTIL"));
         if (isFan) {
           state.sim.wantFan = !state.sim.wantFan;
           if (state.sim.wantFan) state.sim.manualShed = false;
           state.sim.bpFanPressed = true;
           setTimeout(() => { state.sim.bpFanPressed = false; updateLiveVisuals(); }, 220);
           const s = computeSim();
-          showToast(s.k3NonPrio ? "BP Ventilateur (GPIO 17) : Relais K3 ON — Ventilateur 12V en marche" : (s.shedding ? "Surcharge > 3,5 A active : Ventilateur délesté (K3 OFF)" : "BP Ventilateur (GPIO 17) : Relais K3 OFF — Ventilateur 12V arrêté"));
+          showToast(s.r3Confort ? "BP Ventilateur (GPIO 17) : Relais R3 (GPIO 27) ON — Ventilateur 12V en marche" : (s.shedding ? "Surcharge > 3,5 A active : Ligne Confort délestée (R3 OFF)" : "BP Ventilateur (GPIO 17) : Relais R3 (GPIO 27) OFF — Ventilateur 12V arrêté"));
         } else {
           state.sim.wantLamp = !state.sim.wantLamp;
           state.sim.bpLumPressed = true;
           setTimeout(() => { state.sim.bpLumPressed = false; updateLiveVisuals(); }, 220);
           const s = computeSim();
-          showToast(s.k2Prio ? "BP Lumière (GPIO 16) : Relais K2 ON — Lumière 12V allumée" : "BP Lumière (GPIO 16) : Relais K2 OFF — Lumière 12V éteinte");
+          showToast(s.r5Vitale ? "BP Lumière (GPIO 16) : 5e Relais R5 (GPIO 19) ON — Ligne Vitale allumée" : "BP Lumière (GPIO 16) : 5e Relais R5 (GPIO 19) OFF — Ligne Vitale éteinte");
         }
         updateLiveVisuals();
         publishMqttNow(false);
@@ -4638,7 +5092,7 @@
 
       function connectMqtt() {
         if (IS_EMBED_MODE) { disconnectMqtt(); return; }
-        if (!state.mqttEnabled || !state.powered) return;
+        if (state.zeroCloud || !state.mqttEnabled || !state.powered) return;
         if (typeof mqtt === "undefined") { setMqttUi("error"); restartMqttInterval(); return; }
         stopMqttInterval();
         if (state.mqttClient) { try { state.mqttClient.end(true); } catch (e) {} state.mqttClient = null; }
@@ -4701,6 +5155,11 @@
 
       function publishMqttNow(isWireFault = false, wasPoweredBeforeFault = false) {
         if (IS_EMBED_MODE) return;
+        if (state.zeroCloud) {
+          const txJsonEl = document.getElementById("mqtt-tx-json");
+          if (txJsonEl) txJsonEl.textContent = "MODE ZÉRO CLOUD ACTIF : 100 % autonome hors-ligne (FSM, Sas 20 s, RTC DS3231, LCD & BP actifs sans broker).";
+          return;
+        }
         const canNorm = Boolean(state.powered && state.analysis && state.analysis.valid);
         const canFlt = Boolean(isWireFault && wasPoweredBeforeFault);
         if (!canNorm && !canFlt) return;
@@ -4895,7 +5354,7 @@
       let pumpNodes = null;
       let fanNodes = null;
       let buzzerNodes = null;
-      const prevRelayAudio = { initialized: false, active: false, k1: false, k2: false, k3: false, k4: false };
+      const prevRelayAudio = { initialized: false, active: false, r1: false, r2: false, r3: false, r4: false, r5: false };
       const audioStats = { relayClicks: 0, pumpRunning: false, fanRunning: false, buzzerActive: false };
       window.__audioEngineState = audioStats;
 
@@ -5240,25 +5699,28 @@
 
       function syncCircuitAudio(s, allowRelayClicks = true) {
         const a = state.analysis;
-        const k1 = Boolean(s.active && s.k1Solar);
-        const k2 = Boolean(s.active && s.k2Prio);
-        const k3 = Boolean(s.active && s.k3NonPrio);
-        const k4 = Boolean(s.active && s.k4Pump);
+        const r1 = Boolean(s.active && s.r1Sonabel);
+        const r2 = Boolean(s.active && s.r2Solaire);
+        const r3 = Boolean(s.active && s.r3Confort);
+        const r4 = Boolean(s.active && s.r4Pump);
+        const r5 = Boolean(s.active && s.r5Vitale);
 
         if (prevRelayAudio.initialized && allowRelayClicks && state.soundEnabled) {
           const changes = [];
-          if (k1 !== prevRelayAudio.k1) changes.push(k1);
-          if (k2 !== prevRelayAudio.k2) changes.push(k2);
-          if (k3 !== prevRelayAudio.k3) changes.push(k3);
-          if (k4 !== prevRelayAudio.k4) changes.push(k4);
+          if (r1 !== prevRelayAudio.r1) changes.push(r1);
+          if (r2 !== prevRelayAudio.r2) changes.push(r2);
+          if (r3 !== prevRelayAudio.r3) changes.push(r3);
+          if (r4 !== prevRelayAudio.r4) changes.push(r4);
+          if (r5 !== prevRelayAudio.r5) changes.push(r5);
           changes.forEach((isClosing, idx) => playRelayClick(isClosing, idx * 20));
         }
         prevRelayAudio.initialized = true;
         prevRelayAudio.active = Boolean(s.active);
-        prevRelayAudio.k1 = k1;
-        prevRelayAudio.k2 = k2;
-        prevRelayAudio.k3 = k3;
-        prevRelayAudio.k4 = k4;
+        prevRelayAudio.r1 = r1;
+        prevRelayAudio.r2 = r2;
+        prevRelayAudio.r3 = r3;
+        prevRelayAudio.r4 = r4;
+        prevRelayAudio.r5 = r5;
 
         if (!state.soundEnabled) {
           stopAllContinuousAudioImmediate();
@@ -5359,7 +5821,7 @@
         if (kinds.includes("pwr3v3")) return { color: "#7c3aed", layer: "power" };
         if (kinds.includes("i2c_sda")) return { color: "#1d4ed8", layer: "signal" };
         if (kinds.includes("i2c_scl")) return { color: "#ca8a04", layer: "signal" };
-        if (types.includes("acs712") || types.includes("relay4")) return { color: "#15803d", layer: "signal" };
+        if (types.includes("acs712") || types.includes("relay4") || types.includes("relay1ch")) return { color: "#15803d", layer: "signal" };
         if (types.includes("ds18b20") || types.includes("buzzer")) return { color: "#ca8a04", layer: "signal" };
         return { color: "#1d4ed8", layer: "signal" };
       }
@@ -5572,15 +6034,29 @@
           }
           if (c.type === "acs712") setLed(`${c.id}-pwr-led`, s.active, "#ef4444", "#451a1a");
           if (c.type === "relay4") {
-            setLed(`${c.id}-led-1`, s.active && s.k1Solar, "#f59e0b", "#14532d");
-            setLed(`${c.id}-led-2`, s.active && s.k2Prio, "#22c55e", "#14532d");
-            setLed(`${c.id}-led-3`, s.active && s.k3NonPrio, "#22c55e", "#14532d");
-            setLed(`${c.id}-led-4`, s.active && s.k4Pump, "#38bdf8", "#14532d");
+            setLed(`${c.id}-led-1`, s.active && s.r1Sonabel, "#22c55e", "#14532d");
+            setLed(`${c.id}-led-2`, s.active && s.r2Solaire, "#f59e0b", "#14532d");
+            setLed(`${c.id}-led-3`, s.active && s.r3Confort, "#22c55e", "#14532d");
+            setLed(`${c.id}-led-4`, s.active && s.r4Pump, "#38bdf8", "#14532d");
             const st1 = document.getElementById(`${c.id}-state-1`), st2 = document.getElementById(`${c.id}-state-2`), st3 = document.getElementById(`${c.id}-state-3`), st4 = document.getElementById(`${c.id}-state-4`);
-            if (st1) st1.textContent = !s.active ? "REPOS" : (s.k1Solar ? "COM-NO (SOL)" : "COM-NC (SON)");
-            if (st2) st2.textContent = !s.active ? "OUVERT" : (s.k2Prio ? "COM-NO (ON)" : "OUVERT");
-            if (st3) st3.textContent = !s.active ? "OUVERT" : (s.k3NonPrio ? "COM-NO (ON)" : (s.shedding ? "DELESTE" : "OUVERT"));
-            if (st4) st4.textContent = !s.active ? "OUVERT" : (s.k4Pump ? "COM-NO (ON)" : "OUVERT");
+            if (st1) st1.textContent = !s.active ? "OUVERT" : (s.r1Sonabel ? "FERME (SON)" : (s.sasRemaining > 0 ? `SAS ${s.sasRemaining}s` : "OUVERT"));
+            if (st2) st2.textContent = !s.active ? "OUVERT" : (s.r2Solaire ? "FERME (SOL)" : "OUVERT");
+            if (st3) st3.textContent = !s.active ? "OUVERT" : (s.r3Confort ? "COM-NO (ON)" : (s.shedding ? "DELESTE" : "OUVERT"));
+            if (st4) st4.textContent = !s.active ? "OUVERT" : (s.r4Pump ? "COM-NO (ON)" : "OUVERT");
+          }
+          if (c.type === "relay1ch") {
+            setLed(`${c.id}-led-1`, s.active && s.r5Vitale, "#22c55e", "#14532d");
+            const st = document.getElementById(`${c.id}-state-1`);
+            if (st) st.textContent = !s.active ? "OUVERT" : (s.r5Vitale ? "COM-NO (ON)" : "OUVERT");
+          }
+          if (c.type === "rtc_ds3231") {
+            const tm = document.getElementById(`${c.id}-time`);
+            const pk = document.getElementById(`${c.id}-peak-led`);
+            if (tm) {
+              tm.textContent = s.active && a.hasRtc ? s.rtcStr : formatRtcTime(state.sim.rtcHour, state.sim.rtcSec);
+              tm.setAttribute("fill", s.active && s.nexusPeak ? "#4ade80" : "#38bdf8");
+            }
+            if (pk) pk.setAttribute("fill", s.active && s.nexusPeak ? "#22c55e" : "#1e293b");
           }
           if (c.type === "load_priority") {
             const lit = s.active && s.k2Prio && a.prioOk;
@@ -5636,13 +6112,13 @@
           }
           if (c.type === "buzzer") { const wv = document.getElementById(`${c.id}-waves`); if (wv) wv.setAttribute("opacity", s.buzzer ? "1" : "0"); }
           if (c.type === "push_button") {
-            const isFan = c.id === "bp_ventilo" || c.target === "k3" || (c.tag && c.tag.toUpperCase().includes("VENTIL"));
-            const isOn = s.active && (isFan ? s.k3NonPrio : s.k2Prio);
+            const isFan = c.id === "bp_ventilo" || c.target === "k3" || c.target === "r3" || (c.tag && c.tag.toUpperCase().includes("VENTIL"));
+            const isOn = s.active && (isFan ? s.r3Confort : s.r5Vitale);
             const isPressed = isFan ? state.sim.bpFanPressed : state.sim.bpLumPressed;
             setLed(`${c.id}-led`, isOn, "#22c55e", "#14532d");
             const st = document.getElementById(`${c.id}-st`);
             if (st) {
-              st.textContent = !s.active ? "HORS TENSION" : (isOn ? (isFan ? "K3 : MARCHE" : "K2 : ALLUME") : (isFan && s.shedding ? "K3 : DELESTE" : (isFan ? "K3 : ARRET" : "K2 : ETEINT")));
+              st.textContent = !s.active ? "HORS TENSION" : (isOn ? (isFan ? "R3 : MARCHE" : "R5 : ALLUME") : (isFan && s.shedding ? "R3 : DELESTE" : (isFan ? "R3 : ARRET" : "R5 : ETEINT")));
               st.setAttribute("fill", isOn ? "#15803d" : (isFan && s.shedding ? "#b91c1c" : "#64748b"));
             }
             const cap = document.getElementById(`${c.id}-cap`);
@@ -5749,14 +6225,58 @@
         tB.textContent = `${state.sim.temp.toFixed(1)} °C`; tB.className = "slider-val" + (state.sim.temp > 60 ? " alert" : (state.sim.temp > 48 ? " warn" : ""));
         eB.textContent = `${Math.round(state.sim.eau)} %`; eB.className = "slider-val" + (state.sim.eau < 30 ? " alert" : "");
 
-        const aSrc = document.getElementById("act-src"), aK2 = document.getElementById("act-k2"), aK3 = document.getElementById("act-k3"), aK4 = document.getElementById("act-k4");
+        // FSM 5 états, Sas 20 s, RTC DS3231, Nexus 11h–14h & Mode Zéro Cloud
+        const fsmBadge = document.getElementById("fsm-state-badge");
+        if (fsmBadge) {
+          if (!s.active) { fsmBadge.textContent = "HORS TENSION"; fsmBadge.className = "fsm-badge"; }
+          else {
+            const fm = FSM_LABELS[s.fsmState] || { label: s.fsmState, cls: "" };
+            fsmBadge.textContent = fm.label;
+            fsmBadge.className = "fsm-badge " + fm.cls;
+          }
+        }
+        const sasBar = document.getElementById("sas-bar"), sasTxt = document.getElementById("sas-countdown-txt");
+        if (sasBar) sasBar.classList.toggle("visible", Boolean(s.active && s.sasRemaining > 0));
+        if (sasTxt) sasTxt.textContent = `${s.sasRemaining} s`;
+
+        const rtcOut = document.getElementById("rtc-clock-readout");
+        if (rtcOut) rtcOut.textContent = s.rtcStr || formatRtcTime(state.sim.rtcHour, state.sim.rtcSec);
+        const hVal = document.getElementById("val-slider-hour");
+        if (hVal) {
+          const hh = String(Math.floor(state.sim.rtcHour)).padStart(2, "0");
+          const mm = state.sim.rtcHour % 1 >= 0.5 ? "30" : "00";
+          hVal.textContent = `${hh}h${mm}`;
+          hVal.className = "slider-val" + (state.sim.rtcHour >= 11 && state.sim.rtcHour < 14 ? " warn" : "");
+        }
+        const nexPill = document.getElementById("nexus-pill");
+        if (nexPill) {
+          const isPk = state.sim.rtcHour >= 11 && state.sim.rtcHour < 14;
+          nexPill.textContent = isPk ? "NEXUS PIC SOLAIRE 11h–14h" : "Hors pic (11h–14h)";
+          nexPill.classList.toggle("is-peak", isPk);
+        }
+        const zcBtn = document.getElementById("btn-zero-cloud");
+        if (zcBtn) {
+          zcBtn.textContent = state.zeroCloud ? "Zéro Cloud : ACTIF" : "Zéro Cloud : OFF";
+          zcBtn.classList.toggle("is-zc", state.zeroCloud);
+        }
+        const pkBtn = document.getElementById("btn-nexus-peak");
+        if (pkBtn) pkBtn.classList.toggle("is-on", state.sim.rtcHour >= 11 && state.sim.rtcHour < 14);
+
+        const aSrc = document.getElementById("act-src"), aR1 = document.getElementById("act-r1"), aR2 = document.getElementById("act-r2");
+        const aK2 = document.getElementById("act-k2"), aK3 = document.getElementById("act-k3"), aK4 = document.getElementById("act-k4");
         if (!s.active) {
-          aSrc.textContent = "ARRET"; aSrc.className = "act-v"; aK2.textContent = "--"; aK2.className = "act-v"; aK3.textContent = "--"; aK3.className = "act-v"; aK4.textContent = "--"; aK4.className = "act-v";
+          aSrc.textContent = "ARRET"; aSrc.className = "act-v";
+          if (aR1) { aR1.textContent = "--"; aR1.className = "act-v"; }
+          if (aR2) { aR2.textContent = "--"; aR2.className = "act-v"; }
+          aK2.textContent = "--"; aK2.className = "act-v"; aK3.textContent = "--"; aK3.className = "act-v"; aK4.textContent = "--"; aK4.className = "act-v";
         } else {
-          aSrc.textContent = s.source; aSrc.className = "act-v " + (s.source === "SONABEL" ? "ok" : (s.source === "SOLAIRE" ? "warn" : "err"));
-          aK2.textContent = s.k2Prio ? "ON" : "OFF"; aK2.className = "act-v " + (s.k2Prio ? "ok" : "err");
-          aK3.textContent = s.k3NonPrio ? "ON" : (s.shedding ? "DELESTE" : "OFF"); aK3.className = "act-v " + (s.k3NonPrio ? "ok" : (s.shedding ? "warn" : "err"));
-          aK4.textContent = s.k4Pump ? "MARCHE" : "ARRET"; aK4.className = "act-v " + (s.k4Pump ? "info" : "");
+          aSrc.textContent = s.sasRemaining > 0 ? `SAS ${s.sasRemaining}s` : s.source;
+          aSrc.className = "act-v " + (s.source === "SONABEL" ? "ok" : (s.source === "SOLAIRE" ? "warn" : "err"));
+          if (aR1) { aR1.textContent = s.r1Sonabel ? "FERME" : "OUVERT"; aR1.className = "act-v " + (s.r1Sonabel ? "ok" : ""); }
+          if (aR2) { aR2.textContent = s.r2Solaire ? "FERME" : "OUVERT"; aR2.className = "act-v " + (s.r2Solaire ? "warn" : ""); }
+          aK2.textContent = s.r5Vitale ? "ON" : "OFF"; aK2.className = "act-v " + (s.r5Vitale ? "ok" : "err");
+          aK3.textContent = s.r3Confort ? "ON" : (s.shedding ? "DELESTE" : "OFF"); aK3.className = "act-v " + (s.r3Confort ? "ok" : (s.shedding ? "warn" : "err"));
+          aK4.textContent = s.r4Pump ? "MARCHE" : "ARRET"; aK4.className = "act-v " + (s.r4Pump ? "info" : "");
         }
 
         document.getElementById("btn-undo").disabled = state.wiringLocked || state.undoStack.length === 0;
@@ -5790,8 +6310,8 @@
         if (typeof renderBuildView === "function") renderBuildView();
         updateLiveVisuals();
         restartMqttInterval();
-        if (state.powered && state.analysis.valid) startSimAlertMonitor();
-        else stopSimAlertMonitor();
+        if (state.powered && state.analysis.valid) { startSimAlertMonitor(); startSimClock(); }
+        else { stopSimAlertMonitor(); stopSimClock(); }
       }
 
       // =====================================================================
@@ -6286,7 +6806,7 @@
         { id: "s2", title: "2. Réglage critique du convertisseur Buck LM2596 à +5,00V (AVANT raccordement ESP32)", desc: "Alimenter IN+/IN- du LM2596 depuis le Bus 12V, puis régler la vis laiton du potentiomètre jusqu'à lire exactement 5.00 V sur l'afficheur 7 segments et au multimètre avant de relier le rail +5V à l'ESP32 VIN." },
         { id: "s3", title: "3. Capteurs analogiques sur ADC1 (GPIO 32, 33, 34, 35) et ACS712 en série", desc: "Insérer ACS712 #2 en série sur le départ Solaire (OUT -> GPIO 35) et ACS712 #1 en série sur le départ des charges (OUT -> GPIO 34). Relier Tension SONABEL (GPIO 32) et Tension Batterie (GPIO 33) exclusivement sur ADC1." },
         { id: "s4", title: "4. Bus I2C LCD 2004, sonde DS18B20 (+ 4,7 kΩ) et ultrason HC-SR04 (+ pont 2×10 kΩ)", desc: "Câbler SDA sur GPIO 21 et SCL sur GPIO 22. Monter impérativement la résistance pull-up 4,7 kΩ entre DATA DS18B20 (GPIO 4) et +3,3V, ainsi que le pont diviseur 10 kΩ / 10 kΩ sur ECHO HC-SR04 vers GPIO 18." },
-        { id: "s5", title: "5. Module 4 relais 5V, signalisation et charges 12V réelles", desc: "Relier IN1..IN4 aux GPIO 26, 27, 14, 12. Ponter COM2-COM3-COM4 depuis ACS712 #1 IP- et câbler NO2 (Charge Prioritaire), NO3 (Charge Non-Prioritaire), NO4 (Pompe 12V Polytank), Feu tricolore (GPIO 23/19/13) et Buzzer (GPIO 15)." },
+        { id: "s5", title: "5. Module 4 relais 5V, signalisation et charges 12V réelles", desc: "Relier R1..R4 aux GPIO 25, 26, 27, 14 et le 5e relais R5 (Ligne Vitale) à GPIO 19. Insérer le fusible 5 A sur +12V batterie, le condensateur 1000 µF sur +5V LM2596, la diode de roue libre 1N4007 aux bornes de la pompe 12V, le RTC DS3231 en parallèle I2C (GPIO 21/22), Feu tricolore (GPIO 23/2/13) et Buzzer (GPIO 15)." },
         { id: "s6", title: "6. Contrôle continuité GND hors tension puis essais sous tension + MQTT HiveMQ", desc: "Vérifier l'absence de court-circuit entre +12V, +5V, +3,3V et GND à l'ohmmètre, flasher sketch_smartgrid.ino, mettre sous tension et contrôler les trames JSON sur scada_smartgrid.html." }
       ];
 
@@ -6521,12 +7041,12 @@
 
       function buildStandaloneSvgString() {
         const clone = svgEl.cloneNode(true);
-        clone.setAttribute("width", "2060");
-        clone.setAttribute("height", "990");
-        clone.setAttribute("viewBox", "0 0 2060 990");
+        clone.setAttribute("width", "2120");
+        clone.setAttribute("height", "1090");
+        clone.setAttribute("viewBox", "0 0 2120 1090");
         const bg = document.createElementNS(SVG_NS, "rect");
         bg.setAttribute("x", "0"); bg.setAttribute("y", "0");
-        bg.setAttribute("width", "2060"); bg.setAttribute("height", "990");
+        bg.setAttribute("width", "2120"); bg.setAttribute("height", "1090");
         bg.setAttribute("fill", "#F5F7FA");
         clone.insertBefore(bg, clone.firstChild);
         const st = document.createElementNS(SVG_NS, "style");
@@ -6547,7 +7067,7 @@
         const url = URL.createObjectURL(blob);
         img.onload = () => {
           const canvas = document.createElement("canvas");
-          canvas.width = 2060; canvas.height = 990;
+          canvas.width = 2120; canvas.height = 1090;
           const ctx = canvas.getContext("2d");
           ctx.fillStyle = "#F5F7FA";
           ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -6717,11 +7237,15 @@
           publishMqttNow(false);
           restartMqttInterval();
           startSimAlertMonitor();
+          startSimClock();
           requestAnimationFrame(fitView);
         } else {
           state.powered = false;
           stopMqttInterval();
           stopSimAlertMonitor();
+          stopSimClock();
+          state.sim.sasRemaining = 0;
+          state.sim.wasOnSolar = false;
           disconnectMqtt();
           updatePlayButtonUI();
           updateDiagnosticUI();
@@ -6829,6 +7353,61 @@
       bindSlider("slider-i", "iCharge");
       bindSlider("slider-t", "temp");
       bindSlider("slider-eau", "eau");
+      const sliderHourEl = document.getElementById("slider-hour");
+      if (sliderHourEl) {
+        sliderHourEl.addEventListener("input", ev => {
+          state.sim.rtcHour = parseFloat(ev.target.value);
+          state.sim.manualMode = false;
+          updateLiveVisuals();
+          if (state.powered) publishMqttNow(false);
+        });
+      }
+      const btnZeroCloud = document.getElementById("btn-zero-cloud");
+      if (btnZeroCloud) {
+        btnZeroCloud.addEventListener("click", () => {
+          state.zeroCloud = !state.zeroCloud;
+          if (state.zeroCloud) {
+            disconnectMqtt();
+            showToast("Mode Zéro Cloud ACTIF : MQTT coupé, automate FSM + RTC DS3231 + LCD + BP 100 % autonomes en local.");
+          } else {
+            if (state.powered && state.mqttEnabled && !IS_EMBED_MODE) connectMqtt();
+            showToast("Mode Zéro Cloud désactivé : liaison MQTT HiveMQ restaurée.");
+          }
+          updateLiveVisuals();
+          if (state.powered) publishMqttNow(false);
+        });
+      }
+      const btnNexusPeak = document.getElementById("btn-nexus-peak");
+      if (btnNexusPeak) {
+        btnNexusPeak.addEventListener("click", () => {
+          const inPeak = state.sim.rtcHour >= 11 && state.sim.rtcHour < 14;
+          state.sim.rtcHour = inPeak ? 10.0 : 12.5;
+          if (sliderHourEl) sliderHourEl.value = String(state.sim.rtcHour);
+          state.sim.manualMode = false;
+          updateLiveVisuals();
+          if (state.powered) publishMqttNow(false);
+          showToast(state.sim.rtcHour >= 11 && state.sim.rtcHour < 14
+            ? "RTC DS3231 réglé sur 12h30 : fenêtre Nexus Pic Solaire (11h–14h) active !"
+            : "RTC DS3231 réglé sur 10h00 : hors pic solaire (hystérésis standard <30% / >=85%).");
+        });
+      }
+      const btnSasTest = document.getElementById("btn-sas-test");
+      if (btnSasTest) {
+        btnSasTest.addEventListener("click", () => {
+          if (!state.powered && state.analysis && state.analysis.valid) {
+            document.getElementById("btn-play").click();
+          }
+          state.sim.manualSource = false;
+          state.sim.vSonabel = 12.2;
+          const sv = document.getElementById("slider-v");
+          if (sv) sv.value = "12.2";
+          state.sim.wasOnSolar = true;
+          state.sim.sasRemaining = 20;
+          updateLiveVisuals();
+          if (state.powered) publishMqttNow(false);
+          showToast("Sas anti-surtension 20 s déclenché : maintien sur Solaire (R2) avant reconnexion SONABEL (R1).");
+        });
+      }
 
       const ercSummaryBtn = document.getElementById("erc-summary-btn");
       if (ercSummaryBtn) {
@@ -6881,6 +7460,7 @@
       syncDrawers();
       loadPreset("smartgrid");
       window.fitEmbeddedView = fitView;
+      window.__getSimFullState = () => ({ state: { powered: state.powered, wiringLocked: state.wiringLocked, soundEnabled: state.soundEnabled, zeroCloud: state.zeroCloud, componentsCount: state.components.length, wiresCount: state.wires.length }, analysis: state.analysis, sim: computeSim() });
       if (IS_EMBED_MODE) {
         requestAnimationFrame(() => {
           fitView();
