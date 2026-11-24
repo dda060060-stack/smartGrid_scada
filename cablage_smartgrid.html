@@ -2242,6 +2242,78 @@
       </nav>
     </header>
 
+    <!-- 2. BANDEAU HERO SOBRE (BLEU MARINE #0B3B68) -->
+    <section class="doc-hero" aria-label="Présentation Smart Grid U-AUBEN">
+      <div class="doc-hero-inner">
+        <div class="doc-hero-copy">
+          <h1 class="doc-hero-title">Smart Grid &amp; Supervision Polytank 12V DC</h1>
+          <div class="doc-hero-sub">Conception ESP32, câblage 12V/5V et télémétrie SCADA.</div>
+          <p class="doc-hero-desc">
+            Documentation technique complète du prototype hybride SONABEL / Solaire 12V DC conçu par le Club du Génie Électrique (U-AUBEN). Explorez l'architecture électrique, le câblage broche à broche des 17 modules, le firmware ESP32 et la supervision temps réel sur MQTT HiveMQ.
+          </p>
+          <div class="doc-hero-actions">
+            <a class="doc-hero-cta" href="./simulateur_cablage.html">Ouvrir le Simulateur</a>
+            <a class="doc-hero-link-alt" href="./scada_smartgrid.html">Ouvrir SCADA</a>
+          </div>
+        </div>
+
+        <div class="doc-hero-preview" aria-hidden="true">
+          <div class="hero-win-bar">
+            <span class="hero-win-dots">
+              <span style="background:#EF4444;"></span>
+              <span style="background:#F59E0B;"></span>
+              <span style="background:#22C55E;"></span>
+            </span>
+            <span>Smart Grid U-AUBEN · 12V DC / ESP32</span>
+          </div>
+          <svg class="hero-preview-svg" viewBox="0 0 520 265" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="heroGrid" width="16" height="16" patternUnits="userSpaceOnUse">
+                <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#E5E9F0" stroke-width="0.7" />
+              </pattern>
+            </defs>
+            <rect width="520" height="265" fill="url(#heroGrid)" />
+            <!-- Fils orthogonaux 90° -->
+            <path d="M 118 68 L 154 68 L 154 114 L 196 114" fill="none" stroke="#DC2626" stroke-width="2.4" />
+            <path d="M 118 84 L 144 84 L 144 134 L 196 134" fill="none" stroke="#1C1E21" stroke-width="2.2" />
+            <path d="M 118 192 L 166 192 L 166 154 L 196 154" fill="none" stroke="#EA580C" stroke-width="2.2" />
+            <path d="M 296 106 L 336 106 L 336 74 L 366 74" fill="none" stroke="#2563EB" stroke-width="2.2" />
+            <path d="M 296 122 L 346 122 L 346 90 L 366 90" fill="none" stroke="#0284C7" stroke-width="2.2" />
+            <path d="M 296 158 L 344 158 L 344 186 L 366 186" fill="none" stroke="#2E8555" stroke-width="2.2" />
+            <!-- Bloc Buck LM2596 / Sources -->
+            <rect x="24" y="42" width="94" height="62" rx="6" fill="#1D4ED8" stroke="#1E3A8A" stroke-width="1.5" />
+            <text x="71" y="64" fill="#FFFFFF" font-family="IBM Plex Mono, monospace" font-size="9.5" font-weight="700" text-anchor="middle">LM2596 5.0V</text>
+            <rect x="44" y="72" width="54" height="20" rx="3" fill="#0F172A" />
+            <text x="71" y="86" fill="#EF4444" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" text-anchor="middle">5.00V</text>
+            <!-- Bloc 4 Relais -->
+            <rect x="24" y="156" width="94" height="68" rx="6" fill="#1E40AF" stroke="#1E3A8A" stroke-width="1.5" />
+            <rect x="34" y="168" width="16" height="32" rx="2" fill="#3B82F6" stroke="#93C5FD" stroke-width="0.8" />
+            <rect x="54" y="168" width="16" height="32" rx="2" fill="#3B82F6" stroke="#93C5FD" stroke-width="0.8" />
+            <rect x="74" y="168" width="16" height="32" rx="2" fill="#3B82F6" stroke="#93C5FD" stroke-width="0.8" />
+            <rect x="94" y="168" width="16" height="32" rx="2" fill="#3B82F6" stroke="#93C5FD" stroke-width="0.8" />
+            <text x="71" y="216" fill="#DBEAFE" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700" text-anchor="middle">4 RELAIS 5V</text>
+            <!-- Bloc ESP32 central -->
+            <rect x="196" y="76" width="100" height="128" rx="7" fill="#1E293B" stroke="#0F172A" stroke-width="1.8" />
+            <rect x="218" y="92" width="56" height="44" rx="3" fill="#CBD5E1" stroke="#94A3B8" stroke-width="1" />
+            <text x="246" y="118" fill="#1E293B" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700" text-anchor="middle">ESP32</text>
+            <text x="246" y="160" fill="#E2E8F0" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="600" text-anchor="middle">30 BROCHES</text>
+            <circle cx="246" cy="180" r="3.5" fill="#22C55E" />
+            <!-- Écran LCD 2004 I2C -->
+            <rect x="366" y="44" width="132" height="72" rx="6" fill="#15803D" stroke="#166534" stroke-width="1.6" />
+            <rect x="376" y="54" width="112" height="52" rx="3" fill="#84CC16" />
+            <text x="382" y="71" fill="#142607" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700">SRC:SONABEL 12.2V</text>
+            <text x="382" y="84" fill="#142607" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700">I:1.8A  T:32.0C</text>
+            <text x="382" y="97" fill="#142607" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700">EAU:62%  Q1:ON</text>
+            <!-- Polytank HC-SR04 -->
+            <rect x="366" y="144" width="132" height="84" rx="8" fill="#FFFFFF" stroke="#475569" stroke-width="1.8" />
+            <rect x="370" y="182" width="124" height="42" rx="5" fill="#3B82F6" opacity="0.88" />
+            <text x="432" y="166" fill="#1E293B" font-family="IBM Plex Mono, monospace" font-size="9.5" font-weight="700" text-anchor="middle">POLYTANK · 62%</text>
+            <text x="432" y="207" fill="#FFFFFF" font-family="IBM Plex Mono, monospace" font-size="8.5" font-weight="700" text-anchor="middle">HC-SR04 / POMPE</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
     <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="toggleDocSidebar(false)"></div>
 
     <!-- 3. CORPS DE PAGE EN 3 COLONNES SUR FOND BLANC PUR (#FFFFFF) -->
